@@ -9,7 +9,6 @@ img.logo {
     height: auto;
 }
 
-/* Ajuste solo para pantallas grandes (navegadores en PC) */
 /* Ajustes generales (ya funciona bien en móviles) */
 img.logo {
     width: 100%;
@@ -28,8 +27,10 @@ img.logo {
     }
 
     .logo {
-        max-width: 300px; /* Ajusta el tamaño del logo */
+        max-width: 200px; /* Ajusta el tamaño del logo */
         height: auto;
+        align-self: flex-start; /* Asegura que el logo esté arriba */
+        margin-top: 100px; /* Ajusta la distancia desde arriba */
     }
 
     .content {
