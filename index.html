@@ -10,18 +10,31 @@ img.logo {
 }
 
 /* Ajuste solo para pantallas grandes (navegadores en PC) */
+/* Ajustes generales (ya funciona bien en móviles) */
+img.logo {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+/* Ajuste para escritorio */
 @media screen and (min-width: 768px) { 
-    img.logo {
-        position: absolute;  /* Permite moverlo libremente */
-        top: 20px;  /* Ajusta la altura del logo */
-        left: 50px;  /* Ajusta la distancia desde la izquierda */
+    .wrapper {
+        display: flex;  /* Alinea el logo y el contenido en fila */
+        align-items: flex-start; /* Asegura que ambos queden arriba */
+        justify-content: center; /* Mantiene el contenido centrado */
+        gap: 50px; /* Espacio entre el logo y el contenido */
+        max-width: 1000px; /* Ajusta el ancho máximo para evitar desbordamientos */
     }
 
-    /* Evitar que el contenido se superponga con el logo */
+    .logo {
+        max-width: 300px; /* Ajusta el tamaño del logo */
+        height: auto;
+    }
+
     .content {
-        max-width: 650px;  /* Mantiene un límite en el tamaño */
-        padding-left: 320px;  /* Empuja el contenido a la derecha sin romper la alineación */
-        margin: 0 auto;  /* Mantiene el contenido centrado */
+        text-align: left;
+        max-width: 650px;
     }
 }
 
@@ -63,7 +76,7 @@ img.logo {
 </head>
 <body style="margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; text-align: center;">
 
-    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; padding: 20px; max-width: 90%; margin: auto;">
+    <div class="wrapper" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; padding: 20px; max-width: 90%; margin: auto;">
         <!-- Logo -->
         <img src="logov5.jpg" alt="GastroSat Logo" class="logo">
 
