@@ -3,20 +3,26 @@
 <head>
     <style>
     /* Ajustes generales (ya funciona bien en móviles) */
+img.logo {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+/* Ajuste solo para pantallas grandes (navegadores en PC) */
+@media screen and (min-width: 768px) { 
     img.logo {
-        width: 100%;
-        max-width: 300px;
-        height: auto;
+        position: absolute;  /* Permite moverlo libremente */
+        top: 20px;  /* Ajusta la altura del logo */
+        left: 50px;  /* Ajusta la distancia desde la izquierda */
     }
 
-    /* Ajuste solo para pantallas grandes (navegadores en PC) */
-    @media screen and (min-width: 768px) { 
-        img.logo {
-            position: absolute;  /* Permite moverlo libremente */
-            top: 20px;  /* Ajusta la altura del logo */
-            left: 50px;  /* Ajusta la distancia desde la izquierda */
-        }
+    /* Evitar que el contenido se superponga con el logo */
+    .content {
+        padding-left: 250px; /* Ajusta este valor según el tamaño del logo */
     }
+}
+
 </style>
     
     <!-- Favicon estándar -->
@@ -60,7 +66,7 @@
         <img src="logov5.jpg" alt="GastroSat Logo" class="logo">
 
         <!-- Caja de contenido sin borde -->
-        <div style="width: 100%; max-width: 650px; padding: 20px; text-align: left;">
+        <div class="content" style="width: 100%; max-width: 650px; padding: 20px; text-align: left;">
             <h2>🚀 Bienvenido/a a GastroSat</h2>
             <p><strong>Servicio de Asistencia Técnica & Equipamiento Profesional para la Hostelería en Mallorca.</strong></p>
 
