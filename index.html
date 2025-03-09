@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <style>
+    /* Ajustes generales (ya funciona bien en móviles) */
+    img.logo {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+    }
+
+    /* Ajuste solo para pantallas grandes (navegadores en PC) */
+    @media screen and (min-width: 768px) { 
+        img.logo {
+            position: absolute;  /* Permite moverlo libremente */
+            top: 20px;  /* Ajusta la altura del logo */
+            left: 50px;  /* Ajusta la distancia desde la izquierda */
+        }
+    }
+</style>
+    
     <!-- Favicon estándar -->
 <link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
 
@@ -39,7 +57,7 @@
 
     <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; padding: 20px; max-width: 90%; margin: auto;">
         <!-- Logo -->
-        <img src="logov5.jpg" alt="GastroSat Logo" style="width: 100%; max-width: 300px; height: auto;">
+        <img src="logov5.jpg" alt="GastroSat Logo" class="logo">
 
         <!-- Caja de contenido sin borde -->
         <div style="width: 100%; max-width: 650px; padding: 20px; text-align: left;">
