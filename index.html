@@ -15,9 +15,10 @@ img.logo {
     max-width: 300px;
     height: auto;
 }
-@media screen and (max-width: 1080px) {
+@media screen and (min-width: 1180px) {
     .logo {
-        position: static; /* Elimina la propiedad sticky */
+        position: ; /* Elimina la propiedad sticky */
+        top: 20px;
     }
 }
 
@@ -32,8 +33,7 @@ img.logo {
     }
 
     .logo {
-        position: sticky;
-        top: 20px;
+        position: static;
         max-width: 300px; /* Ajusta el tamaño del logo */
         height: auto;
         align-self: flex-start; /* Asegura que el logo esté arriba */
