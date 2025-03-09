@@ -19,33 +19,26 @@ img.logo {
 /* Ajuste para escritorio */
 @media screen and (min-width: 768px) { 
     .wrapper {
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 50px;
-        max-width: 1000px;
-    }
-
-    .logo-container {
-        position: sticky;
-        top: 20px;
-        height: 300px; /* Espacio reservado para el logo */
-        display: flex;
-        align-items: flex-start;
+        display: flex;  /* Alinea el logo y el contenido en fila */
+        align-items: flex-start; /* Asegura que ambos queden arriba */
+        justify-content: center; /* Mantiene el contenido centrado */
+        gap: 50px; /* Espacio entre el logo y el contenido */
+        max-width: 1000px; /* Ajusta el ancho máximo para evitar desbordamientos */
     }
 
     .logo {
-        max-width: 300px;
+        position: stiky;
+        top: 0px;
+        max-width: 300px; /* Ajusta el tamaño del logo */
         height: auto;
+        align-self: flex-start; /* Asegura que el logo esté arriba */
+        margin-top: 90px; /* Ajusta la distancia desde arriba */
     }
-
     .content {
         text-align: left;
         max-width: 650px;
-        margin-top: 50px; /* Ajusta para evitar solapamiento */
     }
 }
-
 
 </style>
     
@@ -87,9 +80,8 @@ img.logo {
 
     <div class="wrapper" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; padding: 20px; max-width: 90%; margin: auto;">
         <!-- Logo -->
-        <div class="logo-container">
         <img src="logov5.jpg" alt="GastroSat Logo" class="logo">
-    </div>
+
         <!-- Caja de contenido sin borde -->
         <div class="content" style="width: 100%; max-width: 650px; padding: 20px; text-align: left;">
             <h2>🚀 Bienvenido/a a GastroSat</h2>
