@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+    
+    <!-- Firebase Configuración -->
+    <script src="js/firebase.js" defer></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Acceso Restringido</h1>
+    <p>Debes iniciar sesión con tu cuenta autorizada para acceder.</p>
+    
+    <button onclick="login()">Iniciar sesión con Google</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof firebase !== "undefined" && firebase.auth) {
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (user && user.email === "tucorreo@gmail.com") {
+                        window.location.href = "/gestion/index.html";
+                    }
+                });
+            } else {
+                console.error("❌ Firebase no está cargado correctamente.");
+            }
+        });
+    </script>
+</body>
+</html>
 
