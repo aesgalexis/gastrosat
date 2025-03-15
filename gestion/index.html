@@ -3,15 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GastroSat</title>
+    <title>Gestión - GastroSat</title>
     <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase y gestión -->
+    <script src="js/firebase.js" defer></script>
+    <script src="js/gestion.js" defer></script>
 </head>
 <body>
-    <h1>GastroSat - Gestión de Clientes</h1>
+    <h1>Gestión GastroSat</h1>
     <nav>
-        <ul>
-            <li><a href="views/clientes.html">Gestión de Clientes</a></li>
-        </ul>
+        <button onclick="cargarVista('clientes')">👥 Clientes</button>
     </nav>
+    
+    <div id="contenido">Cargando...</div>
 </body>
 </html>
