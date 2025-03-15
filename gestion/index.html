@@ -10,15 +10,40 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
     <!-- Firebase Config -->
-   <script>
-    firebase.auth().onAuthStateChanged(user => {
+   <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+<!-- Inicializar Firebase -->
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
+        authDomain: "factu-f58ab.firebaseapp.com",
+        projectId: "factu-f58ab",
+        storageBucket: "factu-f58ab.firebasestorage.app",
+        messagingSenderId: "126560099435",
+        appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
+        measurementId: "G-MC2S07WMSL"
+    };
+
+    // Verificar si Firebase ya está inicializado antes de inicializarlo
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Autenticación y carga de clientes
+    auth.onAuthStateChanged(user => {
         if (user) {
             console.log("✅ Usuario autenticado:", user.email);
-            cargarClientes(); // Cargar clientes solo si hay sesión iniciada
+            cargarClientes();
         } else {
             console.warn("⚠️ No hay usuario autenticado, iniciando sesión...");
-            firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
-                .then(() => cargarClientes()) // Cargar clientes tras iniciar sesión
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+                .then(() => cargarClientes())
                 .catch(error => console.error("❌ Error en autenticación:", error));
         }
     });
@@ -62,6 +87,7 @@
         .catch(error => console.error("❌ Error al cargar clientes:", error));
     }
 </script>
+
 
 
     <style>
