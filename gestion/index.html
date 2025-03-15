@@ -19,14 +19,9 @@
     gest
 
     <script>
-        // Asegurar que Firebase está cargado antes de ejecutar la autenticación
         document.addEventListener("DOMContentLoaded", () => {
             if (typeof firebase !== "undefined" && firebase.auth) {
-                firebase.auth().onAuthStateChanged((user) => {
-                    if (!user || user.email !== "tucorreo@gmail.com") {
-                        window.location.href = "/login.html";
-                    }
-                });
+                verificarAutenticacion(); // Llamar a la función de autenticación
             } else {
                 console.error("❌ Firebase no está cargado correctamente.");
             }
