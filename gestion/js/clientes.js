@@ -1,9 +1,14 @@
 // 🔹 Cargar clientes desde Firebase y mostrarlos en la tabla
 function cargarClientes() {
+    console.log("📡 Intentando cargar clientes desde Firebase...");
+    
     const tabla = document.getElementById("tabla-clientes");
-    tabla.innerHTML = "<tr><td colspan='5'>Cargando...</td></tr>";
+    if (!tabla) {
+        console.error("❌ No se encontró la tabla de clientes.");
+        return;
+    }
 
-    console.log("🔄 Intentando cargar clientes desde Firebase...");
+    tabla.innerHTML = "<tr><td colspan='5'>Cargando...</td></tr>";
 
     db.collection("clientes").orderBy("nombre", "asc").get()
     .then(snapshot => {
@@ -17,12 +22,12 @@ function cargarClientes() {
         tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevos clientes
         snapshot.forEach(doc => {
             const cliente = doc.data();
-            console.log("📄 Cliente encontrado:", cliente);
+            console.log("📄 Insertando en la tabla:", cliente);
 
             const fila = `
                 <tr>
-                    <td>${cliente.nombre}</td>
-                    <td>${cliente.cif}</td>
+                    <td>${cliente.nombre || "-"}</td>
+                    <td>${cliente.cif || "-"}</td>
                     <td>${cliente.telefono || "-"}</td>
                     <td>${cliente.email || "-"}</td>
                     <td>
