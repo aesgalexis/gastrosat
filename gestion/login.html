@@ -5,13 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-
-    <!-- Firebase Configuración -->
-    <script src="js/firebase.js" defer></script>
-
+    <!-- Estilos básicos -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,25 +26,19 @@
             background-color: #0056b3;
         }
     </style>
+
+    <!-- ✅ Cargar Firebase como módulo -->
+    <script type="module">
+        import { login } from "./js/firebase.js";
+
+        // Hacer que la función login sea accesible en el botón
+        window.login = login;
+    </script>
 </head>
 <body>
     <h1>Acceso Restringido</h1>
     <p>Debes iniciar sesión con tu cuenta autorizada.</p>
-    
-    <button onclick="login()">Iniciar sesión con Google</button>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            if (typeof firebase !== "undefined" && firebase.auth) {
-                firebase.auth().onAuthStateChanged((user) => {
-                    if (user && user.email === "tucorreo@gmail.com") {
-                        window.location.href = "/gestion/index.html";
-                    }
-                });
-            } else {
-                console.error("❌ Firebase no está cargado correctamente.");
-            }
-        });
-    </script>
+    <button onclick="login()">Iniciar sesión con Google</button>
 </body>
 </html>
