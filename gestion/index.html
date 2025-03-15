@@ -10,19 +10,27 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
-    
+
     <!-- Firebase y gestión -->
     <script src="js/firebase.js" defer></script>
     <script src="js/gestion.js" defer></script>
 </head>
-    <script>
-    firebase.auth().onAuthStateChanged((user) => {
-        if (!user || user.email !== "tucorreo@gmail.com") {
-            window.location.href = "/login.html";
-        }
-    });
-</script>
 <body>
-   gest
+    gest
+
+    <script>
+        // Asegurar que Firebase está cargado antes de ejecutar la autenticación
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof firebase !== "undefined" && firebase.auth) {
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (!user || user.email !== "tucorreo@gmail.com") {
+                        window.location.href = "/login.html";
+                    }
+                });
+            } else {
+                console.error("❌ Firebase no está cargado correctamente.");
+            }
+        });
+    </script>
 </body>
 </html>
