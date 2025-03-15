@@ -43,7 +43,8 @@
         }
     </style>
 </head>
-    <script type="module">
+    <script type="module" src="./js/firebase.js"></script>
+<script type="module">
     import { verificarAutenticacion, logout } from "./js/firebase.js";
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -54,7 +55,6 @@
     // Asegurar que `logout` sea accesible globalmente
     window.logout = logout;
 </script>
-
 
 <body>
 
