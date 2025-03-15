@@ -3,6 +3,12 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarClientes();
 });
 
+// 🔹 Hacer las funciones accesibles globalmente
+window.cargarClientes = cargarClientes;
+window.agregarCliente = agregarCliente;
+window.editarCliente = editarCliente;
+window.eliminarCliente = eliminarCliente;
+
 // 🔹 Cargar clientes desde Firebase y mostrarlos en la tabla
 function cargarClientes() {
     console.log("📡 Intentando conectar con Firebase...");
