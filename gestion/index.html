@@ -10,19 +10,59 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
     <!-- Firebase Config -->
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
-            authDomain: "factu-f58ab.firebaseapp.com",
-            projectId: "factu-f58ab",
-            storageBucket: "factu-f58ab.firebasestorage.app",
-            messagingSenderId: "126560099435",
-            appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
-            measurementId: "G-MC2S07WMSL"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-    </script>
+   <script>
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            console.log("✅ Usuario autenticado:", user.email);
+            cargarClientes(); // Cargar clientes solo si hay sesión iniciada
+        } else {
+            console.warn("⚠️ No hay usuario autenticado, iniciando sesión...");
+            firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
+                .then(() => cargarClientes()) // Cargar clientes tras iniciar sesión
+                .catch(error => console.error("❌ Error en autenticación:", error));
+        }
+    });
+
+    function cargarClientes() {
+        console.log("📡 Cargando clientes...");
+
+        const tabla = document.getElementById("tabla-clientes");
+        if (!tabla) {
+            console.error("❌ No se encontró la tabla.");
+            return;
+        }
+
+        db.collection("clientes").orderBy("nombre", "asc").get()
+        .then(snapshot => {
+            console.log("✅ Clientes obtenidos:", snapshot.docs.length);
+
+            if (snapshot.empty) {
+                tabla.innerHTML = "<tr><td colspan='4'>No hay clientes registrados</td></tr>";
+                return;
+            }
+
+            tabla.innerHTML = "";
+            snapshot.forEach(doc => {
+                const cliente = doc.data();
+                console.log("📄 Cliente:", cliente);
+
+                const fila = `
+                    <tr>
+                        <td>${cliente.nombre || "-"}</td>
+                        <td>${cliente.cif || "-"}</td>
+                        <td>${cliente.telefono || "-"}</td>
+                        <td>${cliente.email || "-"}</td>
+                    </tr>
+                `;
+                tabla.innerHTML += fila;
+            });
+
+            console.log("✅ Tabla actualizada correctamente.");
+        })
+        .catch(error => console.error("❌ Error al cargar clientes:", error));
+    }
+</script>
+
 
     <style>
         body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
