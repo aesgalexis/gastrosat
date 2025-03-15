@@ -120,11 +120,14 @@
                 snapshot.forEach(doc => {
                     const cliente = doc.data();
                     const li = document.createElement("li");
+                    li.classList.add("cliente-item");
                     li.innerHTML = `
-                        <strong>${cliente.nombre}</strong> (${cliente.nombreFiscal})<br>
-                        ${cliente.direccion} - ${cliente.cif}<br>
-                        📞 ${cliente.telefono || "No especificado"} - 📧 ${cliente.email || "No especificado"}
-                        <button onclick="eliminarCliente('${doc.id}')">❌</button>
+                        <div class="cliente-info">
+                            <strong>${cliente.nombre}</strong> (${cliente.nombreFiscal})<br>
+                            ${cliente.direccion} - ${cliente.cif}<br>
+                            📞 ${cliente.telefono || "No especificado"} - 📧 ${cliente.email || "No especificado"}
+                        </div>
+                        <button class="eliminar-btn" onclick="eliminarCliente('${doc.id}')">❌</button>
                     `;
                     lista.appendChild(li);
                 });
@@ -157,10 +160,28 @@
 
     <style>
         body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
-        input, button { width: 90%; padding: 8px; margin: 5px; }
+        input, button { width: 95%; padding: 8px; margin: 5px; }
         ul { list-style: none; padding: 0; }
-        li { border: 1px solid #ddd; padding: 10px; margin: 5px; text-align: left; position: relative; }
-        button { background-color: red; color: white; border: none; cursor: pointer; position: absolute; right: 10px; top: 10px; }
+        .cliente-item { 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            margin: 5px; 
+            text-align: left; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        .cliente-info { flex-grow: 1; }
+        .eliminar-btn { 
+            background-color: red; 
+            color: white; 
+            border: none; 
+            padding: 5px 10px; 
+            cursor: pointer; 
+        }
+        #cliente-form { display: flex; flex-direction: column; align-items: center; }
+        #cliente-form input, #cliente-form button { width: 100%; }
     </style>
 </head>
 <body>
