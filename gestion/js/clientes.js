@@ -19,8 +19,10 @@ function cargarClientes() {
             return;
         }
 
-        // Limpiar tabla antes de agregar clientes
-        tabla.innerHTML = "";
+        // 🔥 Forzar la actualización eliminando todos los nodos antes de insertar nuevos datos
+        while (tabla.firstChild) {
+            tabla.removeChild(tabla.firstChild);
+        }
 
         snapshot.forEach(doc => {
             const cliente = doc.data();
@@ -29,9 +31,9 @@ function cargarClientes() {
             const fila = document.createElement("tr");
             fila.innerHTML = `
                 <td>${cliente.nombre || "-"}</td>
-                <td>${cliente.hasOwnProperty("cif") ? cliente.cif : "-"}</td>
-                <td>${cliente.hasOwnProperty("telefono") ? cliente.telefono : "-"}</td>
-                <td>${cliente.hasOwnProperty("email") ? cliente.email : "-"}</td>
+                <td>${cliente.cif || "-"}</td>
+                <td>${cliente.telefono || "-"}</td>
+                <td>${cliente.email || "-"}</td>
                 <td>
                     <button onclick="editarCliente('${doc.id}')">✏️ Editar</button>
                     <button class="delete-btn" onclick="eliminarCliente('${doc.id}')">🗑️ Eliminar</button>
@@ -41,9 +43,18 @@ function cargarClientes() {
         });
 
         console.log("✅ Tabla actualizada correctamente.");
+        console.log("📊 Contenido actual de la tabla:", tabla.innerHTML);
     })
     .catch(error => console.error("❌ Error al cargar clientes:", error));
 }
+
+// 🔹 FORZAR CARGA AUTOMÁTICA TRAS LA CARGA DE LA PÁGINA
+window.onload = function () {
+    console.log("🚀 Página cargada, iniciando carga de clientes...");
+    setTimeout(() => {
+        cargarClientes();
+    }, 1000);
+};
 
 // 🔹 FORZAR CARGA AUTOMÁTICA DE CLIENTES TRAS CARGAR LA PÁGINA
 window.onload = function () {
