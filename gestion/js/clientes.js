@@ -51,23 +51,16 @@ function cargarClientes() {
 // 🔹 FORZAR CARGA AUTOMÁTICA TRAS LA CARGA DE LA PÁGINA
 window.onload = function () {
     console.log("🚀 Página cargada, iniciando carga de clientes...");
-    setTimeout(() => {
-        cargarClientes();
-    }, 1000);
-};
 
-// 🔹 FORZAR CARGA AUTOMÁTICA DE CLIENTES TRAS CARGAR LA PÁGINA
-window.onload = function () {
-    console.log("🚀 Página cargada, iniciando carga de clientes...");
-    
-    // Método 1: Retrasar la ejecución para asegurar que el DOM está listo
+    // 🔹 Método 1: Retrasar la ejecución para asegurar que el DOM está listo
     setTimeout(() => {
         cargarClientes();
     }, 1000);
 
-    // Método 2: Comprobar si la tabla está disponible y reintentar
+    // 🔹 Método 2: Comprobar si la tabla está disponible y reintentar
     const interval = setInterval(() => {
-        if (document.getElementById("tabla-clientes")) {
+        const tabla = document.getElementById("tabla-clientes");
+        if (tabla) {
             console.log("✅ Tabla detectada en el DOM. Cargando clientes...");
             cargarClientes();
             clearInterval(interval); // Detener el intervalo tras la primera carga exitosa
