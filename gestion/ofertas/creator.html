@@ -1,1 +1,164 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Oferta - GastroSat</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; text-align: center; }
+        input, select, textarea, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 12px; border: 1px solid #ddd; }
+        button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #0056b3; }
+        #generar-pdf { display: none; } /* 🔹 Oculto hasta que se guarde una oferta */
+    </style>
+</head>
+<body>
+
+    <h2>Crear Nueva Oferta</h2>
+    <button onclick="window.location.href='index.html'">🔙 Volver</button>
+
+    <form id="oferta-form">
+        <label>Cliente:</label>
+        <select id="oferta-cliente" onchange="autocompletarCliente()"></select>
+
+        <label>Nombre:</label>
+        <input type="text" id="oferta-nombre" readonly>
+
+        <label>Nombre Fiscal:</label>
+        <input type="text" id="oferta-nombre-fiscal" readonly>
+
+        <label>Dirección:</label>
+        <input type="text" id="oferta-direccion" readonly>
+
+        <label>CIF:</label>
+        <input type="text" id="oferta-cif" readonly>
+
+        <label>Descripción de la Oferta:</label>
+        <textarea id="oferta-descripcion" rows="3"></textarea>
+
+        <label>Importe Total (€):</label>
+        <input type="number" id="oferta-importe" step="0.01">
+
+        <label>Estado:</label>
+        <select id="oferta-estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Aceptada">Aceptada</option>
+            <option value="Rechazada">Rechazada</option>
+        </select>
+
+        <button type="button" onclick="guardarOferta()">💾 Guardar Oferta</button>
+    </form>
+
+    <button id="generar-pdf" onclick="generarPDF()">📄 Generar PDF</button>
+
+    <script>
+        // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
+        if (!firebase.apps.length) {
+            const firebaseConfig = {
+                apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
+                authDomain: "factu-f58ab.firebaseapp.com",
+                projectId: "factu-f58ab",
+                storageBucket: "factu-f58ab.firebasestorage.app",
+                messagingSenderId: "126560099435",
+                appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
+                measurementId: "G-MC2S07WMSL"
+            };
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // 🔹 Inicializar Firestore y Auth
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        let ofertaIdGuardada = null; // Guardará la ID de la oferta creada
+
+        // 🔹 Esperar autenticación antes de cargar datos
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("✅ Usuario autenticado:", user.email);
+                cargarClientes();
+            } else {
+                console.error("❌ Usuario no autenticado, redirigiendo...");
+                window.location.href = "index.html"; 
+            }
+        });
+
+        // 🔹 Cargar clientes en el selector
+        function cargarClientes() {
+            const clienteSelect = document.getElementById("oferta-cliente");
+            db.collection("clientes").get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    const cliente = doc.data();
+                    const option = document.createElement("option");
+                    option.value = doc.id;
+                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
+                    clienteSelect.appendChild(option);
+                });
+            }).catch(error => console.error("❌ Error al cargar clientes:", error));
+        }
+
+        // 🔹 Autocompletar datos del cliente seleccionado
+        function autocompletarCliente() {
+            const clienteId = document.getElementById("oferta-cliente").value;
+            if (!clienteId) return;
+
+            db.collection("clientes").doc(clienteId).get().then(doc => {
+                if (doc.exists) {
+                    const cliente = doc.data();
+                    document.getElementById("oferta-nombre").value = cliente.nombre;
+                    document.getElementById("oferta-nombre-fiscal").value = cliente.nombreFiscal;
+                    document.getElementById("oferta-direccion").value = cliente.direccion;
+                    document.getElementById("oferta-cif").value = cliente.cif;
+                }
+            });
+        }
+
+        // 🔹 Guardar Oferta en Firestore
+        function guardarOferta() {
+            const clienteId = document.getElementById("oferta-cliente").value;
+            const nombre = document.getElementById("oferta-nombre").value;
+            const nombreFiscal = document.getElementById("oferta-nombre-fiscal").value;
+            const direccion = document.getElementById("oferta-direccion").value;
+            const cif = document.getElementById("oferta-cif").value;
+            const descripcion = document.getElementById("oferta-descripcion").value;
+            const importe = document.getElementById("oferta-importe").value;
+            const estado = document.getElementById("oferta-estado").value;
+
+            if (!clienteId || !descripcion || !importe) {
+                alert("❌ Completa todos los campos obligatorios.");
+                return;
+            }
+
+            const fecha = new Date().toISOString().split("T")[0];
+            const ofertaId = `OF-${fecha.replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+            db.collection("ofertas").doc(ofertaId).set({
+                ofertaId, clienteId, nombre, nombreFiscal, direccion, cif, fecha, descripcion, importe: parseFloat(importe), estado
+            })
+            .then(() => {
+                alert("✅ Oferta guardada correctamente.");
+                ofertaIdGuardada = ofertaId;
+                document.getElementById("generar-pdf").style.display = "block"; // 🔹 Mostrar botón PDF
+            })
+            .catch(error => {
+                console.error("❌ Error al guardar la oferta:", error);
+            });
+        }
+
+        // 🔹 Redirigir a generator.html con la oferta recién creada
+        function generarPDF() {
+            if (ofertaIdGuardada) {
+                window.location.href = `generator.html?ofertaId=${ofertaIdGuardada}`;
+            } else {
+                alert("❌ Primero debes guardar la oferta.");
+            }
+        }
+    </script>
+</body>
+</html>
