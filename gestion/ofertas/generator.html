@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- jsPDF y html2canvas para generar PDF -->
+    <!-- jsPDF y html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -18,8 +18,6 @@
         body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; text-align: center; }
         .pdf-container { background: white; padding: 20px; border: 1px solid #ddd; border-radius: 12px; text-align: left; }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 2px solid #000; }
-        .company-info { text-align: right; }
-        .content { margin-top: 20px; }
         .total { font-size: 18px; font-weight: bold; text-align: right; margin-top: 10px; }
         button { background-color: #007BFF; color: white; padding: 10px; border: none; border-radius: 12px; cursor: pointer; margin-top: 20px; }
         button:hover { background-color: #0056b3; }
@@ -37,23 +35,16 @@
     <div id="pdf-content" class="pdf-container">
         <div class="header">
             <h2>Oferta - GastroSat</h2>
-            <div class="company-info">
-                <p><strong>GastroSat</strong></p>
-                <p>Dirección de la empresa</p>
-                <p>Teléfono | Email</p>
-            </div>
         </div>
 
         <h3>Oferta: <span id="oferta-id">-</span></h3>
         <p><strong>Fecha:</strong> <span id="oferta-fecha">-</span></p>
 
-        <div class="content">
-            <h4>Datos del Cliente</h4>
-            <p><strong>Nombre:</strong> <span id="oferta-nombre">-</span></p>
-            <p><strong>Nombre Fiscal:</strong> <span id="oferta-nombre-fiscal">-</span></p>
-            <p><strong>Dirección:</strong> <span id="oferta-direccion">-</span></p>
-            <p><strong>CIF:</strong> <span id="oferta-cif">-</span></p>
-        </div>
+        <h4>Datos del Cliente</h4>
+        <p><strong>Nombre:</strong> <span id="oferta-nombre">-</span></p>
+        <p><strong>Nombre Fiscal:</strong> <span id="oferta-nombre-fiscal">-</span></p>
+        <p><strong>Dirección:</strong> <span id="oferta-direccion">-</span></p>
+        <p><strong>CIF:</strong> <span id="oferta-cif">-</span></p>
 
         <h4>Descripción de la Oferta</h4>
         <p id="oferta-descripcion">-</p>
@@ -89,10 +80,8 @@
         // 🔹 Detectar cambios en autenticación
         auth.onAuthStateChanged(user => {
             if (user) {
-                console.log("✅ Usuario autenticado:", user.email);
                 cargarOfertas();
             } else {
-                console.error("❌ Usuario no autenticado, redirigiendo...");
                 window.location.href = "../"; // Redirigir si no está autenticado
             }
         });
@@ -105,7 +94,6 @@
             db.collection("ofertas").orderBy("fecha", "desc").get()
             .then(snapshot => {
                 if (snapshot.empty) {
-                    console.warn("⚠️ No hay ofertas en Firestore.");
                     ofertaSelect.innerHTML = "<option value=''>No hay ofertas disponibles</option>";
                     return;
                 }
@@ -120,8 +108,7 @@
                     ofertaSelect.appendChild(option);
                 });
             })
-            .catch(error => {
-                console.error("❌ Error al cargar ofertas:", error);
+            .catch(() => {
                 ofertaSelect.innerHTML = "<option value=''>Error al cargar ofertas</option>";
             });
         }
@@ -129,7 +116,6 @@
         // 🔹 Cargar datos de la oferta seleccionada
         function cargarDatosOferta() {
             const ofertaId = document.getElementById("oferta-select").value;
-            if (!ofertaId) return;
 
             db.collection("ofertas").doc(ofertaId).get().then(doc => {
                 if (doc.exists) {
