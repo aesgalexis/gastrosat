@@ -26,7 +26,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ✅ Usuario autorizado
-const usuarioAutorizado = "tucorreo@gmail.com";
+const usuarioAutorizado = "aesg.alexis@gmail.com";
 
 // 🔒 **Función para verificar autenticación y bloquear acceso si es necesario**
 export function verificarAutenticacion() {
