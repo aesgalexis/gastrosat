@@ -7,14 +7,14 @@
 
     <link rel="stylesheet" href="css/styles.css">
 
-    <!-- Firebase SDKs (antes de firebase.js) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- Firebase y lógica central (firebase.js debe cargarse antes que gestion.js) -->
+    <!-- Firebase y lógica principal -->
     <script src="js/firebase.js"></script>
-    <script src="js/gestion.js" defer></script>
+    <script src="js/gestion.js"></script>
 </head>
 <body>
     <h1>Gestión GastroSat</h1>
@@ -24,5 +24,8 @@
     </nav>
 
     <div id="contenido">Cargando...</div>
+
+    <!-- Contenedor de scripts dinámicos -->
+    <div id="scripts"></div>
 </body>
 </html>
