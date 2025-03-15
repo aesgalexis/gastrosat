@@ -42,7 +42,7 @@
     </form>
 
     <script>
-        // 🔹 Inicializar Firebase
+        // 🔹 Inicializar Firebase si no está inicializado
         if (!firebase.apps.length) {
             const firebaseConfig = {
                 apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
@@ -56,10 +56,24 @@
             firebase.initializeApp(firebaseConfig);
         }
 
+        // 🔹 Inicializar Firestore y Auth
         const db = firebase.firestore();
+        const auth = firebase.auth();
         const urlParams = new URLSearchParams(window.location.search);
         const ofertaId = urlParams.get("ofertaId");
 
+        // 🔹 Verificar autenticación antes de cargar datos
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("✅ Usuario autenticado:", user.email);
+                cargarOferta(); 
+            } else {
+                console.error("❌ Usuario no autenticado, redirigiendo...");
+                window.location.href = "../";
+            }
+        });
+
+        // 🔹 Cargar oferta si existe
         function cargarOferta() {
             if (!ofertaId) return; // 🛠️ Si no hay ofertaId, es una oferta nueva
 
@@ -96,6 +110,24 @@
             .catch(error => console.error("❌ Error al cargar la oferta:", error));
         }
 
+        // 🔹 Agregar concepto
+        function agregarConcepto() {
+            const container = document.getElementById("conceptos-container");
+            const div = document.createElement("div");
+            div.classList.add("concepto");
+
+            div.innerHTML = `
+                <input type="text" placeholder="Concepto" class="concepto-nombre" required>
+                <input type="number" placeholder="Cantidad" class="concepto-cantidad" value="1" min="1" required oninput="actualizarTotal()">
+                <input type="number" placeholder="Precio Unitario (€)" class="concepto-precio" step="0.01" required oninput="actualizarTotal()">
+                <button type="button" onclick="eliminarConcepto(this)">❌</button>
+            `;
+
+            container.appendChild(div);
+            actualizarTotal();
+        }
+
+        // 🔹 Calcular totales
         function actualizarTotal() {
             let subtotal = 0;
             document.querySelectorAll(".concepto").forEach(concepto => {
@@ -109,6 +141,7 @@
             document.getElementById("oferta-total").textContent = total.toFixed(2);
         }
 
+        // 🔹 Guardar oferta (crear o actualizar)
         function guardarOferta() {
             const subtotal = parseFloat(document.getElementById("oferta-subtotal").textContent);
             const total = parseFloat(document.getElementById("oferta-total").textContent);
@@ -116,10 +149,16 @@
             if (ofertaId) {
                 db.collection("ofertas").doc(ofertaId).update({ subtotal, total })
                 .then(() => alert("✅ Cambios guardados."));
+            } else {
+                alert("❌ No se encontró la oferta.");
             }
         }
 
-        window.onload = cargarOferta;
+        window.onload = () => {
+            auth.onAuthStateChanged(user => {
+                if (user) cargarOferta();
+            });
+        };
     </script>
 
 </body>
