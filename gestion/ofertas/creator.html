@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,17 +11,19 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
     <style>
-        body { font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; text-align: center; }
-        input, select, textarea, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 12px; border: 1px solid #ddd; }
-        button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
+        #conceptos-container { margin-top: 20px; }
+        .concepto { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        input, select, button { padding: 10px; margin: 5px; border-radius: 12px; border: 1px solid #ddd; }
+        button { background-color: #007BFF; color: white; cursor: pointer; }
         button:hover { background-color: #0056b3; }
-        #generar-pdf { display: none; } /* 🔹 Oculto hasta que se guarde una oferta */
+        .total { font-size: 18px; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <h2>Crear Nueva Oferta</h2>
-    <button onclick="window.location.href='index.html'">🔙 Volver</button>
+    <button onclick="window.history.back()">🔙 Volver</button>
 
     <form id="oferta-form">
         <label>Cliente:</label>
@@ -40,23 +41,14 @@
         <label>CIF:</label>
         <input type="text" id="oferta-cif" readonly>
 
-        <label>Descripción de la Oferta:</label>
-        <textarea id="oferta-descripcion" rows="3"></textarea>
+        <h3>Conceptos</h3>
+        <div id="conceptos-container"></div>
+        <button type="button" onclick="agregarConcepto()">➕ Añadir Concepto</button>
 
-        <label>Importe Total (€):</label>
-        <input type="number" id="oferta-importe" step="0.01">
-
-        <label>Estado:</label>
-        <select id="oferta-estado">
-            <option value="Pendiente">Pendiente</option>
-            <option value="Aceptada">Aceptada</option>
-            <option value="Rechazada">Rechazada</option>
-        </select>
+        <p class="total">Total: <span id="oferta-total">0.00</span> €</p>
 
         <button type="button" onclick="guardarOferta()">💾 Guardar Oferta</button>
     </form>
-
-    <button id="generar-pdf" onclick="generarPDF()">📄 Generar PDF</button>
 
     <script>
         // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
@@ -76,23 +68,16 @@
         // 🔹 Inicializar Firestore y Auth
         const db = firebase.firestore();
         const auth = firebase.auth();
-        let ofertaIdGuardada = null; // Guardará la ID de la oferta creada
-
-        // 🔹 Esperar autenticación antes de cargar datos
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                console.log("✅ Usuario autenticado:", user.email);
-                cargarClientes();
-            } else {
-                console.error("❌ Usuario no autenticado, redirigiendo...");
-                window.location.href = "index.html"; 
-            }
-        });
 
         // 🔹 Cargar clientes en el selector
         function cargarClientes() {
             const clienteSelect = document.getElementById("oferta-cliente");
-            db.collection("clientes").get().then(snapshot => {
+            clienteSelect.innerHTML = "<option value=''>Cargando clientes...</option>";
+
+            db.collection("clientes").get()
+            .then(snapshot => {
+                clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
+
                 snapshot.forEach(doc => {
                     const cliente = doc.data();
                     const option = document.createElement("option");
@@ -100,12 +85,17 @@
                     option.textContent = `${cliente.nombre} (${cliente.cif})`;
                     clienteSelect.appendChild(option);
                 });
-            }).catch(error => console.error("❌ Error al cargar clientes:", error));
+            })
+            .catch(error => {
+                console.error("Error al cargar clientes:", error);
+                clienteSelect.innerHTML = "<option value=''>Error al cargar clientes</option>";
+            });
         }
 
         // 🔹 Autocompletar datos del cliente seleccionado
         function autocompletarCliente() {
             const clienteId = document.getElementById("oferta-cliente").value;
+
             if (!clienteId) return;
 
             db.collection("clientes").doc(clienteId).get().then(doc => {
@@ -119,46 +109,84 @@
             });
         }
 
-        // 🔹 Guardar Oferta en Firestore
+        // 🔹 Agregar un nuevo concepto
+        function agregarConcepto() {
+            const container = document.getElementById("conceptos-container");
+            const div = document.createElement("div");
+            div.classList.add("concepto");
+
+            div.innerHTML = `
+                <input type="text" placeholder="Concepto" class="concepto-nombre" required>
+                <input type="number" placeholder="Cantidad" class="concepto-cantidad" value="1" min="1" required oninput="actualizarTotal()">
+                <input type="number" placeholder="Precio Unitario (€)" class="concepto-precio" step="0.01" required oninput="actualizarTotal()">
+                <button type="button" onclick="eliminarConcepto(this)">❌</button>
+            `;
+
+            container.appendChild(div);
+            actualizarTotal();
+        }
+
+        // 🔹 Eliminar un concepto
+        function eliminarConcepto(button) {
+            button.parentElement.remove();
+            actualizarTotal();
+        }
+
+        // 🔹 Calcular total
+        function actualizarTotal() {
+            let total = 0;
+            document.querySelectorAll(".concepto").forEach(concepto => {
+                const cantidad = parseFloat(concepto.querySelector(".concepto-cantidad").value) || 0;
+                const precio = parseFloat(concepto.querySelector(".concepto-precio").value) || 0;
+                total += cantidad * precio;
+            });
+            document.getElementById("oferta-total").textContent = total.toFixed(2);
+        }
+
+        // 🔹 Guardar Oferta
         function guardarOferta() {
             const clienteId = document.getElementById("oferta-cliente").value;
-            const nombre = document.getElementById("oferta-nombre").value;
-            const nombreFiscal = document.getElementById("oferta-nombre-fiscal").value;
-            const direccion = document.getElementById("oferta-direccion").value;
-            const cif = document.getElementById("oferta-cif").value;
-            const descripcion = document.getElementById("oferta-descripcion").value;
-            const importe = document.getElementById("oferta-importe").value;
-            const estado = document.getElementById("oferta-estado").value;
-
-            if (!clienteId || !descripcion || !importe) {
-                alert("❌ Completa todos los campos obligatorios.");
+            if (!clienteId) {
+                alert("Seleccione un cliente.");
                 return;
             }
 
-            const fecha = new Date().toISOString().split("T")[0];
-            const ofertaId = `OF-${fecha.replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
-
-            db.collection("ofertas").doc(ofertaId).set({
-                ofertaId, clienteId, nombre, nombreFiscal, direccion, cif, fecha, descripcion, importe: parseFloat(importe), estado
-            })
-            .then(() => {
-                alert("✅ Oferta guardada correctamente.");
-                ofertaIdGuardada = ofertaId;
-                document.getElementById("generar-pdf").style.display = "block"; // 🔹 Mostrar botón PDF
-            })
-            .catch(error => {
-                console.error("❌ Error al guardar la oferta:", error);
+            const conceptos = [];
+            document.querySelectorAll(".concepto").forEach(concepto => {
+                const nombre = concepto.querySelector(".concepto-nombre").value.trim();
+                const cantidad = parseFloat(concepto.querySelector(".concepto-cantidad").value) || 1;
+                const precio = parseFloat(concepto.querySelector(".concepto-precio").value) || 0;
+                if (nombre) {
+                    conceptos.push({ nombre, cantidad, precio });
+                }
             });
+
+            if (conceptos.length === 0) {
+                alert("Debe agregar al menos un concepto.");
+                return;
+            }
+
+            const oferta = {
+                clienteId,
+                nombre: document.getElementById("oferta-nombre").value,
+                nombreFiscal: document.getElementById("oferta-nombre-fiscal").value,
+                direccion: document.getElementById("oferta-direccion").value,
+                cif: document.getElementById("oferta-cif").value,
+                fecha: new Date().toISOString().split("T")[0],
+                conceptos,
+                total: parseFloat(document.getElementById("oferta-total").textContent)
+            };
+
+            db.collection("ofertas").add(oferta)
+            .then(() => {
+                alert("Oferta guardada correctamente.");
+                window.history.back();
+            })
+            .catch(error => alert("Error al guardar la oferta."));
         }
 
-        // 🔹 Redirigir a generator.html con la oferta recién creada
-        function generarPDF() {
-            if (ofertaIdGuardada) {
-                window.location.href = `generator.html?ofertaId=${ofertaIdGuardada}`;
-            } else {
-                alert("❌ Primero debes guardar la oferta.");
-            }
-        }
+        // 🔹 Cargar clientes al abrir la página
+        window.onload = cargarClientes;
     </script>
 </body>
 </html>
