@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
 
     <script>
+        
         // 🔹 Configuración de Firebase (usa tus datos)
         const firebaseConfig = {
             apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
@@ -78,6 +79,61 @@
                 iniciarFirebaseUI();
             });
         }
+        <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+<script>
+    const db = firebase.firestore();
+
+    // 🔹 Guardar un cliente en Firestore
+    function guardarCliente() {
+        const nombre = document.getElementById("cliente-nombre").value;
+        const email = document.getElementById("cliente-email").value;
+
+        if (!nombre || !email) {
+            alert("Completa los datos del cliente");
+            return;
+        }
+
+        db.collection("clientes").add({
+            nombre: nombre,
+            email: email,
+            creado: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            alert("Cliente agregado correctamente");
+            document.getElementById("cliente-nombre").value = "";
+            document.getElementById("cliente-email").value = "";
+            cargarClientes();
+        })
+        .catch(error => {
+            console.error("Error al guardar cliente:", error);
+            alert("Hubo un error al guardar el cliente");
+        });
+    }
+
+    // 🔹 Cargar clientes desde Firestore y mostrarlos en la lista
+    function cargarClientes() {
+        const lista = document.getElementById("lista-clientes");
+        lista.innerHTML = ""; // Limpiar lista antes de recargar
+
+        db.collection("clientes").orderBy("creado", "desc").get().then(snapshot => {
+            snapshot.forEach(doc => {
+                const cliente = doc.data();
+                const li = document.createElement("li");
+                li.textContent = `${cliente.nombre} - ${cliente.email}`;
+                lista.appendChild(li);
+            });
+        });
+    }
+
+    // 🔹 Cargar clientes al cargar la página
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            cargarClientes();
+        }
+    });
+</script>
+
     </script>
 
     <style>
