@@ -1,3 +1,4 @@
+// Verificar si Firebase ya está inicializado antes de declararlo de nuevo
 if (!firebase.apps.length) {
     const firebaseConfig = {
         apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
@@ -11,10 +12,11 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
+// Declarar variables globales de Firebase para Firestore y Auth
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Verificar autenticación
+// Verificar autenticación una sola vez al cargar la página
 auth.onAuthStateChanged(user => {
     if (!user) {
         window.location.href = "../"; // Redirigir si no está autenticado
