@@ -15,7 +15,14 @@
     <script src="js/firebase.js" defer></script>
     <script src="js/gestion.js" defer></script>
 </head>
+    <script>
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user || user.email !== "tucorreo@gmail.com") {
+            window.location.href = "/login.html";
+        }
+    });
+</script>
 <body>
-   
+   gest
 </body>
 </html>
