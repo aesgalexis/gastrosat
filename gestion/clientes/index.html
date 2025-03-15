@@ -24,7 +24,16 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 🔹 Guardar Cliente
+        // 🔹 Verificar autenticación antes de usar Firestore
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                cargarClientes();
+            } else {
+                window.location.href = "../";
+            }
+        });
+
+        // 🔹 Guardar Cliente en Firestore
         function guardarCliente() {
             const nombre = document.getElementById("cliente-nombre").value;
             const nombreFiscal = document.getElementById("cliente-nombre-fiscal").value;
@@ -38,10 +47,7 @@
                 return;
             }
 
-            const clienteId = Date.now().toString();
-
-            db.collection("clientes").doc(clienteId).set({
-                clienteId: clienteId,
+            db.collection("clientes").add({
                 nombre: nombre,
                 nombreFiscal: nombreFiscal,
                 direccion: direccion,
@@ -61,12 +67,13 @@
             });
         }
 
-        // 🔹 Cargar Clientes
+        // 🔹 Cargar Clientes desde Firestore
         function cargarClientes() {
             const lista = document.getElementById("lista-clientes");
             lista.innerHTML = "";
 
-            db.collection("clientes").orderBy("creado", "desc").get().then(snapshot => {
+            db.collection("clientes").orderBy("creado", "desc").get()
+            .then(snapshot => {
                 snapshot.forEach(doc => {
                     const cliente = doc.data();
                     const li = document.createElement("li");
@@ -81,10 +88,13 @@
                     `;
                     lista.appendChild(li);
                 });
+            })
+            .catch(error => {
+                console.error("Error al cargar clientes:", error);
             });
         }
 
-        // 🔹 Eliminar Cliente
+        // 🔹 Eliminar Cliente de Firestore
         function eliminarCliente(clienteId) {
             if (confirm("¿Seguro que quieres eliminar este cliente?")) {
                 db.collection("clientes").doc(clienteId).delete()
@@ -97,54 +107,17 @@
                 });
             }
         }
-
-        // 🔹 Cargar Clientes al iniciar
-        window.onload = cargarClientes;
     </script>
 
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            max-width: 500px; 
-            margin: auto; 
-            padding: 20px; 
-            text-align: center;
-        }
-        input, button { 
-            width: 100%; 
-            padding: 10px; 
-            margin: 5px 0; 
-            font-size: 16px; 
-            border-radius: 12px; /* 🔹 Bordes redondeados */
-            border: 1px solid #ddd;
-        }
-        button { 
-            background-color: #007BFF; 
-            color: white; 
-            cursor: pointer; 
-            transition: 0.3s;
-        }
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; text-align: center; }
+        input, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 12px; border: 1px solid #ddd; }
+        button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
         button:hover { background-color: #0056b3; }
         ul { list-style: none; padding: 0; }
-        .cliente-item { 
-            border: 1px solid #ddd; 
-            border-radius: 12px; /* 🔹 Bordes redondeados */
-            padding: 15px; 
-            margin: 10px 0; 
-            text-align: left; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-        }
+        .cliente-item { border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin: 10px 0; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .cliente-info { flex-grow: 1; }
-        .eliminar-btn { 
-            background-color: red; 
-            color: white; 
-            border: none; 
-            padding: 5px 10px; 
-            cursor: pointer; 
-            border-radius: 8px; /* 🔹 Bordes redondeados */
-        }
+        .eliminar-btn { background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 8px; }
         .eliminar-btn:hover { background-color: darkred; }
     </style>
 </head>
