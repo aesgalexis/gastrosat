@@ -12,12 +12,13 @@
 
     <style>
         body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
+        #cliente-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         #conceptos-container { margin-top: 20px; }
-        .concepto { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .concepto { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
         input, select, button { padding: 10px; margin: 5px; border-radius: 12px; border: 1px solid #ddd; }
         button { background-color: #007BFF; color: white; cursor: pointer; }
         button:hover { background-color: #0056b3; }
-        .total { font-size: 18px; font-weight: bold; margin-top: 20px; }
+        .totales { font-size: 16px; font-weight: bold; display: flex; justify-content: space-between; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -26,26 +27,22 @@
     <button onclick="window.history.back()">🔙 Volver</button>
 
     <form id="oferta-form">
-        <label>Cliente:</label>
-        <select id="oferta-cliente" onchange="autocompletarCliente()"></select>
+        <div id="cliente-container">
+            <label>Cliente:</label>
+            <select id="oferta-cliente" onchange="autocompletarCliente()"></select>
 
-        <label>Nombre:</label>
-        <input type="text" id="oferta-nombre" readonly>
-
-        <label>Nombre Fiscal:</label>
-        <input type="text" id="oferta-nombre-fiscal" readonly>
-
-        <label>Dirección:</label>
-        <input type="text" id="oferta-direccion" readonly>
-
-        <label>CIF:</label>
-        <input type="text" id="oferta-cif" readonly>
+            <label>Nombre:</label>
+            <input type="text" id="oferta-nombre" readonly>
+        </div>
 
         <h3>Conceptos</h3>
         <div id="conceptos-container"></div>
         <button type="button" onclick="agregarConcepto()">➕ Añadir Concepto</button>
 
-        <p class="total">Total: <span id="oferta-total">0.00</span> €</p>
+        <div class="totales">
+            <p>Subtotal: <span id="oferta-subtotal">0.00</span> €</p>
+            <p>Total (IVA 21%): <span id="oferta-total">0.00</span> €</p>
+        </div>
 
         <button type="button" onclick="guardarOferta()">💾 Guardar Oferta</button>
     </form>
@@ -102,9 +99,6 @@
                 if (doc.exists) {
                     const cliente = doc.data();
                     document.getElementById("oferta-nombre").value = cliente.nombre;
-                    document.getElementById("oferta-nombre-fiscal").value = cliente.nombreFiscal;
-                    document.getElementById("oferta-direccion").value = cliente.direccion;
-                    document.getElementById("oferta-cif").value = cliente.cif;
                 }
             });
         }
@@ -132,14 +126,17 @@
             actualizarTotal();
         }
 
-        // 🔹 Calcular total
+        // 🔹 Calcular subtotal y total
         function actualizarTotal() {
-            let total = 0;
+            let subtotal = 0;
             document.querySelectorAll(".concepto").forEach(concepto => {
                 const cantidad = parseFloat(concepto.querySelector(".concepto-cantidad").value) || 0;
                 const precio = parseFloat(concepto.querySelector(".concepto-precio").value) || 0;
-                total += cantidad * precio;
+                subtotal += cantidad * precio;
             });
+
+            const total = subtotal * 1.21; // Aplicar 21% de IVA
+            document.getElementById("oferta-subtotal").textContent = subtotal.toFixed(2);
             document.getElementById("oferta-total").textContent = total.toFixed(2);
         }
 
@@ -166,15 +163,16 @@
                 return;
             }
 
+            const subtotal = parseFloat(document.getElementById("oferta-subtotal").textContent);
+            const total = parseFloat(document.getElementById("oferta-total").textContent);
+
             const oferta = {
                 clienteId,
                 nombre: document.getElementById("oferta-nombre").value,
-                nombreFiscal: document.getElementById("oferta-nombre-fiscal").value,
-                direccion: document.getElementById("oferta-direccion").value,
-                cif: document.getElementById("oferta-cif").value,
                 fecha: new Date().toISOString().split("T")[0],
                 conceptos,
-                total: parseFloat(document.getElementById("oferta-total").textContent)
+                subtotal,
+                total
             };
 
             db.collection("ofertas").add(oferta)
