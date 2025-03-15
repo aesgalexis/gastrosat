@@ -10,193 +10,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <script>
-        // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
-        if (!firebase.apps.length) {
-            const firebaseConfig = {
-                apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
-                authDomain: "factu-f58ab.firebaseapp.com",
-                projectId: "factu-f58ab",
-                storageBucket: "factu-f58ab.firebasestorage.app",
-                messagingSenderId: "126560099435",
-                appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
-                measurementId: "G-MC2S07WMSL"
-            };
-            firebase.initializeApp(firebaseConfig);
-        }
-
-        // 🔹 Inicializar Firestore y Auth
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        // 🔹 Detectar cambios en autenticación
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                console.log("Usuario autenticado:", user.email);
-                cargarClientes();
-            } else {
-                console.log("Usuario no autenticado, redirigiendo...");
-                window.location.href = "../";
-            }
-        });
-
-        // 🔹 Función para cargar clientes en el selector
-        function cargarClientes() {
-            console.log("Intentando cargar clientes...");
-            const clienteSelect = document.getElementById("oferta-cliente");
-            clienteSelect.innerHTML = "<option value=''>Cargando clientes...</option>";
-
-            db.collection("clientes").get()
-            .then(snapshot => {
-                console.log("Clientes obtenidos:", snapshot.docs.length);
-                clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
-
-                snapshot.forEach(doc => {
-                    console.log("Cliente encontrado:", doc.data());
-                    const cliente = doc.data();
-                    const option = document.createElement("option");
-                    option.value = doc.id;
-                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
-                    clienteSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error("Error al cargar clientes:", error);
-                clienteSelect.innerHTML = "<option value=''>Error al cargar clientes</option>";
-            });
-        }
-
-        // 🔹 Autocompletar datos del cliente seleccionado
-        function autocompletarCliente() {
-    const clienteId = document.getElementById("oferta-cliente").value;
-
-    if (!clienteId) {
-        document.getElementById("oferta-nombre").value = "";
-        document.getElementById("oferta-nombre-fiscal").value = "";
-        document.getElementById("oferta-direccion").value = "";
-        document.getElementById("oferta-cif").value = "";
-        return;
-    }
-
-    db.collection("clientes").doc(clienteId).get()
-    .then(doc => {
-        if (doc.exists) {
-            const cliente = doc.data();
-            document.getElementById("oferta-nombre").value = cliente.nombre || "";
-            document.getElementById("oferta-nombre-fiscal").value = cliente.nombreFiscal || "";
-            document.getElementById("oferta-direccion").value = cliente.direccion || "";
-            document.getElementById("oferta-cif").value = cliente.cif || "";
-        }
-    })
-    .catch(error => {
-        console.error("Error al autocompletar cliente:", error);
-    });
-}
-
-        // 🔹 Guardar Oferta en Firestore
-        function guardarOferta() {
-            const clienteId = document.getElementById("oferta-cliente").value;
-            const nombre = document.getElementById("oferta-nombre").value;
-            const nombreFiscal = document.getElementById("oferta-nombre-fiscal").value;
-            const direccion = document.getElementById("oferta-direccion").value;
-            const cif = document.getElementById("oferta-cif").value;
-            const descripcion = document.getElementById("oferta-descripcion").value;
-            const importe = document.getElementById("oferta-importe").value;
-            const estado = document.getElementById("oferta-estado").value;
-
-            if (!clienteId || !descripcion || !importe) {
-                alert("Seleccione un cliente y complete los campos obligatorios.");
-                return;
-            }
-
-            const fecha = new Date().toISOString().split("T")[0];
-            const ofertaId = `OF-${fecha.replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
-
-            db.collection("ofertas").doc(ofertaId).set({
-                ofertaId: ofertaId,
-                clienteId: clienteId,
-                nombre: nombre,
-                nombreFiscal: nombreFiscal,
-                direccion: direccion,
-                cif: cif,
-                fecha: fecha,
-                descripcion: descripcion,
-                importe: parseFloat(importe),
-                estado: estado
-            })
-            .then(() => {
-                alert("Oferta guardada correctamente.");
-                document.getElementById("oferta-form").reset();
-            })
-            .catch(error => {
-                console.error("Error al guardar la oferta:", error);
-                alert("Error al guardar la oferta.");
-            });
-        }
-        let ofertaGuardada = false; // 🔹 Controla si hay una oferta guardada
-
-function guardarOferta() {
-    const clienteId = document.getElementById("oferta-cliente").value;
-    const nombre = document.getElementById("oferta-nombre").value;
-    const nombreFiscal = document.getElementById("oferta-nombre-fiscal").value;
-    const direccion = document.getElementById("oferta-direccion").value;
-    const cif = document.getElementById("oferta-cif").value;
-    const descripcion = document.getElementById("oferta-descripcion").value;
-    const importe = document.getElementById("oferta-importe").value;
-    const estado = document.getElementById("oferta-estado").value;
-
-    if (!clienteId || !descripcion || !importe) {
-        alert("❌ Debes completar los campos obligatorios antes de guardar la oferta.");
-        return;
-    }
-
-    const fecha = new Date().toISOString().split("T")[0];
-    const ofertaId = `OF-${fecha.replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
-
-    db.collection("ofertas").doc(ofertaId).set({
-        ofertaId: ofertaId,
-        clienteId: clienteId,
-        nombre: nombre,
-        nombreFiscal: nombreFiscal,
-        direccion: direccion,
-        cif: cif,
-        fecha: fecha,
-        descripcion: descripcion,
-        importe: parseFloat(importe),
-        estado: estado
-    })
-    .then(() => {
-        alert("✅ Oferta guardada correctamente.");
-        ofertaGuardada = true; // ✅ Se marca como guardada
-        document.getElementById("oferta-form").reset();
-    })
-    .catch(error => {
-        console.error("Error al guardar la oferta:", error);
-        alert("❌ Error al guardar la oferta.");
-    });
-}
-
-// 🔹 Verifica si la oferta ha sido guardada antes de ir a generator.html
-function verificarYGenerarPDF() {
-    if (!ofertaGuardada) {
-        alert("❌ Debes guardar una oferta antes de generar el PDF.");
-    } else {
-        window.location.href = "generator.html";
-    }
-}
-
-    </script>
-
     <style>
         body { font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; text-align: center; }
-        input, select, textarea, button { 
-            width: 100%; 
-            padding: 10px; 
-            margin: 5px 0; 
-            font-size: 16px; 
-            border-radius: 12px;
-            border: 1px solid #ddd;
-        }
+        input, select, textarea, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 12px; border: 1px solid #ddd; }
         button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
         button:hover { background-color: #0056b3; }
     </style>
@@ -206,7 +22,14 @@ function verificarYGenerarPDF() {
     <h2>Gestión de Ofertas</h2>
     <button onclick="window.location.href='../'">🔙 Volver</button>
 
-    <h3>Crear Nueva Oferta</h3>
+    <h3>Seleccionar Oferta para Editar</h3>
+    <select id="oferta-select" onchange="cargarOfertaSeleccionada()">
+        <option value="">Nueva Oferta</option>
+    </select>
+
+    <button onclick="nuevaOferta()">➕ Nueva Oferta</button>
+
+    <h3>Crear / Editar Oferta</h3>
     <form id="oferta-form">
         <label>Cliente:</label>
         <select id="oferta-cliente" onchange="autocompletarCliente()"></select>
@@ -224,10 +47,10 @@ function verificarYGenerarPDF() {
         <input type="text" id="oferta-cif" readonly>
 
         <label>Descripción de la Oferta:</label>
-        <textarea id="oferta-descripcion" rows="3" placeholder="Detalles de la oferta"></textarea>
+        <textarea id="oferta-descripcion" rows="3"></textarea>
 
         <label>Importe Total (€):</label>
-        <input type="number" id="oferta-importe" step="0.01" placeholder="0.00">
+        <input type="number" id="oferta-importe" step="0.01">
 
         <label>Estado:</label>
         <select id="oferta-estado">
@@ -236,10 +59,137 @@ function verificarYGenerarPDF() {
             <option value="Rechazada">Rechazada</option>
         </select>
 
-        <button type="button" onclick="guardarOferta()">Guardar Oferta</button>
-        <button type="button" onclick="verificarYGenerarPDF()">📄 Generar PDF</button>
-
+        <button type="button" onclick="guardarOferta()">💾 Guardar Oferta</button>
     </form>
 
+    <script>
+        // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
+        if (!firebase.apps.length) {
+            const firebaseConfig = {
+                apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
+                authDomain: "factu-f58ab.firebaseapp.com",
+                projectId: "factu-f58ab",
+                storageBucket: "factu-f58ab.firebasestorage.app",
+                messagingSenderId: "126560099435",
+                appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
+                measurementId: "G-MC2S07WMSL"
+            };
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // 🔹 Inicializar Firestore
+        const db = firebase.firestore();
+        let ofertaEnEdicion = null; // Guardará la oferta que se está editando
+
+        // 🔹 Cargar ofertas en el selector
+        function cargarOfertas() {
+            const ofertaSelect = document.getElementById("oferta-select");
+            ofertaSelect.innerHTML = "<option value=''>Nueva Oferta</option>";
+
+            db.collection("ofertas").orderBy("fecha", "desc").get()
+            .then(snapshot => {
+                snapshot.forEach(doc => {
+                    const oferta = doc.data();
+                    const option = document.createElement("option");
+                    option.value = doc.id;
+                    option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
+                    ofertaSelect.appendChild(option);
+                });
+            });
+        }
+
+        // 🔹 Cargar clientes en el selector
+        function cargarClientes() {
+            const clienteSelect = document.getElementById("oferta-cliente");
+            db.collection("clientes").get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    const cliente = doc.data();
+                    const option = document.createElement("option");
+                    option.value = doc.id;
+                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
+                    clienteSelect.appendChild(option);
+                });
+            });
+        }
+
+        // 🔹 Autocompletar datos del cliente seleccionado
+        function autocompletarCliente() {
+            const clienteId = document.getElementById("oferta-cliente").value;
+            if (!clienteId) return;
+
+            db.collection("clientes").doc(clienteId).get().then(doc => {
+                if (doc.exists) {
+                    const cliente = doc.data();
+                    document.getElementById("oferta-nombre").value = cliente.nombre;
+                    document.getElementById("oferta-nombre-fiscal").value = cliente.nombreFiscal;
+                    document.getElementById("oferta-direccion").value = cliente.direccion;
+                    document.getElementById("oferta-cif").value = cliente.cif;
+                }
+            });
+        }
+
+        // 🔹 Cargar oferta seleccionada para edición
+        function cargarOfertaSeleccionada() {
+            const ofertaId = document.getElementById("oferta-select").value;
+            if (!ofertaId) {
+                nuevaOferta(); // Si se elige "Nueva Oferta", limpiar el formulario
+                return;
+            }
+
+            db.collection("ofertas").doc(ofertaId).get().then(doc => {
+                if (doc.exists) {
+                    const oferta = doc.data();
+                    ofertaEnEdicion = ofertaId;
+
+                    document.getElementById("oferta-cliente").value = oferta.clienteId;
+                    autocompletarCliente(); // Llenar los datos del cliente automáticamente
+                    document.getElementById("oferta-descripcion").value = oferta.descripcion;
+                    document.getElementById("oferta-importe").value = oferta.importe;
+                    document.getElementById("oferta-estado").value = oferta.estado;
+                }
+            });
+        }
+
+        // 🔹 Crear o actualizar oferta en Firestore
+        function guardarOferta() {
+            const clienteId = document.getElementById("oferta-cliente").value;
+            const descripcion = document.getElementById("oferta-descripcion").value;
+            const importe = document.getElementById("oferta-importe").value;
+            const estado = document.getElementById("oferta-estado").value;
+
+            if (!clienteId || !descripcion || !importe) {
+                alert("❌ Completa todos los campos obligatorios.");
+                return;
+            }
+
+            const datosOferta = {
+                clienteId,
+                descripcion,
+                importe: parseFloat(importe),
+                estado,
+                fecha: new Date().toISOString().split("T")[0]
+            };
+
+            if (ofertaEnEdicion) {
+                db.collection("ofertas").doc(ofertaEnEdicion).update(datosOferta)
+                .then(() => alert("✅ Oferta actualizada correctamente."));
+            } else {
+                datosOferta.ofertaId = `OF-${Date.now()}`;
+                db.collection("ofertas").doc(datosOferta.ofertaId).set(datosOferta)
+                .then(() => alert("✅ Oferta creada correctamente."));
+            }
+        }
+
+        // 🔹 Resetear formulario para crear una nueva oferta
+        function nuevaOferta() {
+            ofertaEnEdicion = null;
+            document.getElementById("oferta-form").reset();
+        }
+
+        window.onload = () => {
+            cargarClientes();
+            cargarOfertas();
+        };
+    </script>
 </body>
 </html>
