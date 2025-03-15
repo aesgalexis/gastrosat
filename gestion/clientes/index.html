@@ -3,156 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>unatomo</title>
+    <title>Clientes - GastroSat</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 🔹 Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
+            authDomain: "factu-f58ab.firebaseapp.com",
+            projectId: "factu-f58ab",
+            storageBucket: "factu-f58ab.firebasestorage.app",
+            messagingSenderId: "126560099435",
+            appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
+            measurementId: "G-MC2S07WMSL"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 🔹 Guardar Cliente
+        function guardarCliente() {
+            const nombre = document.getElementById("cliente-nombre").value;
+            const nombreFiscal = document.getElementById("cliente-nombre-fiscal").value;
+            const direccion = document.getElementById("cliente-direccion").value;
+            const cif = document.getElementById("cliente-cif").value;
+            const telefono = document.getElementById("cliente-telefono").value || "";
+            const email = document.getElementById("cliente-email").value || "";
+
+            if (!nombre || !nombreFiscal || !direccion || !cif) {
+                alert("Completa los campos obligatorios.");
+                return;
+            }
+
+            const clienteId = Date.now().toString();
+
+            db.collection("clientes").doc(clienteId).set({
+                clienteId: clienteId,
+                nombre: nombre,
+                nombreFiscal: nombreFiscal,
+                direccion: direccion,
+                cif: cif,
+                telefono: telefono,
+                email: email,
+                creado: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                alert("Cliente agregado correctamente.");
+                document.getElementById("cliente-form").reset();
+                cargarClientes();
+            })
+            .catch(error => {
+                console.error("Error al guardar cliente:", error);
+                alert("Error al guardar cliente.");
+            });
+        }
+
+        // 🔹 Cargar Clientes
+        function cargarClientes() {
+            const lista = document.getElementById("lista-clientes");
+            lista.innerHTML = "";
+
+            db.collection("clientes").orderBy("creado", "desc").get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    const cliente = doc.data();
+                    const li = document.createElement("li");
+                    li.classList.add("cliente-item");
+                    li.innerHTML = `
+                        <div class="cliente-info">
+                            <strong>${cliente.nombre}</strong> (${cliente.nombreFiscal})<br>
+                            ${cliente.direccion} - ${cliente.cif}<br>
+                            📞 ${cliente.telefono || "No especificado"} - 📧 ${cliente.email || "No especificado"}
+                        </div>
+                        <button class="eliminar-btn" onclick="eliminarCliente('${doc.id}')">❌</button>
+                    `;
+                    lista.appendChild(li);
+                });
+            });
+        }
+
+        // 🔹 Eliminar Cliente
+        function eliminarCliente(clienteId) {
+            if (confirm("¿Seguro que quieres eliminar este cliente?")) {
+                db.collection("clientes").doc(clienteId).delete()
+                .then(() => {
+                    alert("Cliente eliminado.");
+                    cargarClientes();
+                })
+                .catch(error => {
+                    console.error("Error al eliminar cliente:", error);
+                });
+            }
+        }
+
+        // 🔹 Cargar Clientes al iniciar
+        window.onload = cargarClientes;
+    </script>
+
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 500px; 
+            margin: auto; 
+            padding: 20px; 
             text-align: center;
-            position: relative;
         }
-        .post-container {
-            width: 800px;
-            height: 600px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 20px;
-            position: absolute;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
+        input, button { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            font-size: 16px; 
+            border-radius: 12px; /* 🔹 Bordes redondeados */
+            border: 1px solid #ddd;
+        }
+        button { 
+            background-color: #007BFF; 
+            color: white; 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+        button:hover { background-color: #0056b3; }
+        ul { list-style: none; padding: 0; }
+        .cliente-item { 
+            border: 1px solid #ddd; 
+            border-radius: 12px; /* 🔹 Bordes redondeados */
+            padding: 15px; 
+            margin: 10px 0; 
+            text-align: left; 
+            display: flex; 
+            justify-content: space-between; 
             align-items: center;
         }
-        .active {
-            display: flex;
+        .cliente-info { flex-grow: 1; }
+        .eliminar-btn { 
+            background-color: red; 
+            color: white; 
+            border: none; 
+            padding: 5px 10px; 
+            cursor: pointer; 
+            border-radius: 8px; /* 🔹 Bordes redondeados */
         }
-        .post-upper {
-            color: blue;
-        }
-        .post-lower {
-            color: green;
-        }
-        .arrow {
-            font-size: 32px;
-            cursor: pointer;
-            position: fixed;
-            color: #333;
-        }
-        .arrow-left { left: 20px; top: 50%; transform: translateY(-50%); }
-        .arrow-right { right: 20px; top: 50%; transform: translateY(-50%); }
-        .arrow-up { top: 20px; left: 50%; transform: translateX(-50%); }
-        .arrow-down { bottom: 20px; left: 50%; transform: translateX(-50%); }
+        .eliminar-btn:hover { background-color: darkred; }
     </style>
 </head>
 <body>
-    <div id="post-1" class="post-container active">
-        <h2>Primer post</h2>
-        <p>Contenido del primer post.</p>
-        <div class="arrow arrow-right" onclick="nextPost()">➡️</div>
-    </div>
-    
-    <div id="post-1-upper" class="post-container post-upper">
-        <h2>Nivel superior del primer post</h2>
-        <p>Contenido superior del primer post.</p>
-    </div>
-    
-    <div id="post-1-lower" class="post-container post-lower">
-        <h2>Nivel inferior del primer post</h2>
-        <p>Contenido inferior del primer post.</p>
-    </div>
 
-    <div id="post-2" class="post-container">
-        <h2>Segundo post</h2>
-        <p>Contenido del segundo post.</p>
-        <div class="arrow arrow-left" onclick="prevPost()">⬅️</div>
-        <div class="arrow arrow-right" onclick="nextPost()">➡️</div>
-    </div>
-    
-    <div id="post-2-upper" class="post-container post-upper">
-        <h2>Nivel superior del segundo post</h2>
-        <p>Contenido superior del segundo post.</p>
-    </div>
-    
-    <div id="post-2-lower" class="post-container post-lower">
-        <h2>Nivel inferior del segundo post</h2>
-        <p>Contenido inferior del segundo post.</p>
-    </div>
+    <h2>Gestión de Clientes</h2>
+    <button onclick="window.location.href='../'">🔙 Volver</button>
 
-    <div id="post-3" class="post-container">
-        <h2>Tercer post</h2>
-        <p>Contenido del tercer post.</p>
-        <div class="arrow arrow-left" onclick="prevPost()">⬅️</div>
-    </div>
+    <h3>Agregar Cliente</h3>
+    <form id="cliente-form">
+        <input type="text" id="cliente-nombre" placeholder="Nombre *">
+        <input type="text" id="cliente-nombre-fiscal" placeholder="Nombre Fiscal *">
+        <input type="text" id="cliente-direccion" placeholder="Dirección *">
+        <input type="text" id="cliente-cif" placeholder="CIF *">
+        <input type="text" id="cliente-telefono" placeholder="Teléfono">
+        <input type="email" id="cliente-email" placeholder="Correo Electrónico">
+        <button type="button" onclick="guardarCliente()">Guardar Cliente</button>
+    </form>
 
-    <div id="post-3-upper" class="post-container post-upper">
-        <h2>Nivel superior del tercer post</h2>
-        <p>Contenido superior del tercer post.</p>
-    </div>
-    
-    <div id="post-3-lower" class="post-container post-lower">
-        <h2>Nivel inferior del tercer post</h2>
-        <p>Contenido inferior del tercer post.</p>
-    </div>
+    <h3>Lista de Clientes</h3>
+    <ul id="lista-clientes"></ul>
 
-    <div class="arrow arrow-up" onclick="navigateUp()">⬆️</div>
-    <div class="arrow arrow-down" onclick="navigateDown()">⬇️</div>
-
-    <script>
-        let postIndex = 1;
-        let totalPosts = 3;
-        let currentView = "main"; // Puede ser 'main', 'upper' o 'lower'
-
-        function showPost(index) {
-            hideAllPosts();
-            document.getElementById(`post-${index}`).classList.add("active");
-            postIndex = index;
-            currentView = "main";
-        }
-
-        function hideAllPosts() {
-            document.querySelectorAll(".post-container").forEach(post => post.classList.remove("active"));
-        }
-
-        function nextPost() {
-            if (postIndex < totalPosts) {
-                showPost(postIndex + 1);
-            }
-        }
-
-        function prevPost() {
-            if (postIndex > 1) {
-                showPost(postIndex - 1);
-            }
-        }
-
-        function navigateUp() {
-            if (currentView === "main") {
-                hideAllPosts();
-                document.getElementById(`post-${postIndex}-upper`).classList.add("active");
-                currentView = "upper";
-            } else if (currentView === "lower") {
-                showPost(postIndex);
-            }
-        }
-
-        function navigateDown() {
-            if (currentView === "main") {
-                hideAllPosts();
-                document.getElementById(`post-${postIndex}-lower`).classList.add("active");
-                currentView = "lower";
-            } else if (currentView === "upper") {
-                showPost(postIndex);
-            }
-        }
-    </script>
 </body>
 </html>
