@@ -12,20 +12,29 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- Firebase y lógica principal -->
+    <!-- Firebase y lógica -->
     <script src="js/firebase.js"></script>
-    <script src="js/gestion.js"></script>
+    <script src="js/clientes.js"></script>
 </head>
 <body>
     <h1>Gestión GastroSat</h1>
-    <nav>
-        <button onclick="cargarVista('ofertas')">📄 Ofertas</button>
-        <button onclick="cargarVista('clientes')">👥 Clientes</button>
-    </nav>
+    
+    <h2>Gestión de Clientes</h2>
+    <button onclick="agregarCliente()">➕ Agregar Cliente</button>
 
-    <div id="contenido">Cargando...</div>
-
-    <!-- Contenedor de scripts dinámicos -->
-    <div id="scripts"></div>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>CIF</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-clientes">
+            <tr><td colspan="5">Cargando clientes...</td></tr>
+        </tbody>
+    </table>
 </body>
 </html>
