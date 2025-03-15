@@ -1,16 +1,29 @@
 console.log("🚀 `clientes.js` cargado correctamente.");
 
-// 🔹 Función global para garantizar acceso
+// 🔹 Hacer funciones globales para evitar errores
 window.cargarClientes = cargarClientes;
 window.agregarCliente = agregarCliente;
 window.editarCliente = editarCliente;
 window.eliminarCliente = eliminarCliente;
 
+// 🔹 Esperar a que la tabla exista en el DOM antes de cargar los clientes
+function esperarTablaYcargarClientes() {
+    const tabla = document.getElementById("tabla-clientes");
+
+    if (tabla) {
+        console.log("✅ Tabla encontrada. Ejecutando `cargarClientes()`...");
+        cargarClientes();
+    } else {
+        console.warn("⏳ La tabla aún no está disponible. Reintentando en 500ms...");
+        setTimeout(esperarTablaYcargarClientes, 500);
+    }
+}
+
 // 🔹 Esperar autenticación antes de cargar clientes
 auth.onAuthStateChanged(user => {
     if (user) {
         console.log("✅ Usuario autenticado:", user.email);
-        cargarClientes();
+        esperarTablaYcargarClientes();
     } else {
         console.error("❌ Usuario no autenticado, redirigiendo...");
         window.location.href = "../";
