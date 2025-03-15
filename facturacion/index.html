@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facturación Gastrosat</title>
 
-    <!-- Firebase SDK (Carga correcta sin módulos ES6) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
     
     <link rel="stylesheet" type="text/css" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
 
     <script>
-        // 🔹 Configuración de Firebase (usa tus datos)
+        // 🔹 Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
             authDomain: "factu-f58ab.firebaseapp.com",
@@ -25,12 +25,10 @@
             measurementId: "G-MC2S07WMSL"
         };
         firebase.initializeApp(firebaseConfig);
-
-        // 🔹 Base de datos Firestore
         const db = firebase.firestore();
 
-        // 🔹 Correo permitido para acceder
-        const emailPermitido = "aesg.alexis@gmail.com"; // Reemplázalo con tu cuenta
+        // 🔹 Correo permitido
+        const emailPermitido = "aesg.alexis@gmail.com";
 
         // 🔹 Inicializar FirebaseUI
         function iniciarFirebaseUI() {
@@ -47,7 +45,7 @@
                             document.getElementById("contenido").style.display = "block";
                             document.getElementById("login-container").style.display = "none";
                         } else {
-                            alert("Acceso denegado. No tienes permisos.");
+                            alert("Acceso denegado.");
                             firebase.auth().signOut();
                         }
                         return false;
@@ -56,7 +54,7 @@
             });
         }
 
-        // 🔹 Detectar cambios en la autenticación
+        // 🔹 Detectar cambios en autenticación
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 if (user.email === emailPermitido) {
@@ -76,49 +74,78 @@
             }
         });
 
-        // 🔹 Guardar un cliente en Firestore
+        // 🔹 Guardar Cliente
         function guardarCliente() {
             const nombre = document.getElementById("cliente-nombre").value;
-            const email = document.getElementById("cliente-email").value;
+            const nombreFiscal = document.getElementById("cliente-nombre-fiscal").value;
+            const direccion = document.getElementById("cliente-direccion").value;
+            const cif = document.getElementById("cliente-cif").value;
+            const telefono = document.getElementById("cliente-telefono").value || "";
+            const email = document.getElementById("cliente-email").value || "";
 
-            if (!nombre || !email) {
-                alert("Completa los datos del cliente");
+            if (!nombre || !nombreFiscal || !direccion || !cif) {
+                alert("Completa los campos obligatorios.");
                 return;
             }
 
-            db.collection("clientes").add({
+            const clienteId = Date.now().toString(); // ID único basado en timestamp
+
+            db.collection("clientes").doc(clienteId).set({
+                clienteId: clienteId,
                 nombre: nombre,
+                nombreFiscal: nombreFiscal,
+                direccion: direccion,
+                cif: cif,
+                telefono: telefono,
                 email: email,
                 creado: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then(() => {
-                alert("Cliente agregado correctamente");
-                document.getElementById("cliente-nombre").value = "";
-                document.getElementById("cliente-email").value = "";
+                alert("Cliente agregado correctamente.");
+                document.getElementById("cliente-form").reset();
                 cargarClientes();
             })
             .catch(error => {
                 console.error("Error al guardar cliente:", error);
-                alert("Hubo un error al guardar el cliente");
+                alert("Error al guardar cliente.");
             });
         }
 
-        // 🔹 Cargar clientes desde Firestore y mostrarlos en la lista
+        // 🔹 Cargar Clientes
         function cargarClientes() {
             const lista = document.getElementById("lista-clientes");
-            lista.innerHTML = ""; // Limpiar lista antes de recargar
+            lista.innerHTML = ""; // Limpiar lista
 
             db.collection("clientes").orderBy("creado", "desc").get().then(snapshot => {
                 snapshot.forEach(doc => {
                     const cliente = doc.data();
                     const li = document.createElement("li");
-                    li.textContent = `${cliente.nombre} - ${cliente.email}`;
+                    li.innerHTML = `
+                        <strong>${cliente.nombre}</strong> (${cliente.nombreFiscal})<br>
+                        ${cliente.direccion} - ${cliente.cif}<br>
+                        📞 ${cliente.telefono || "No especificado"} - 📧 ${cliente.email || "No especificado"}
+                        <button onclick="eliminarCliente('${doc.id}')">❌</button>
+                    `;
                     lista.appendChild(li);
                 });
             });
         }
 
-        // 🔹 Función para cerrar sesión
+        // 🔹 Eliminar Cliente
+        function eliminarCliente(clienteId) {
+            if (confirm("¿Seguro que quieres eliminar este cliente?")) {
+                db.collection("clientes").doc(clienteId).delete()
+                .then(() => {
+                    alert("Cliente eliminado.");
+                    cargarClientes();
+                })
+                .catch(error => {
+                    console.error("Error al eliminar cliente:", error);
+                });
+            }
+        }
+
+        // 🔹 Cerrar Sesión
         function logout() {
             firebase.auth().signOut().then(() => {
                 document.getElementById("contenido").style.display = "none";
@@ -129,28 +156,34 @@
     </script>
 
     <style>
-        body { font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px; text-align: center; }
-        #contenido { display: none; }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
+        input, button { width: 90%; padding: 8px; margin: 5px; }
+        ul { list-style: none; padding: 0; }
+        li { border: 1px solid #ddd; padding: 10px; margin: 5px; text-align: left; position: relative; }
+        button { background-color: red; color: white; border: none; cursor: pointer; position: absolute; right: 10px; top: 10px; }
     </style>
 </head>
 <body>
 
-    <!-- 🔹 Contenedor de inicio de sesión -->
     <div id="login-container">
         <h2>Iniciar Sesión</h2>
-        <div id="firebaseui-auth-container"></div> <!-- FirebaseUI renderiza el login aquí -->
+        <div id="firebaseui-auth-container"></div>
     </div>
 
-    <!-- 🔹 Contenido privado (visible solo tras iniciar sesión) -->
     <div id="contenido">
-        <h2>Bienvenido a la Facturación de Gastrosat</h2>
-        <p>Contenido privado solo para tu cuenta.</p>
+        <h2>Clientes - Facturación Gastrosat</h2>
         <button onclick="logout()">Cerrar sesión</button>
 
         <h3>Agregar Cliente</h3>
-        <input type="text" id="cliente-nombre" placeholder="Nombre del cliente">
-        <input type="email" id="cliente-email" placeholder="Correo del cliente">
-        <button onclick="guardarCliente()">Guardar Cliente</button>
+        <form id="cliente-form">
+            <input type="text" id="cliente-nombre" placeholder="Nombre *">
+            <input type="text" id="cliente-nombre-fiscal" placeholder="Nombre Fiscal *">
+            <input type="text" id="cliente-direccion" placeholder="Dirección *">
+            <input type="text" id="cliente-cif" placeholder="CIF *">
+            <input type="text" id="cliente-telefono" placeholder="Teléfono">
+            <input type="email" id="cliente-email" placeholder="Correo Electrónico">
+            <button type="button" onclick="guardarCliente()">Guardar Cliente</button>
+        </form>
 
         <h3>Lista de Clientes</h3>
         <ul id="lista-clientes"></ul>
