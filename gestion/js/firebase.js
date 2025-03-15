@@ -18,7 +18,7 @@ const auth = firebase.auth();
 const db = firebase.firestore(); // 🔧 Esto previene el error `firebase.firestore is not a function`
 
 // ✅ Definir usuario autorizado ANTES de usarlo
-const usuarioAutorizado = "tucorreo@gmail.com";
+const usuarioAutorizado = "aesg.alexis@gmail.com";
 
 // 🔒 Función para verificar autenticación y bloquear acceso si es necesario
 function verificarAutenticacion() {
