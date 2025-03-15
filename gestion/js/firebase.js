@@ -1,4 +1,4 @@
-// Evitar que Firebase se inicialice más de una vez
+// Evitar doble inicialización de Firebase
 if (!window.firebaseInitialized) {
     window.firebaseInitialized = true;
 
@@ -11,14 +11,14 @@ if (!window.firebaseInitialized) {
         appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
         measurementId: "G-MC2S07WMSL"
     };
-    
+
     firebase.initializeApp(firebaseConfig);
     window.db = firebase.firestore();
     window.auth = firebase.auth();
 }
 
-// Verificar autenticación una sola vez al cargar la página
-auth.onAuthStateChanged(user => {
+// Verificar autenticación solo una vez
+window.auth.onAuthStateChanged(user => {
     if (!user) {
         window.location.href = "../"; // Redirigir si no está autenticado
     }
