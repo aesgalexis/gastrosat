@@ -43,6 +43,16 @@
         }
     </style>
 </head>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        if (typeof firebase !== "undefined" && firebase.auth) {
+            console.log("🔄 Verificando autenticación...");
+            verificarAutenticacion(); // Bloqueo firme de acceso
+        } else {
+            console.error("❌ Firebase no está cargado correctamente.");
+        }
+    });
+</script>
 <body>
 
     <div class="container">
