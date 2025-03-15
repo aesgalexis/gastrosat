@@ -1,22 +1,22 @@
 console.log("🚀 `clientes.js` cargado correctamente.");
 
 // 🔹 Definir funciones vacías para evitar errores si aún no existen
-window.agregarCliente = window.agregarCliente || function() {
+window.agregarCliente = function() {
     console.warn("⚠️ `agregarCliente()` aún no está definido.");
 };
 
-window.editarCliente = window.editarCliente || function(id) {
+window.editarCliente = function(id) {
     console.warn(`⚠️ Intentando editar cliente con ID: ${id}, pero aún no está definido.`);
 };
 
-window.eliminarCliente = window.eliminarCliente || function(id) {
+window.eliminarCliente = function(id) {
     console.warn(`⚠️ Intentando eliminar cliente con ID: ${id}, pero aún no está definido.`);
 };
 
 // 🔹 Esperar a que la tabla esté en el DOM antes de ejecutar `cargarClientes()`
 document.addEventListener("DOMContentLoaded", () => {
     console.log("🔥 DOM completamente cargado, esperando a que la tabla esté disponible...");
-    
+
     const esperarTabla = setInterval(() => {
         const tabla = document.getElementById("tabla-clientes");
         if (tabla) {
