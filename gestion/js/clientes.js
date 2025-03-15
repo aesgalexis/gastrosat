@@ -1,4 +1,8 @@
-// 🔹 Función para cargar clientes desde Firebase y mostrarlos en la tabla
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("🚀 Clientes.js cargado, iniciando carga de clientes...");
+    cargarClientes();
+});
+
 function cargarClientes() {
     console.log("📡 Intentando conectar con Firebase...");
 
@@ -47,23 +51,3 @@ function cargarClientes() {
     })
     .catch(error => console.error("❌ Error al cargar clientes:", error));
 }
-
-// 🔹 FORZAR CARGA AUTOMÁTICA TRAS LA CARGA DE LA PÁGINA
-window.onload = function () {
-    console.log("🚀 Página cargada, iniciando carga de clientes...");
-
-    // 🔹 Método 1: Retrasar la ejecución para asegurar que el DOM está listo
-    setTimeout(() => {
-        cargarClientes();
-    }, 1000);
-
-    // 🔹 Método 2: Comprobar si la tabla está disponible y reintentar
-    const interval = setInterval(() => {
-        const tabla = document.getElementById("tabla-clientes");
-        if (tabla) {
-            console.log("✅ Tabla detectada en el DOM. Cargando clientes...");
-            cargarClientes();
-            clearInterval(interval); // Detener el intervalo tras la primera carga exitosa
-        }
-    }, 500);
-};
