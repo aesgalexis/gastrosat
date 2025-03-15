@@ -7,11 +7,68 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- jsPDF para generar PDF -->
+    <!-- jsPDF y html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; text-align: center; }
+        .pdf-container { background: white; padding: 20px; border: 1px solid #ddd; border-radius: 12px; text-align: left; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 2px solid #000; }
+        .logo { width: 100px; }
+        .company-info { text-align: right; }
+        .content { margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f2f2f2; }
+        .total { font-size: 18px; font-weight: bold; text-align: right; margin-top: 10px; }
+        button { background-color: #007BFF; color: white; padding: 10px; border: none; border-radius: 12px; cursor: pointer; margin-top: 20px; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <h2>Generar PDF de Oferta</h2>
+    <button onclick="window.location.href='../'">🔙 Volver</button>
+
+    <label>Selecciona una oferta:</label>
+    <select id="oferta-select" onchange="cargarDatosOferta()"></select>
+
+    <!-- 📄 Plantilla para el PDF -->
+    <div id="pdf-content" class="pdf-container">
+        <div class="header">
+            <img src="../logo.png" alt="Logo" class="logo"> <!-- 🔹 Agrega tu logo -->
+            <div class="company-info">
+                <p><strong>GastroSat</strong></p>
+                <p>Dirección de la empresa</p>
+                <p>Teléfono | Email</p>
+            </div>
+        </div>
+
+        <h3>Oferta: <span id="oferta-id">-</span></h3>
+        <p><strong>Fecha:</strong> <span id="oferta-fecha">-</span></p>
+
+        <div class="content">
+            <h4>Datos del Cliente</h4>
+            <p><strong>Nombre:</strong> <span id="oferta-nombre">-</span></p>
+            <p><strong>Nombre Fiscal:</strong> <span id="oferta-nombre-fiscal">-</span></p>
+            <p><strong>Dirección:</strong> <span id="oferta-direccion">-</span></p>
+            <p><strong>CIF:</strong> <span id="oferta-cif">-</span></p>
+        </div>
+
+        <h4>Descripción de la Oferta</h4>
+        <p id="oferta-descripcion">-</p>
+
+        <h4>Importe Total</h4>
+        <p class="total"><strong>Total: </strong> <span id="oferta-importe">-</span> €</p>
+
+        <h4>Estado de la Oferta</h4>
+        <p><span id="oferta-estado">-</span></p>
+    </div>
+
+    <button onclick="generarPDF()">📄 Descargar PDF</button>
 
     <script>
         // 🔹 Inicializar Firebase si no está inicializado
@@ -28,9 +85,8 @@
             firebase.initializeApp(firebaseConfig);
         }
 
-        // 🔹 Inicializar Firestore y Auth
+        // 🔹 Inicializar Firestore
         const db = firebase.firestore();
-        const auth = firebase.auth();
 
         // 🔹 Cargar ofertas disponibles
         function cargarOfertas() {
@@ -55,7 +111,7 @@
             });
         }
 
-        // 🔹 Cargar los datos de la oferta seleccionada
+        // 🔹 Cargar datos de la oferta seleccionada
         function cargarDatosOferta() {
             const ofertaId = document.getElementById("oferta-select").value;
             if (!ofertaId) return;
@@ -76,60 +132,20 @@
             });
         }
 
-        // 🔹 Generar PDF de la oferta seleccionada
+        // 🔹 Generar PDF con html2canvas
         function generarPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
 
-            doc.setFontSize(16);
-            doc.text("Oferta - GastroSat", 20, 20);
+            html2canvas(document.getElementById("pdf-content"), { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL("image/png");
+                const doc = new jsPDF("p", "mm", "a4");
 
-            doc.setFontSize(12);
-            doc.text(`ID: ${document.getElementById("oferta-id").textContent}`, 20, 30);
-            doc.text(`Fecha: ${document.getElementById("oferta-fecha").textContent}`, 20, 40);
-            doc.text(`Cliente: ${document.getElementById("oferta-nombre").textContent}`, 20, 50);
-            doc.text(`Nombre Fiscal: ${document.getElementById("oferta-nombre-fiscal").textContent}`, 20, 60);
-            doc.text(`Dirección: ${document.getElementById("oferta-direccion").textContent}`, 20, 70);
-            doc.text(`CIF: ${document.getElementById("oferta-cif").textContent}`, 20, 80);
-            doc.text(`Descripción: ${document.getElementById("oferta-descripcion").textContent}`, 20, 90);
-            doc.text(`Importe Total: ${document.getElementById("oferta-importe").textContent}`, 20, 100);
-            doc.text(`Estado: ${document.getElementById("oferta-estado").textContent}`, 20, 110);
-
-            doc.save(`Oferta_${document.getElementById("oferta-id").textContent}.pdf`);
+                doc.addImage(imgData, "PNG", 10, 10, 190, 0);
+                doc.save("Oferta_GastroSat.pdf");
+            });
         }
 
         window.onload = cargarOfertas;
     </script>
-
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
-        select, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 12px; border: 1px solid #ddd; }
-        button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #0056b3; }
-        .info-box { background: #f8f8f8; padding: 10px; margin-top: 10px; border-radius: 12px; text-align: left; }
-    </style>
-</head>
-<body>
-
-    <h2>Generar PDF de Oferta</h2>
-    <button onclick="window.location.href='../'">🔙 Volver</button>
-
-    <label>Selecciona una oferta:</label>
-    <select id="oferta-select" onchange="cargarDatosOferta()"></select>
-
-    <div class="info-box">
-        <p><strong>ID:</strong> <span id="oferta-id">-</span></p>
-        <p><strong>Fecha:</strong> <span id="oferta-fecha">-</span></p>
-        <p><strong>Cliente:</strong> <span id="oferta-nombre">-</span></p>
-        <p><strong>Nombre Fiscal:</strong> <span id="oferta-nombre-fiscal">-</span></p>
-        <p><strong>Dirección:</strong> <span id="oferta-direccion">-</span></p>
-        <p><strong>CIF:</strong> <span id="oferta-cif">-</span></p>
-        <p><strong>Descripción:</strong> <span id="oferta-descripcion">-</span></p>
-        <p><strong>Importe Total:</strong> <span id="oferta-importe">-</span></p>
-        <p><strong>Estado:</strong> <span id="oferta-estado">-</span></p>
-    </div>
-
-    <button onclick="generarPDF()">📄 Generar PDF</button>
-
 </body>
 </html>
