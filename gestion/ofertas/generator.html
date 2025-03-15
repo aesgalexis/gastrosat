@@ -7,9 +7,10 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- jsPDF y html2canvas -->
+    <!-- jsPDF y html2canvas para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -17,12 +18,8 @@
         body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; text-align: center; }
         .pdf-container { background: white; padding: 20px; border: 1px solid #ddd; border-radius: 12px; text-align: left; }
         .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 2px solid #000; }
-        .logo { width: 100px; }
         .company-info { text-align: right; }
         .content { margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background: #f2f2f2; }
         .total { font-size: 18px; font-weight: bold; text-align: right; margin-top: 10px; }
         button { background-color: #007BFF; color: white; padding: 10px; border: none; border-radius: 12px; cursor: pointer; margin-top: 20px; }
         button:hover { background-color: #0056b3; }
@@ -39,7 +36,7 @@
     <!-- 📄 Plantilla para el PDF -->
     <div id="pdf-content" class="pdf-container">
         <div class="header">
-            <img src="../logo.png" alt="Logo" class="logo"> <!-- 🔹 Agrega tu logo -->
+            <h2>Oferta - GastroSat</h2>
             <div class="company-info">
                 <p><strong>GastroSat</strong></p>
                 <p>Dirección de la empresa</p>
@@ -71,17 +68,7 @@
     <button onclick="generarPDF()">📄 Descargar PDF</button>
 
     <script>
-        // 🔹 Esperar a que el usuario esté autenticado antes de cargar las ofertas
-auth.onAuthStateChanged(user => {
-    if (user) {
-        console.log("✅ Usuario autenticado:", user.email);
-        cargarOfertas(); // Ahora sí cargamos las ofertas
-    } else {
-        console.error("❌ Usuario no autenticado, redirigiendo a inicio.");
-        window.location.href = "../"; // Redirige si no hay usuario autenticado
-    }
-});
-        // 🔹 Inicializar Firebase si no está inicializado
+        // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
         if (!firebase.apps.length) {
             const firebaseConfig = {
                 apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
@@ -95,55 +82,49 @@ auth.onAuthStateChanged(user => {
             firebase.initializeApp(firebaseConfig);
         }
 
-        // 🔹 Inicializar Firestore
+        // 🔹 Inicializar Firestore y Auth
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
-        // 🔹 Esperar a que Firebase esté listo antes de acceder a Firestore
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("🚀 Página cargada, inicializando Firebase...");
-    if (!firebase.apps.length) {
-        console.error("❌ Firebase no está inicializado.");
-        return;
-    }
-    
-    console.log("✅ Firebase inicializado, cargando ofertas...");
-    cargarOfertas();
-});
-
-// 🔹 Cargar ofertas desde Firestore
-function cargarOfertas() {
-    const ofertaSelect = document.getElementById("oferta-select");
-    if (!ofertaSelect) {
-        console.error("❌ No se encontró el elemento oferta-select en el DOM.");
-        return;
-    }
-
-    ofertaSelect.innerHTML = "<option value=''>Cargando ofertas...</option>";
-
-    db.collection("ofertas").orderBy("fecha", "desc").get()
-    .then(snapshot => {
-        if (snapshot.empty) {
-            console.warn("⚠️ No hay ofertas en Firestore.");
-            ofertaSelect.innerHTML = "<option value=''>No hay ofertas disponibles</option>";
-            return;
-        }
-
-        ofertaSelect.innerHTML = "<option value=''>Seleccione una oferta</option>";
-
-        snapshot.forEach(doc => {
-            const oferta = doc.data();
-            console.log("✅ Oferta cargada:", oferta);
-            const option = document.createElement("option");
-            option.value = doc.id;
-            option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
-            ofertaSelect.appendChild(option);
+        // 🔹 Detectar cambios en autenticación
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("✅ Usuario autenticado:", user.email);
+                cargarOfertas();
+            } else {
+                console.error("❌ Usuario no autenticado, redirigiendo...");
+                window.location.href = "../"; // Redirigir si no está autenticado
+            }
         });
-    })
-    .catch(error => {
-        console.error("❌ Error al cargar ofertas:", error);
-        ofertaSelect.innerHTML = "<option value=''>Error al cargar ofertas</option>";
-    });
-}
+
+        // 🔹 Cargar ofertas disponibles
+        function cargarOfertas() {
+            const ofertaSelect = document.getElementById("oferta-select");
+            ofertaSelect.innerHTML = "<option value=''>Cargando ofertas...</option>";
+
+            db.collection("ofertas").orderBy("fecha", "desc").get()
+            .then(snapshot => {
+                if (snapshot.empty) {
+                    console.warn("⚠️ No hay ofertas en Firestore.");
+                    ofertaSelect.innerHTML = "<option value=''>No hay ofertas disponibles</option>";
+                    return;
+                }
+
+                ofertaSelect.innerHTML = "<option value=''>Seleccione una oferta</option>";
+
+                snapshot.forEach(doc => {
+                    const oferta = doc.data();
+                    const option = document.createElement("option");
+                    option.value = doc.id;
+                    option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
+                    ofertaSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("❌ Error al cargar ofertas:", error);
+                ofertaSelect.innerHTML = "<option value=''>Error al cargar ofertas</option>";
+            });
+        }
 
         // 🔹 Cargar datos de la oferta seleccionada
         function cargarDatosOferta() {
@@ -178,8 +159,6 @@ function cargarOfertas() {
                 doc.save("Oferta_GastroSat.pdf");
             });
         }
-
-        window.onload = cargarOfertas;
     </script>
 </body>
 </html>
