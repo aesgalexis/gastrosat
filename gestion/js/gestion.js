@@ -1,4 +1,5 @@
 function cargarVista(vista) {
+    console.log(`📂 Intentando cargar vista: ${vista}`);
     document.getElementById("contenido").innerHTML = "Cargando...";
     fetch(`views/${vista}.html`)
         .then(response => {
@@ -9,11 +10,14 @@ function cargarVista(vista) {
         })
         .then(html => {
             document.getElementById("contenido").innerHTML = html;
+            console.log(`✅ Vista ${vista} cargada correctamente.`);
 
-            // Cargar script correspondiente si es necesario
+            // Cargar script si es necesario
             if (vista === "clientes") {
+                console.log("📜 Cargando script clientes.js...");
                 cargarScript("js/clientes.js");
             } else if (vista === "cliente-form") {
+                console.log("📜 Cargando script cliente-form.js...");
                 cargarScript("js/cliente-form.js");
             }
         })
