@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Oferta - GastroSat</title>
+    <title>Crear / Editar Oferta - GastroSat</title>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
@@ -12,9 +12,8 @@
 
     <style>
         body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
-        #cliente-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         #conceptos-container { margin-top: 20px; }
-        .concepto { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+        .concepto { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         input, select, button { padding: 10px; margin: 5px; border-radius: 12px; border: 1px solid #ddd; }
         button { background-color: #007BFF; color: white; cursor: pointer; }
         button:hover { background-color: #0056b3; }
@@ -23,17 +22,12 @@
 </head>
 <body>
 
-    <h2>Crear Nueva Oferta</h2>
+    <h2 id="titulo">Crear Nueva Oferta</h2>
     <button onclick="window.history.back()">🔙 Volver</button>
 
     <form id="oferta-form">
-        <div id="cliente-container">
-            <label>Cliente:</label>
-            <select id="oferta-cliente" onchange="autocompletarCliente()"></select>
-
-            <label>Nombre:</label>
-            <input type="text" id="oferta-nombre" readonly>
-        </div>
+        <h3>Cliente</h3>
+        <p><strong>Cliente:</strong> <span id="oferta-nombre"></span></p>
 
         <h3>Conceptos</h3>
         <div id="conceptos-container"></div>
@@ -48,7 +42,7 @@
     </form>
 
     <script>
-        // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
+        // 🔹 Inicializar Firebase
         if (!firebase.apps.length) {
             const firebaseConfig = {
                 apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
@@ -62,48 +56,49 @@
             firebase.initializeApp(firebaseConfig);
         }
 
-        // 🔹 Inicializar Firestore y Auth
+        // 🔹 Firestore
         const db = firebase.firestore();
-        const auth = firebase.auth();
+        const urlParams = new URLSearchParams(window.location.search);
+        const ofertaId = urlParams.get("ofertaId"); // Detectar si hay una oferta a editar
+        let ofertaData = null;
 
-        // 🔹 Cargar clientes en el selector
-        function cargarClientes() {
-            const clienteSelect = document.getElementById("oferta-cliente");
-            clienteSelect.innerHTML = "<option value=''>Cargando clientes...</option>";
+        function cargarOferta() {
+            if (ofertaId) {
+                document.getElementById("titulo").textContent = "Editar Oferta"; // Cambia el título
 
-            db.collection("clientes").get()
-            .then(snapshot => {
-                clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
+                db.collection("ofertas").doc(ofertaId).get()
+                .then(doc => {
+                    if (!doc.exists) {
+                        alert("❌ La oferta no existe.");
+                        window.history.back();
+                        return;
+                    }
 
-                snapshot.forEach(doc => {
-                    const cliente = doc.data();
-                    const option = document.createElement("option");
-                    option.value = doc.id;
-                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
-                    clienteSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error("Error al cargar clientes:", error);
-                clienteSelect.innerHTML = "<option value=''>Error al cargar clientes</option>";
-            });
+                    ofertaData = doc.data();
+                    document.getElementById("oferta-nombre").textContent = ofertaData.nombre;
+
+                    // Cargar conceptos en la interfaz
+                    const container = document.getElementById("conceptos-container");
+                    container.innerHTML = "";
+                    ofertaData.conceptos.forEach(concepto => {
+                        const div = document.createElement("div");
+                        div.classList.add("concepto");
+                        div.innerHTML = `
+                            <input type="text" value="${concepto.nombre}" class="concepto-nombre" required>
+                            <input type="number" value="${concepto.cantidad}" min="1" class="concepto-cantidad" required oninput="actualizarTotal()">
+                            <input type="number" value="${concepto.precio}" step="0.01" class="concepto-precio" required oninput="actualizarTotal()">
+                            <button type="button" onclick="eliminarConcepto(this)">❌</button>
+                        `;
+                        container.appendChild(div);
+                    });
+
+                    actualizarTotal();
+                })
+                .catch(error => console.error("❌ Error al cargar la oferta:", error));
+            }
         }
 
-        // 🔹 Autocompletar datos del cliente seleccionado
-        function autocompletarCliente() {
-            const clienteId = document.getElementById("oferta-cliente").value;
-
-            if (!clienteId) return;
-
-            db.collection("clientes").doc(clienteId).get().then(doc => {
-                if (doc.exists) {
-                    const cliente = doc.data();
-                    document.getElementById("oferta-nombre").value = cliente.nombre;
-                }
-            });
-        }
-
-        // 🔹 Agregar un nuevo concepto
+        // 🔹 Agregar concepto
         function agregarConcepto() {
             const container = document.getElementById("conceptos-container");
             const div = document.createElement("div");
@@ -120,13 +115,7 @@
             actualizarTotal();
         }
 
-        // 🔹 Eliminar un concepto
-        function eliminarConcepto(button) {
-            button.parentElement.remove();
-            actualizarTotal();
-        }
-
-        // 🔹 Calcular subtotal y total
+        // 🔹 Calcular totales
         function actualizarTotal() {
             let subtotal = 0;
             document.querySelectorAll(".concepto").forEach(concepto => {
@@ -135,56 +124,33 @@
                 subtotal += cantidad * precio;
             });
 
-            const total = subtotal * 1.21; // Aplicar 21% de IVA
+            const total = subtotal * 1.21;
             document.getElementById("oferta-subtotal").textContent = subtotal.toFixed(2);
             document.getElementById("oferta-total").textContent = total.toFixed(2);
         }
 
-        // 🔹 Guardar Oferta
+        // 🔹 Guardar oferta (crear o actualizar)
         function guardarOferta() {
-            const clienteId = document.getElementById("oferta-cliente").value;
-            if (!clienteId) {
-                alert("Seleccione un cliente.");
-                return;
-            }
-
             const conceptos = [];
             document.querySelectorAll(".concepto").forEach(concepto => {
                 const nombre = concepto.querySelector(".concepto-nombre").value.trim();
                 const cantidad = parseFloat(concepto.querySelector(".concepto-cantidad").value) || 1;
                 const precio = parseFloat(concepto.querySelector(".concepto-precio").value) || 0;
-                if (nombre) {
-                    conceptos.push({ nombre, cantidad, precio });
-                }
+                if (nombre) conceptos.push({ nombre, cantidad, precio });
             });
-
-            if (conceptos.length === 0) {
-                alert("Debe agregar al menos un concepto.");
-                return;
-            }
 
             const subtotal = parseFloat(document.getElementById("oferta-subtotal").textContent);
             const total = parseFloat(document.getElementById("oferta-total").textContent);
 
-            const oferta = {
-                clienteId,
-                nombre: document.getElementById("oferta-nombre").value,
-                fecha: new Date().toISOString().split("T")[0],
-                conceptos,
-                subtotal,
-                total
-            };
-
-            db.collection("ofertas").add(oferta)
-            .then(() => {
-                alert("Oferta guardada correctamente.");
-                window.history.back();
-            })
-            .catch(error => alert("Error al guardar la oferta."));
+            if (ofertaId) {
+                db.collection("ofertas").doc(ofertaId).update({ conceptos, subtotal, total })
+                .then(() => alert("✅ Cambios guardados."));
+            }
         }
 
-        // 🔹 Cargar clientes al abrir la página
-        window.onload = cargarClientes;
+        // 🔹 Cargar oferta si hay un `ofertaId`
+        window.onload = cargarOferta;
     </script>
+
 </body>
 </html>
