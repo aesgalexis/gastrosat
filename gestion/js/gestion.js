@@ -5,13 +5,12 @@ function cargarVista(vista) {
         .then(html => {
             document.getElementById("contenido").innerHTML = html;
             if (vista === "ofertas") {
-                cargarOfertas();
-            } else if (vista === "clientes") {
-                cargarClientes();
+                const script = document.createElement("script");
+                script.src = "js/ofertas.js";
+                document.body.appendChild(script);
             }
         })
         .catch(error => console.error("Error al cargar la vista:", error));
 }
 
-// Cargar por defecto la vista de ofertas
 window.onload = () => cargarVista("ofertas");
