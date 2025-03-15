@@ -3,156 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>unatomo</title>
+    <title>Gestión - GastroSat</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+
+    <script>
+        // 🔹 Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
+            authDomain: "factu-f58ab.firebaseapp.com",
+            projectId: "factu-f58ab",
+            storageBucket: "factu-f58ab.firebasestorage.app",
+            messagingSenderId: "126560099435",
+            appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
+            measurementId: "G-MC2S07WMSL"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        // 🔹 Correo permitido
+        const emailPermitido = "aesg.alexis@gmail.com";
+
+        // 🔹 Inicializar FirebaseUI
+        function iniciarFirebaseUI() {
+            const ui = new firebaseui.auth.AuthUI(firebase.auth());
+            ui.start('#firebaseui-auth-container', {
+                signInOptions: [
+                    firebase.auth.GoogleAuthProvider.PROVIDER_ID
+                ],
+                signInFlow: "popup",
+                callbacks: {
+                    signInSuccessWithAuthResult: function(authResult) {
+                        const user = authResult.user;
+                        if (user.email === emailPermitido) {
+                            document.getElementById("contenido").style.display = "block";
+                            document.getElementById("login-container").style.display = "none";
+                        } else {
+                            alert("Acceso denegado.");
+                            firebase.auth().signOut();
+                        }
+                        return false;
+                    }
+                }
+            });
+        }
+
+        // 🔹 Detectar cambios en autenticación
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                if (user.email === emailPermitido) {
+                    document.getElementById("contenido").style.display = "block";
+                    document.getElementById("login-container").style.display = "none";
+                } else {
+                    firebase.auth().signOut();
+                    document.getElementById("contenido").style.display = "none";
+                    document.getElementById("login-container").style.display = "block";
+                    iniciarFirebaseUI();
+                }
+            } else {
+                document.getElementById("contenido").style.display = "none";
+                document.getElementById("login-container").style.display = "block";
+                iniciarFirebaseUI();
+            }
+        });
+
+        // 🔹 Cerrar Sesión
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                document.getElementById("contenido").style.display = "none";
+                document.getElementById("login-container").style.display = "block";
+                iniciarFirebaseUI();
+            });
+        }
+    </script>
+
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            text-align: center;
-            position: relative;
-        }
-        .post-container {
-            width: 800px;
-            height: 600px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 20px;
-            position: absolute;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .active {
-            display: flex;
-        }
-        .post-upper {
-            color: blue;
-        }
-        .post-lower {
-            color: green;
-        }
-        .arrow {
-            font-size: 32px;
-            cursor: pointer;
-            position: fixed;
-            color: #333;
-        }
-        .arrow-left { left: 20px; top: 50%; transform: translateY(-50%); }
-        .arrow-right { right: 20px; top: 50%; transform: translateY(-50%); }
-        .arrow-up { top: 20px; left: 50%; transform: translateX(-50%); }
-        .arrow-down { bottom: 20px; left: 50%; transform: translateX(-50%); }
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px; text-align: center; }
+        button { width: 90%; padding: 10px; margin: 10px; font-size: 16px; cursor: pointer; }
+        .menu-container { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div id="post-1" class="post-container active">
-        <h2>Primer post</h2>
-        <p>Contenido del primer post.</p>
-        <div class="arrow arrow-right" onclick="nextPost()">➡️</div>
-    </div>
-    
-    <div id="post-1-upper" class="post-container post-upper">
-        <h2>Nivel superior del primer post</h2>
-        <p>Contenido superior del primer post.</p>
-    </div>
-    
-    <div id="post-1-lower" class="post-container post-lower">
-        <h2>Nivel inferior del primer post</h2>
-        <p>Contenido inferior del primer post.</p>
+
+    <!-- 🔹 Contenedor de inicio de sesión -->
+    <div id="login-container">
+        <h2>Iniciar Sesión</h2>
+        <div id="firebaseui-auth-container"></div>
     </div>
 
-    <div id="post-2" class="post-container">
-        <h2>Segundo post</h2>
-        <p>Contenido del segundo post.</p>
-        <div class="arrow arrow-left" onclick="prevPost()">⬅️</div>
-        <div class="arrow arrow-right" onclick="nextPost()">➡️</div>
-    </div>
-    
-    <div id="post-2-upper" class="post-container post-upper">
-        <h2>Nivel superior del segundo post</h2>
-        <p>Contenido superior del segundo post.</p>
-    </div>
-    
-    <div id="post-2-lower" class="post-container post-lower">
-        <h2>Nivel inferior del segundo post</h2>
-        <p>Contenido inferior del segundo post.</p>
+    <!-- 🔹 Contenido privado (visible solo tras iniciar sesión) -->
+    <div id="contenido">
+        <h2>Gestión - GastroSat</h2>
+        <button onclick="logout()">Cerrar sesión</button>
+
+        <h3>Menú de Gestión</h3>
+        <div class="menu-container">
+            <button onclick="window.location.href='clientes/'">📂 CLIENTES</button>
+            <button onclick="window.location.href='ofertas/'">📄 OFERTAS</button>
+            <button onclick="window.location.href='albaranes/'">📦 ALBARANES</button>
+            <button onclick="window.location.href='proformas/'">💰 PROFORMAS</button>
+            <button onclick="window.location.href='facturas/'">🧾 FACTURAS</button>
+        </div>
     </div>
 
-    <div id="post-3" class="post-container">
-        <h2>Tercer post</h2>
-        <p>Contenido del tercer post.</p>
-        <div class="arrow arrow-left" onclick="prevPost()">⬅️</div>
-    </div>
-
-    <div id="post-3-upper" class="post-container post-upper">
-        <h2>Nivel superior del tercer post</h2>
-        <p>Contenido superior del tercer post.</p>
-    </div>
-    
-    <div id="post-3-lower" class="post-container post-lower">
-        <h2>Nivel inferior del tercer post</h2>
-        <p>Contenido inferior del tercer post.</p>
-    </div>
-
-    <div class="arrow arrow-up" onclick="navigateUp()">⬆️</div>
-    <div class="arrow arrow-down" onclick="navigateDown()">⬇️</div>
-
-    <script>
-        let postIndex = 1;
-        let totalPosts = 3;
-        let currentView = "main"; // Puede ser 'main', 'upper' o 'lower'
-
-        function showPost(index) {
-            hideAllPosts();
-            document.getElementById(`post-${index}`).classList.add("active");
-            postIndex = index;
-            currentView = "main";
-        }
-
-        function hideAllPosts() {
-            document.querySelectorAll(".post-container").forEach(post => post.classList.remove("active"));
-        }
-
-        function nextPost() {
-            if (postIndex < totalPosts) {
-                showPost(postIndex + 1);
-            }
-        }
-
-        function prevPost() {
-            if (postIndex > 1) {
-                showPost(postIndex - 1);
-            }
-        }
-
-        function navigateUp() {
-            if (currentView === "main") {
-                hideAllPosts();
-                document.getElementById(`post-${postIndex}-upper`).classList.add("active");
-                currentView = "upper";
-            } else if (currentView === "lower") {
-                showPost(postIndex);
-            }
-        }
-
-        function navigateDown() {
-            if (currentView === "main") {
-                hideAllPosts();
-                document.getElementById(`post-${postIndex}-lower`).classList.add("active");
-                currentView = "lower";
-            } else if (currentView === "upper") {
-                showPost(postIndex);
-            }
-        }
-    </script>
 </body>
 </html>
