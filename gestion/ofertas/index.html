@@ -68,26 +68,30 @@
 
         // 🔹 Autocompletar datos del cliente seleccionado
         function autocompletarCliente() {
-            const clienteId = document.getElementById("oferta-cliente").value;
+    const clienteId = document.getElementById("oferta-cliente").value;
 
-            if (!clienteId) {
-                document.getElementById("oferta-nombre").value = "";
-                document.getElementById("oferta-nombre-fiscal").value = "";
-                document.getElementById("oferta-direccion").value = "";
-                document.getElementById("oferta-cif").value = "";
-                return;
-            }
+    if (!clienteId) {
+        document.getElementById("oferta-nombre").value = "";
+        document.getElementById("oferta-nombre-fiscal").value = "";
+        document.getElementById("oferta-direccion").value = "";
+        document.getElementById("oferta-cif").value = "";
+        return;
+    }
 
-            db.collection("clientes").doc(clienteId).get().then(doc => {
-                if (doc.exists) {
-                    const cliente = doc.data();
-                    document.getElementById("oferta-nombre").value = cliente.nombre;
-                    document.getElementById("oferta-nombre-fiscal").value = cliente.nombreFiscal;
-                    document.getElementById("oferta-direccion").value = cliente.direccion;
-                    document.getElementById("oferta-cif").value = cliente.cif;
-                }
-            });
+    db.collection("clientes").doc(clienteId).get()
+    .then(doc => {
+        if (doc.exists) {
+            const cliente = doc.data();
+            document.getElementById("oferta-nombre").value = cliente.nombre || "";
+            document.getElementById("oferta-nombre-fiscal").value = cliente.nombreFiscal || "";
+            document.getElementById("oferta-direccion").value = cliente.direccion || "";
+            document.getElementById("oferta-cif").value = cliente.cif || "";
         }
+    })
+    .catch(error => {
+        console.error("Error al autocompletar cliente:", error);
+    });
+}
 
         // 🔹 Guardar Oferta en Firestore
         function guardarOferta() {
