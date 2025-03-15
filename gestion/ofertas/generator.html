@@ -71,6 +71,16 @@
     <button onclick="generarPDF()">📄 Descargar PDF</button>
 
     <script>
+        // 🔹 Esperar a que el usuario esté autenticado antes de cargar las ofertas
+auth.onAuthStateChanged(user => {
+    if (user) {
+        console.log("✅ Usuario autenticado:", user.email);
+        cargarOfertas(); // Ahora sí cargamos las ofertas
+    } else {
+        console.error("❌ Usuario no autenticado, redirigiendo a inicio.");
+        window.location.href = "../"; // Redirige si no hay usuario autenticado
+    }
+});
         // 🔹 Inicializar Firebase si no está inicializado
         if (!firebase.apps.length) {
             const firebaseConfig = {
