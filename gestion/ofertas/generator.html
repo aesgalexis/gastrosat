@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- jsPDF para generar PDF -->
+    <!-- jsPDF y jsPDF-AutoTable para generación de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
@@ -96,29 +96,44 @@
         // 🔹 Generar y descargar PDF
         function generarPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const doc = new jsPDF({ format: "a4" });
 
-            doc.setFontSize(16);
-            doc.text("Oferta - GastroSat", 20, 20);
+            // 🔹 Logo de la empresa
+            const img = new Image();
+            img.src = "../logo5.svg"; // Ruta del logo
 
-            doc.setFontSize(12);
-            doc.text(`ID: ${document.getElementById("oferta-id").textContent}`, 20, 30);
-            doc.text(`Cliente: ${document.getElementById("oferta-nombre").textContent}`, 20, 40);
-            doc.text(`Nombre Fiscal: ${document.getElementById("oferta-nombre-fiscal").textContent}`, 20, 50);
-            doc.text(`Dirección: ${document.getElementById("oferta-direccion").textContent}`, 20, 60);
-            doc.text(`CIF: ${document.getElementById("oferta-cif").textContent}`, 20, 70);
-            doc.text(`Fecha: ${document.getElementById("oferta-fecha").textContent}`, 20, 80);
-            doc.text(`Estado: ${document.getElementById("oferta-estado").textContent}`, 20, 90);
-            
-            // 🔹 Descripción en varias líneas
-            const descripcion = document.getElementById("oferta-descripcion").textContent;
-            const splitDescripcion = doc.splitTextToSize(descripcion, 160);
-            doc.text("Descripción:", 20, 100);
-            doc.text(splitDescripcion, 20, 110);
+            img.onload = function () {
+                doc.addImage(img, "SVG", 20, 15, 50, 20);
 
-            doc.text(`Importe Total: ${document.getElementById("oferta-importe").textContent} €`, 20, 150);
+                // 🔹 Datos de la empresa (4 líneas reservadas)
+                doc.setFontSize(12);
+                doc.text("Empresa: GastroSat", 20, 45);
+                doc.text("Dirección: ---------------", 20, 55);
+                doc.text("Teléfono: ---------------", 20, 65);
+                doc.text("Email: ---------------", 20, 75);
 
-            doc.save(`Oferta_${document.getElementById("oferta-id").textContent}.pdf`);
+                // 🔹 Datos del cliente (alineados a la derecha)
+                doc.text("Cliente: " + document.getElementById("oferta-nombre").textContent, 120, 45);
+                doc.text("Fiscal: " + document.getElementById("oferta-nombre-fiscal").textContent, 120, 55);
+                doc.text("Dirección: " + document.getElementById("oferta-direccion").textContent, 120, 65);
+                doc.text("CIF: " + document.getElementById("oferta-cif").textContent, 120, 75);
+
+                // 🔹 Línea separadora
+                doc.line(20, 85, 190, 85);
+
+                // 🔹 Descripción de la oferta
+                doc.setFontSize(14);
+                doc.text("Descripción de la Oferta:", 20, 95);
+                doc.setFontSize(12);
+                const desc = doc.splitTextToSize(document.getElementById("oferta-descripcion").textContent, 160);
+                doc.text(desc, 20, 105);
+
+                // 🔹 Segunda línea separadora
+                doc.line(20, 140, 190, 140);
+
+                // 🔹 Guardar el PDF
+                doc.save(`Oferta_${document.getElementById("oferta-id").textContent}.pdf`);
+            };
         }
 
         // 🔹 Cargar oferta al abrir la página
