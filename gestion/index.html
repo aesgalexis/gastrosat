@@ -18,23 +18,34 @@
 
     <!-- 🚀 Cargar `clientes.js` solo cuando todo esté listo -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("🔥 DOM completamente cargado, ahora cargamos `clientes.js`");
+    function cargarVista(vista) {
+        console.log(`📂 Intentando cargar vista: ${vista}`);
+        fetch(`views/${vista}.html`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById("contenido").innerHTML = html;
+                console.log(`✅ Vista ${vista} cargada correctamente.`);
 
-            let script = document.createElement("script");
-            script.src = "js/clientes.js";
-            script.onload = function() {
-                console.log("✅ `clientes.js` cargado correctamente.");
-                if (typeof cargarClientes === "function") {
-                    console.log("🚀 Ejecutando `cargarClientes()`...");
-                    cargarClientes();
-                } else {
-                    console.error("❌ `cargarClientes` no está definido después de cargar `clientes.js`.");
+                // 🔹 Cargar script específico solo después de cargar la vista
+                if (vista === "clientes") {
+                    let script = document.createElement("script");
+                    script.src = "js/clientes.js";
+                    script.onload = function() {
+                        console.log("✅ `clientes.js` cargado correctamente.");
+                        if (typeof cargarClientes === "function") {
+                            console.log("🚀 Ejecutando `cargarClientes()`...");
+                            cargarClientes();
+                        } else {
+                            console.error("❌ `cargarClientes` no está definido después de cargar `clientes.js`.");
+                        }
+                    };
+                    document.body.appendChild(script);
                 }
-            };
-            document.body.appendChild(script);
-        });
-    </script>
+            })
+            .catch(error => console.error(`❌ Error al cargar la vista: ${error}`));
+    }
+</script>
+
 </head>
 <body>
     <h1>Gestión GastroSat</h1>
