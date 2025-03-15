@@ -21,7 +21,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // Usuario autorizado
-const usuarioAutorizado = "tucorreo@gmail.com";
+const usuarioAutorizado = "aesg.alexis@gmail.com";
 
 // Función para verificar autenticación
 function verificarAutenticacion() {
