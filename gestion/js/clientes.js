@@ -20,11 +20,13 @@ function cargarClientes() {
         }
 
         tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevos clientes
+        let contenidoTabla = "";
+
         snapshot.forEach(doc => {
             const cliente = doc.data();
             console.log("📄 Insertando en la tabla:", cliente);
 
-            const fila = `
+            contenidoTabla += `
                 <tr>
                     <td>${cliente.nombre || "-"}</td>
                     <td>${cliente.cif || "-"}</td>
@@ -36,15 +38,16 @@ function cargarClientes() {
                     </td>
                 </tr>
             `;
-            tabla.innerHTML += fila;
         });
+
+        console.log("📊 Contenido generado para la tabla:", contenidoTabla);
+        tabla.innerHTML = contenidoTabla; // Finalmente, actualizar la tabla en una sola operación
     })
     .catch(error => console.error("❌ Error al cargar clientes:", error));
 }
 
-// 🔹 Llamar a `cargarClientes()` cuando se carga la vista
-window.onload = () => {
-    console.log("🚀 Vista de clientes cargada, inicializando Firebase...");
-    console.log("🔎 Verificando `db`:", db);
+// 🔹 Asegurar que `cargarClientes()` se ejecuta cuando el DOM esté listo
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("🚀 Vista de clientes completamente cargada.");
     cargarClientes();
-};
+});
