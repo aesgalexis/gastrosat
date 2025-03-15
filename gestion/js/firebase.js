@@ -1,6 +1,3 @@
-// ✅ Asegurar que Firebase se carga como módulo
-export const firebaseModule = true;
-
 // ✅ Importar Firebase con ES Modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { 
