@@ -88,28 +88,52 @@
         // 🔹 Inicializar Firestore
         const db = firebase.firestore();
 
-        // 🔹 Cargar ofertas disponibles
-        function cargarOfertas() {
-            const ofertaSelect = document.getElementById("oferta-select");
-            ofertaSelect.innerHTML = "<option value=''>Cargando ofertas...</option>";
+        // 🔹 Esperar a que Firebase esté listo antes de acceder a Firestore
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("🚀 Página cargada, inicializando Firebase...");
+    if (!firebase.apps.length) {
+        console.error("❌ Firebase no está inicializado.");
+        return;
+    }
+    
+    console.log("✅ Firebase inicializado, cargando ofertas...");
+    cargarOfertas();
+});
 
-            db.collection("ofertas").orderBy("fecha", "desc").get()
-            .then(snapshot => {
-                ofertaSelect.innerHTML = "<option value=''>Seleccione una oferta</option>";
+// 🔹 Cargar ofertas desde Firestore
+function cargarOfertas() {
+    const ofertaSelect = document.getElementById("oferta-select");
+    if (!ofertaSelect) {
+        console.error("❌ No se encontró el elemento oferta-select en el DOM.");
+        return;
+    }
 
-                snapshot.forEach(doc => {
-                    const oferta = doc.data();
-                    const option = document.createElement("option");
-                    option.value = doc.id;
-                    option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
-                    ofertaSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error("Error al cargar ofertas:", error);
-                ofertaSelect.innerHTML = "<option value=''>Error al cargar ofertas</option>";
-            });
+    ofertaSelect.innerHTML = "<option value=''>Cargando ofertas...</option>";
+
+    db.collection("ofertas").orderBy("fecha", "desc").get()
+    .then(snapshot => {
+        if (snapshot.empty) {
+            console.warn("⚠️ No hay ofertas en Firestore.");
+            ofertaSelect.innerHTML = "<option value=''>No hay ofertas disponibles</option>";
+            return;
         }
+
+        ofertaSelect.innerHTML = "<option value=''>Seleccione una oferta</option>";
+
+        snapshot.forEach(doc => {
+            const oferta = doc.data();
+            console.log("✅ Oferta cargada:", oferta);
+            const option = document.createElement("option");
+            option.value = doc.id;
+            option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
+            ofertaSelect.appendChild(option);
+        });
+    })
+    .catch(error => {
+        console.error("❌ Error al cargar ofertas:", error);
+        ofertaSelect.innerHTML = "<option value=''>Error al cargar ofertas</option>";
+    });
+}
 
         // 🔹 Cargar datos de la oferta seleccionada
         function cargarDatosOferta() {
