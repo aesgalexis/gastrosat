@@ -44,14 +44,17 @@
     </style>
 </head>
     <script type="module">
-    import { verificarAutenticacion } from "./js/firebase.js";
+    import { verificarAutenticacion, logout } from "./js/firebase.js";
 
-    // ✅ Verificar autenticación al cargar la página
     document.addEventListener("DOMContentLoaded", () => {
-        console.log("🔄 Verificando autenticación...");
+        console.log("🔄 Verificando autenticación en index.html...");
         verificarAutenticacion();
     });
+
+    // Hacer que el botón de logout funcione correctamente
+    window.logout = logout;
 </script>
+
 
 <body>
 
