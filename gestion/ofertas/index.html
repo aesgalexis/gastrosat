@@ -133,6 +133,58 @@
                 alert("Error al guardar la oferta.");
             });
         }
+        let ofertaGuardada = false; // 🔹 Controla si hay una oferta guardada
+
+function guardarOferta() {
+    const clienteId = document.getElementById("oferta-cliente").value;
+    const nombre = document.getElementById("oferta-nombre").value;
+    const nombreFiscal = document.getElementById("oferta-nombre-fiscal").value;
+    const direccion = document.getElementById("oferta-direccion").value;
+    const cif = document.getElementById("oferta-cif").value;
+    const descripcion = document.getElementById("oferta-descripcion").value;
+    const importe = document.getElementById("oferta-importe").value;
+    const estado = document.getElementById("oferta-estado").value;
+
+    if (!clienteId || !descripcion || !importe) {
+        alert("❌ Debes completar los campos obligatorios antes de guardar la oferta.");
+        return;
+    }
+
+    const fecha = new Date().toISOString().split("T")[0];
+    const ofertaId = `OF-${fecha.replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    db.collection("ofertas").doc(ofertaId).set({
+        ofertaId: ofertaId,
+        clienteId: clienteId,
+        nombre: nombre,
+        nombreFiscal: nombreFiscal,
+        direccion: direccion,
+        cif: cif,
+        fecha: fecha,
+        descripcion: descripcion,
+        importe: parseFloat(importe),
+        estado: estado
+    })
+    .then(() => {
+        alert("✅ Oferta guardada correctamente.");
+        ofertaGuardada = true; // ✅ Se marca como guardada
+        document.getElementById("oferta-form").reset();
+    })
+    .catch(error => {
+        console.error("Error al guardar la oferta:", error);
+        alert("❌ Error al guardar la oferta.");
+    });
+}
+
+// 🔹 Verifica si la oferta ha sido guardada antes de ir a generator.html
+function verificarYGenerarPDF() {
+    if (!ofertaGuardada) {
+        alert("❌ Debes guardar una oferta antes de generar el PDF.");
+    } else {
+        window.location.href = "generator.html";
+    }
+}
+
     </script>
 
     <style>
@@ -185,7 +237,7 @@
         </select>
 
         <button type="button" onclick="guardarOferta()">Guardar Oferta</button>
-        <button type="button" onclick="window.location.href='generator.html'">📄 Generar PDF</button>
+        <button type="button" onclick="verificarYGenerarPDF()">📄 Generar PDF</button>
 
     </form>
 
