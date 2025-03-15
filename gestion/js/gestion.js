@@ -1,37 +1,23 @@
 function cargarVista(vista) {
     console.log(`📂 Intentando cargar vista: ${vista}`);
-    document.getElementById("contenido").innerHTML = "Cargando...";
+
     fetch(`views/${vista}.html`)
         .then(response => {
-            if (!response.ok) {
-                throw new Error(`No se encontró la vista: ${vista}`);
-            }
+            if (!response.ok) throw new Error("❌ No se pudo cargar la vista.");
             return response.text();
         })
         .then(html => {
             document.getElementById("contenido").innerHTML = html;
             console.log(`✅ Vista ${vista} cargada correctamente.`);
 
-            // Cargar script si es necesario
-            if (vista === "clientes") {
-                console.log("📜 Cargando script clientes.js...");
-                cargarScript("js/clientes.js");
-            } else if (vista === "cliente-form") {
-                console.log("📜 Cargando script cliente-form.js...");
-                cargarScript("js/cliente-form.js");
-            }
+            // Eliminar cualquier script previo antes de cargar nuevos
+            document.getElementById("scripts").innerHTML = "";
+
+            // Cargar script de la vista correspondiente
+            const script = document.createElement("script");
+            script.src = `js/${vista}.js`;
+            script.onload = () => console.log(`📜 Script ${vista}.js cargado.`);
+            document.getElementById("scripts").appendChild(script);
         })
-        .catch(error => console.error("❌ Error al cargar vista:", error));
+        .catch(error => console.error("❌ Error al cargar la vista:", error));
 }
-
-// Función para cargar scripts dinámicamente
-function cargarScript(scriptSrc) {
-    console.log(`📜 Cargando script: ${scriptSrc}`);
-    const script = document.createElement("script");
-    script.src = scriptSrc;
-    script.defer = true;
-    document.body.appendChild(script);
-}
-
-// Cargar la vista por defecto al abrir la página
-window.onload = () => cargarVista("clientes");
