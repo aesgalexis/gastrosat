@@ -12,29 +12,37 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- Firebase y lógica -->
+    <!-- Firebase y lógica de gestión -->
     <script src="js/firebase.js"></script>
-    <script src="js/clientes.js"></script>
+    <script src="js/gestion.js"></script>
+
+    <!-- 🚀 Cargar `clientes.js` solo cuando todo esté listo -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("🔥 DOM completamente cargado, ahora cargamos `clientes.js`");
+
+            let script = document.createElement("script");
+            script.src = "js/clientes.js";
+            script.onload = function() {
+                console.log("✅ `clientes.js` cargado correctamente.");
+                if (typeof cargarClientes === "function") {
+                    console.log("🚀 Ejecutando `cargarClientes()`...");
+                    cargarClientes();
+                } else {
+                    console.error("❌ `cargarClientes` no está definido después de cargar `clientes.js`.");
+                }
+            };
+            document.body.appendChild(script);
+        });
+    </script>
 </head>
 <body>
     <h1>Gestión GastroSat</h1>
-    
-    <h2>Gestión de Clientes</h2>
-    <button onclick="agregarCliente()">➕ Agregar Cliente</button>
+    <nav>
+        <button onclick="cargarVista('ofertas')">📄 Ofertas</button>
+        <button onclick="cargarVista('clientes')">👥 Clientes</button>
+    </nav>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>CIF</th>
-                <th>Teléfono</th>
-                <th>Email</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-clientes">
-            <tr><td colspan="5">Cargando clientes...</td></tr>
-        </tbody>
-    </table>
+    <div id="contenido">Cargando...</div>
 </body>
 </html>
