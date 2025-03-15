@@ -11,56 +11,38 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
     <style>
-        body { font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; text-align: center; }
-        input, select, textarea, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 12px; border: 1px solid #ddd; }
-        button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; text-align: center; }
+        button { background-color: #007BFF; color: white; padding: 10px; border: none; border-radius: 12px; cursor: pointer; margin: 10px 0; }
         button:hover { background-color: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: #f4f4f4; }
+        .btn-small { padding: 5px; font-size: 14px; }
+        .delete-btn { background-color: red; }
+        .delete-btn:hover { background-color: darkred; }
     </style>
 </head>
 <body>
 
     <h2>Gestión de Ofertas</h2>
     <button onclick="window.location.href='../'">🔙 Volver</button>
+    <button onclick="window.location.href='crear.html'">➕ Crear Oferta</button>
 
-    <h3>Seleccionar Oferta para Editar</h3>
-    <select id="oferta-select" onchange="cargarOfertaSeleccionada()">
-        <option value="">Nueva Oferta</option>
-    </select>
-
-    <button onclick="nuevaOferta()">➕ Nueva Oferta</button>
-
-    <h3>Crear / Editar Oferta</h3>
-    <form id="oferta-form">
-        <label>Cliente:</label>
-        <select id="oferta-cliente" onchange="autocompletarCliente()"></select>
-
-        <label>Nombre:</label>
-        <input type="text" id="oferta-nombre" readonly>
-
-        <label>Nombre Fiscal:</label>
-        <input type="text" id="oferta-nombre-fiscal" readonly>
-
-        <label>Dirección:</label>
-        <input type="text" id="oferta-direccion" readonly>
-
-        <label>CIF:</label>
-        <input type="text" id="oferta-cif" readonly>
-
-        <label>Descripción de la Oferta:</label>
-        <textarea id="oferta-descripcion" rows="3"></textarea>
-
-        <label>Importe Total (€):</label>
-        <input type="number" id="oferta-importe" step="0.01">
-
-        <label>Estado:</label>
-        <select id="oferta-estado">
-            <option value="Pendiente">Pendiente</option>
-            <option value="Aceptada">Aceptada</option>
-            <option value="Rechazada">Rechazada</option>
-        </select>
-
-        <button type="button" onclick="guardarOferta()">💾 Guardar Oferta</button>
-    </form>
+    <h3>Ofertas Existentes</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Importe</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-ofertas">
+            <tr><td colspan="5">Cargando ofertas...</td></tr>
+        </tbody>
+    </table>
 
     <script>
         // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
@@ -80,121 +62,72 @@
         // 🔹 Inicializar Firestore y Auth
         const db = firebase.firestore();
         const auth = firebase.auth();
-        let ofertaEnEdicion = null; // Guardará la oferta que se está editando
 
         // 🔹 Esperar autenticación antes de cargar datos
         auth.onAuthStateChanged(user => {
             if (user) {
                 console.log("✅ Usuario autenticado:", user.email);
-                cargarClientes();  // Ahora sí podemos cargar clientes
-                cargarOfertas();   // Ahora sí podemos cargar ofertas
+                cargarOfertas();
             } else {
                 console.error("❌ Usuario no autenticado, redirigiendo...");
-                window.location.href = "../";  // Redirigir si no está autenticado
+                window.location.href = "../"; 
             }
         });
 
-        // 🔹 Cargar clientes en el selector
-        function cargarClientes() {
-            const clienteSelect = document.getElementById("oferta-cliente");
-            db.collection("clientes").get().then(snapshot => {
-                snapshot.forEach(doc => {
-                    const cliente = doc.data();
-                    const option = document.createElement("option");
-                    option.value = doc.id;
-                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
-                    clienteSelect.appendChild(option);
-                });
-            }).catch(error => {
-                console.error("❌ Error al cargar clientes:", error);
-            });
-        }
-
-        // 🔹 Cargar ofertas en el selector
+        // 🔹 Cargar ofertas en la tabla
         function cargarOfertas() {
-            const ofertaSelect = document.getElementById("oferta-select");
-            ofertaSelect.innerHTML = "<option value=''>Nueva Oferta</option>";
+            const tabla = document.getElementById("tabla-ofertas");
+            tabla.innerHTML = "<tr><td colspan='5'>Cargando ofertas...</td></tr>";
 
             db.collection("ofertas").orderBy("fecha", "desc").get()
             .then(snapshot => {
+                if (snapshot.empty) {
+                    tabla.innerHTML = "<tr><td colspan='5'>No hay ofertas registradas</td></tr>";
+                    return;
+                }
+
+                tabla.innerHTML = "";
                 snapshot.forEach(doc => {
                     const oferta = doc.data();
-                    const option = document.createElement("option");
-                    option.value = doc.id;
-                    option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
-                    ofertaSelect.appendChild(option);
+                    const fila = `
+                        <tr>
+                            <td>${oferta.ofertaId}</td>
+                            <td>${oferta.nombre}</td>
+                            <td>${oferta.importe} €</td>
+                            <td>${oferta.estado}</td>
+                            <td>
+                                <button class="btn-small" onclick="editarOferta('${doc.id}')">✏️ Editar</button>
+                                <button class="btn-small" onclick="generarPDF('${doc.id}')">📄 PDF</button>
+                                <button class="btn-small delete-btn" onclick="eliminarOferta('${doc.id}')">🗑️ Eliminar</button>
+                            </td>
+                        </tr>
+                    `;
+                    tabla.innerHTML += fila;
                 });
-            }).catch(error => {
-                console.error("❌ Error al cargar ofertas:", error);
-            });
+            })
+            .catch(error => console.error("❌ Error al cargar ofertas:", error));
         }
 
-        // 🔹 Autocompletar datos del cliente seleccionado
-        function autocompletarCliente() {
-            const clienteId = document.getElementById("oferta-cliente").value;
-            if (!clienteId) return;
-
-            db.collection("clientes").doc(clienteId).get().then(doc => {
-                if (doc.exists) {
-                    const cliente = doc.data();
-                    document.getElementById("oferta-nombre").value = cliente.nombre;
-                    document.getElementById("oferta-nombre-fiscal").value = cliente.nombreFiscal;
-                    document.getElementById("oferta-direccion").value = cliente.direccion;
-                    document.getElementById("oferta-cif").value = cliente.cif;
-                }
-            });
+        // 🔹 Redirigir a la edición de una oferta
+        function editarOferta(ofertaId) {
+            window.location.href = `editar.html?ofertaId=${ofertaId}`;
         }
 
-        // 🔹 Cargar oferta seleccionada para edición
-        function cargarOfertaSeleccionada() {
-            const ofertaId = document.getElementById("oferta-select").value;
-            if (!ofertaId) {
-                nuevaOferta(); // Si se elige "Nueva Oferta", limpiar el formulario
-                return;
-            }
-
-            db.collection("ofertas").doc(ofertaId).get().then(doc => {
-                if (doc.exists) {
-                    const oferta = doc.data();
-                    ofertaEnEdicion = ofertaId;
-
-                    document.getElementById("oferta-cliente").value = oferta.clienteId;
-                    autocompletarCliente(); // Llenar los datos del cliente automáticamente
-                    document.getElementById("oferta-descripcion").value = oferta.descripcion;
-                    document.getElementById("oferta-importe").value = oferta.importe;
-                    document.getElementById("oferta-estado").value = oferta.estado;
-                }
-            });
+        // 🔹 Redirigir a la generación de PDF
+        function generarPDF(ofertaId) {
+            window.location.href = `generator.html?ofertaId=${ofertaId}`;
         }
 
-        // 🔹 Crear o actualizar oferta en Firestore
-        function guardarOferta() {
-            const clienteId = document.getElementById("oferta-cliente").value;
-            const descripcion = document.getElementById("oferta-descripcion").value;
-            const importe = document.getElementById("oferta-importe").value;
-            const estado = document.getElementById("oferta-estado").value;
+        // 🔹 Eliminar una oferta
+        function eliminarOferta(ofertaId) {
+            if (!confirm("¿Estás seguro de que deseas eliminar esta oferta?")) return;
 
-            if (!clienteId || !descripcion || !importe) {
-                alert("❌ Completa todos los campos obligatorios.");
-                return;
-            }
-
-            const datosOferta = { clienteId, descripcion, importe: parseFloat(importe), estado, fecha: new Date().toISOString().split("T")[0] };
-
-            if (ofertaEnEdicion) {
-                db.collection("ofertas").doc(ofertaEnEdicion).update(datosOferta)
-                .then(() => alert("✅ Oferta actualizada correctamente."));
-            } else {
-                datosOferta.ofertaId = `OF-${Date.now()}`;
-                db.collection("ofertas").doc(datosOferta.ofertaId).set(datosOferta)
-                .then(() => alert("✅ Oferta creada correctamente."));
-            }
-        }
-
-        // 🔹 Resetear formulario para nueva oferta
-        function nuevaOferta() {
-            ofertaEnEdicion = null;
-            document.getElementById("oferta-form").reset();
+            db.collection("ofertas").doc(ofertaId).delete()
+            .then(() => {
+                alert("✅ Oferta eliminada correctamente.");
+                cargarOfertas(); // Recargar la lista
+            })
+            .catch(error => console.error("❌ Error al eliminar oferta:", error));
         }
     </script>
 </body>
