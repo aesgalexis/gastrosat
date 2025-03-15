@@ -15,6 +15,7 @@
         input, select, textarea, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 12px; border: 1px solid #ddd; }
         button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
         button:hover { background-color: #0056b3; }
+        #generar-pdf { display: none; } /* 🔹 Oculto hasta que se seleccione o cree una oferta */
     </style>
 </head>
 <body>
@@ -62,6 +63,9 @@
         <button type="button" onclick="guardarOferta()">💾 Guardar Oferta</button>
     </form>
 
+    <!-- 🔹 Botón para generar PDF -->
+    <button id="generar-pdf" onclick="generarPDF()">📄 Generar PDF</button>
+
     <script>
         // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
         if (!firebase.apps.length) {
@@ -86,11 +90,11 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 console.log("✅ Usuario autenticado:", user.email);
-                cargarClientes();  // Ahora sí podemos cargar clientes
-                cargarOfertas();   // Ahora sí podemos cargar ofertas
+                cargarClientes();
+                cargarOfertas();
             } else {
                 console.error("❌ Usuario no autenticado, redirigiendo...");
-                window.location.href = "../";  // Redirigir si no está autenticado
+                window.location.href = "../"; 
             }
         });
 
@@ -105,9 +109,7 @@
                     option.textContent = `${cliente.nombre} (${cliente.cif})`;
                     clienteSelect.appendChild(option);
                 });
-            }).catch(error => {
-                console.error("❌ Error al cargar clientes:", error);
-            });
+            }).catch(error => console.error("❌ Error al cargar clientes:", error));
         }
 
         // 🔹 Cargar ofertas en el selector
@@ -124,32 +126,14 @@
                     option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
                     ofertaSelect.appendChild(option);
                 });
-            }).catch(error => {
-                console.error("❌ Error al cargar ofertas:", error);
-            });
-        }
-
-        // 🔹 Autocompletar datos del cliente seleccionado
-        function autocompletarCliente() {
-            const clienteId = document.getElementById("oferta-cliente").value;
-            if (!clienteId) return;
-
-            db.collection("clientes").doc(clienteId).get().then(doc => {
-                if (doc.exists) {
-                    const cliente = doc.data();
-                    document.getElementById("oferta-nombre").value = cliente.nombre;
-                    document.getElementById("oferta-nombre-fiscal").value = cliente.nombreFiscal;
-                    document.getElementById("oferta-direccion").value = cliente.direccion;
-                    document.getElementById("oferta-cif").value = cliente.cif;
-                }
-            });
+            }).catch(error => console.error("❌ Error al cargar ofertas:", error));
         }
 
         // 🔹 Cargar oferta seleccionada para edición
         function cargarOfertaSeleccionada() {
             const ofertaId = document.getElementById("oferta-select").value;
             if (!ofertaId) {
-                nuevaOferta(); // Si se elige "Nueva Oferta", limpiar el formulario
+                nuevaOferta(); 
                 return;
             }
 
@@ -159,10 +143,12 @@
                     ofertaEnEdicion = ofertaId;
 
                     document.getElementById("oferta-cliente").value = oferta.clienteId;
-                    autocompletarCliente(); // Llenar los datos del cliente automáticamente
+                    autocompletarCliente();
                     document.getElementById("oferta-descripcion").value = oferta.descripcion;
                     document.getElementById("oferta-importe").value = oferta.importe;
                     document.getElementById("oferta-estado").value = oferta.estado;
+
+                    document.getElementById("generar-pdf").style.display = "block"; // 🔹 Mostrar botón PDF
                 }
             });
         }
@@ -187,14 +173,19 @@
             } else {
                 datosOferta.ofertaId = `OF-${Date.now()}`;
                 db.collection("ofertas").doc(datosOferta.ofertaId).set(datosOferta)
-                .then(() => alert("✅ Oferta creada correctamente."));
+                .then(() => {
+                    alert("✅ Oferta creada correctamente.");
+                    ofertaEnEdicion = datosOferta.ofertaId;
+                    document.getElementById("generar-pdf").style.display = "block"; 
+                });
             }
         }
 
-        // 🔹 Resetear formulario para nueva oferta
-        function nuevaOferta() {
-            ofertaEnEdicion = null;
-            document.getElementById("oferta-form").reset();
+        // 🔹 Redirigir a Generator con la oferta en edición
+        function generarPDF() {
+            if (ofertaEnEdicion) {
+                window.location.href = `generator.html?ofertaId=${ofertaEnEdicion}`;
+            }
         }
     </script>
 </body>
