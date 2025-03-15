@@ -1,0 +1,34 @@
+<!-- cliente-form.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Cliente</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <h2 id="titulo-formulario">Agregar Cliente</h2>
+    
+    <form id="formulario-cliente">
+        <input type="hidden" id="cliente-id">
+        
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" required>
+        
+        <label for="cif">CIF:</label>
+        <input type="text" id="cif" required>
+        
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono">
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email">
+        
+        <button type="submit">Guardar</button>
+        <button type="button" onclick="volverAClientes()">Cancelar</button>
+    </form>
+    
+    <script src="js/clientes.js"></script>
+</body>
+</html>
