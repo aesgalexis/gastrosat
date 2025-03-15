@@ -1,6 +1,6 @@
 // 🔹 Cargar clientes desde Firebase y mostrarlos en la tabla
 function cargarClientes() {
-    console.log("📡 Intentando cargar clientes desde Firebase...");
+    console.log("📡 Intentando conectar con Firebase...");
     
     const tabla = document.getElementById("tabla-clientes");
     if (!tabla) {
@@ -19,13 +19,14 @@ function cargarClientes() {
             return;
         }
 
-        // Limpiar tabla y reconstruir el contenido
-        let contenidoTabla = "";
+        // Limpiar tabla antes de agregar clientes
+        tabla.innerHTML = "";
+
         snapshot.forEach(doc => {
             const cliente = doc.data();
             console.log("📄 Insertando en la tabla:", cliente);
 
-            contenidoTabla += `
+            const fila = `
                 <tr>
                     <td>${cliente.nombre || "-"}</td>
                     <td>${cliente.cif || "-"}</td>
@@ -37,15 +38,10 @@ function cargarClientes() {
                     </td>
                 </tr>
             `;
+            tabla.insertAdjacentHTML("beforeend", fila); // 🔹 Inserta fila en la tabla sin sobrescribir
         });
 
-        console.log("📊 Contenido generado para la tabla:", contenidoTabla);
-        
-        // **FORZAR la actualización de la tabla**
-        setTimeout(() => {
-            tabla.innerHTML = contenidoTabla;
-            console.log("✅ Tabla actualizada correctamente.");
-        }, 100);
+        console.log("✅ Tabla actualizada correctamente.");
     })
     .catch(error => console.error("❌ Error al cargar clientes:", error));
 }
