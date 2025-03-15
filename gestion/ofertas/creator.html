@@ -27,6 +27,10 @@
 
     <form id="oferta-form">
         <h3>Cliente</h3>
+        <label for="oferta-cliente">Seleccionar Cliente:</label>
+        <select id="oferta-cliente" onchange="autocompletarCliente()">
+            <option value="">Cargando clientes...</option>
+        </select>
         <p><strong>Cliente:</strong> <span id="oferta-nombre"></span></p>
 
         <h3>Conceptos</h3>
@@ -42,7 +46,6 @@
     </form>
 
     <script>
-        // 🔹 Inicializar Firebase si no está inicializado
         if (!firebase.apps.length) {
             const firebaseConfig = {
                 apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
@@ -56,28 +59,56 @@
             firebase.initializeApp(firebaseConfig);
         }
 
-        // 🔹 Inicializar Firestore y Auth
         const db = firebase.firestore();
         const auth = firebase.auth();
         const urlParams = new URLSearchParams(window.location.search);
         const ofertaId = urlParams.get("ofertaId");
 
-        // 🔹 Verificar autenticación antes de cargar datos
         auth.onAuthStateChanged(user => {
             if (user) {
-                console.log("✅ Usuario autenticado:", user.email);
-                cargarOferta(); 
+                cargarClientes();
+                if (ofertaId) cargarOferta();
             } else {
-                console.error("❌ Usuario no autenticado, redirigiendo...");
                 window.location.href = "../";
             }
         });
 
-        // 🔹 Cargar oferta si existe
-        function cargarOferta() {
-            if (!ofertaId) return; // 🛠️ Si no hay ofertaId, es una oferta nueva
+        function cargarClientes() {
+            const clienteSelect = document.getElementById("oferta-cliente");
+            clienteSelect.innerHTML = "<option value=''>Cargando clientes...</option>";
 
-            document.getElementById("titulo").textContent = "Editar Oferta"; // Cambia el título
+            db.collection("clientes").get()
+            .then(snapshot => {
+                clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
+
+                snapshot.forEach(doc => {
+                    const cliente = doc.data();
+                    const option = document.createElement("option");
+                    option.value = doc.id;
+                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
+                    clienteSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error("❌ Error al cargar clientes:", error));
+        }
+
+        function autocompletarCliente() {
+            const clienteId = document.getElementById("oferta-cliente").value;
+            if (!clienteId) {
+                document.getElementById("oferta-nombre").textContent = "";
+                return;
+            }
+
+            db.collection("clientes").doc(clienteId).get().then(doc => {
+                if (doc.exists) {
+                    const cliente = doc.data();
+                    document.getElementById("oferta-nombre").textContent = cliente.nombre;
+                }
+            });
+        }
+
+        function cargarOferta() {
+            document.getElementById("titulo").textContent = "Editar Oferta";
 
             db.collection("ofertas").doc(ofertaId).get()
             .then(doc => {
@@ -89,8 +120,8 @@
 
                 const oferta = doc.data();
                 document.getElementById("oferta-nombre").textContent = oferta.nombre || "Sin nombre";
+                document.getElementById("oferta-cliente").value = oferta.clienteId || "";
 
-                // Cargar conceptos
                 const container = document.getElementById("conceptos-container");
                 container.innerHTML = "";
                 (oferta.conceptos || []).forEach(concepto => {
@@ -110,7 +141,6 @@
             .catch(error => console.error("❌ Error al cargar la oferta:", error));
         }
 
-        // 🔹 Agregar concepto
         function agregarConcepto() {
             const container = document.getElementById("conceptos-container");
             const div = document.createElement("div");
@@ -127,7 +157,6 @@
             actualizarTotal();
         }
 
-        // 🔹 Calcular totales
         function actualizarTotal() {
             let subtotal = 0;
             document.querySelectorAll(".concepto").forEach(concepto => {
@@ -141,24 +170,16 @@
             document.getElementById("oferta-total").textContent = total.toFixed(2);
         }
 
-        // 🔹 Guardar oferta (crear o actualizar)
         function guardarOferta() {
+            const clienteId = document.getElementById("oferta-cliente").value;
             const subtotal = parseFloat(document.getElementById("oferta-subtotal").textContent);
             const total = parseFloat(document.getElementById("oferta-total").textContent);
 
             if (ofertaId) {
-                db.collection("ofertas").doc(ofertaId).update({ subtotal, total })
+                db.collection("ofertas").doc(ofertaId).update({ clienteId, subtotal, total })
                 .then(() => alert("✅ Cambios guardados."));
-            } else {
-                alert("❌ No se encontró la oferta.");
             }
         }
-
-        window.onload = () => {
-            auth.onAuthStateChanged(user => {
-                if (user) cargarOferta();
-            });
-        };
     </script>
 
 </body>
