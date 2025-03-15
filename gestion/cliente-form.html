@@ -7,6 +7,13 @@
     <title>Formulario Cliente</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
+    <script>
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user || user.email !== "tucorreo@gmail.com") {
+            window.location.href = "/login.html";
+        }
+    });
+</script>
 <body>
     <h2 id="titulo-formulario">Agregar Cliente</h2>
     
