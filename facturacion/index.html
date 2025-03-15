@@ -24,8 +24,8 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        // 🔹 Correo permitido para acceder (cambia esto por tu cuenta)
-        const emailPermitido = "TU_CORREO@gmail.com";
+        // 🔹 Correo permitido para acceder
+        const emailPermitido = "TU_CORREO@gmail.com"; // Reemplázalo con tu cuenta
 
         // 🔹 Configurar FirebaseUI
         const ui = new firebaseui.auth.AuthUI(firebase.auth());
@@ -33,9 +33,9 @@
         function iniciarFirebaseUI() {
             ui.start('#firebaseui-auth-container', {
                 signInOptions: [
-                    firebase.auth.GoogleAuthProvider.PROVIDER_ID // Solo permite iniciar sesión con Google
+                    firebase.auth.GoogleAuthProvider.PROVIDER_ID // Solo permite Google
                 ],
-                signInFlow: "popup", // Evita redirección
+                signInFlow: "popup",
                 callbacks: {
                     signInSuccessWithAuthResult: function(authResult) {
                         const user = authResult.user;
@@ -54,9 +54,16 @@
 
         // 🔹 Detectar cambios en la autenticación
         firebase.auth().onAuthStateChanged(user => {
-            if (user && user.email === emailPermitido) {
-                document.getElementById("contenido").style.display = "block";
-                document.getElementById("login-container").style.display = "none";
+            if (user) {
+                if (user.email === emailPermitido) {
+                    document.getElementById("contenido").style.display = "block";
+                    document.getElementById("login-container").style.display = "none";
+                } else {
+                    firebase.auth().signOut();
+                    document.getElementById("contenido").style.display = "none";
+                    document.getElementById("login-container").style.display = "block";
+                    iniciarFirebaseUI();
+                }
             } else {
                 document.getElementById("contenido").style.display = "none";
                 document.getElementById("login-container").style.display = "block";
