@@ -10,11 +10,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- jsPDF para generar PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
     <script>
-        // 🔹 Inicializar Firebase si no está inicializado
+        // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
         if (!firebase.apps.length) {
             const firebaseConfig = {
                 apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
@@ -43,7 +40,7 @@
             }
         });
 
-        // 🔹 Cargar clientes en el selector
+        // 🔹 Función para cargar clientes en el selector
         function cargarClientes() {
             console.log("Intentando cargar clientes...");
             const clienteSelect = document.getElementById("oferta-cliente");
@@ -55,6 +52,7 @@
                 clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
 
                 snapshot.forEach(doc => {
+                    console.log("Cliente encontrado:", doc.data());
                     const cliente = doc.data();
                     const option = document.createElement("option");
                     option.value = doc.id;
@@ -68,7 +66,7 @@
             });
         }
 
-        // 🔹 Autocompletar datos del cliente
+        // 🔹 Autocompletar datos del cliente seleccionado
         function autocompletarCliente() {
             const clienteId = document.getElementById("oferta-cliente").value;
 
@@ -91,7 +89,7 @@
             });
         }
 
-        // 🔹 Guardar Oferta
+        // 🔹 Guardar Oferta en Firestore
         function guardarOferta() {
             const clienteId = document.getElementById("oferta-cliente").value;
             const nombre = document.getElementById("oferta-nombre").value;
@@ -131,32 +129,18 @@
                 alert("Error al guardar la oferta.");
             });
         }
-
-        // 🔹 Generar PDF de la oferta
-        function generarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.setFontSize(16);
-            doc.text("Oferta - GastroSat", 20, 20);
-
-            doc.setFontSize(12);
-            doc.text(`Fecha: ${new Date().toISOString().split("T")[0]}`, 20, 30);
-            doc.text(`Cliente: ${document.getElementById("oferta-nombre").value}`, 20, 40);
-            doc.text(`Nombre Fiscal: ${document.getElementById("oferta-nombre-fiscal").value}`, 20, 50);
-            doc.text(`Dirección: ${document.getElementById("oferta-direccion").value}`, 20, 60);
-            doc.text(`CIF: ${document.getElementById("oferta-cif").value}`, 20, 70);
-            doc.text(`Descripción: ${document.getElementById("oferta-descripcion").value}`, 20, 80);
-            doc.text(`Importe Total: ${document.getElementById("oferta-importe").value} €`, 20, 90);
-            doc.text(`Estado: ${document.getElementById("oferta-estado").value}`, 20, 100);
-
-            doc.save("Oferta_GastroSat.pdf");
-        }
     </script>
 
     <style>
         body { font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; text-align: center; }
-        input, select, textarea, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 12px; border: 1px solid #ddd; }
+        input, select, textarea, button { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            font-size: 16px; 
+            border-radius: 12px;
+            border: 1px solid #ddd;
+        }
         button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
         button:hover { background-color: #0056b3; }
     </style>
@@ -166,7 +150,38 @@
     <h2>Gestión de Ofertas</h2>
     <button onclick="window.location.href='../'">🔙 Volver</button>
 
-    <button onclick="generarPDF()">📄 Generar PDF</button>
+    <h3>Crear Nueva Oferta</h3>
+    <form id="oferta-form">
+        <label>Cliente:</label>
+        <select id="oferta-cliente" onchange="autocompletarCliente()"></select>
+
+        <label>Nombre:</label>
+        <input type="text" id="oferta-nombre" readonly>
+
+        <label>Nombre Fiscal:</label>
+        <input type="text" id="oferta-nombre-fiscal" readonly>
+
+        <label>Dirección:</label>
+        <input type="text" id="oferta-direccion" readonly>
+
+        <label>CIF:</label>
+        <input type="text" id="oferta-cif" readonly>
+
+        <label>Descripción de la Oferta:</label>
+        <textarea id="oferta-descripcion" rows="3" placeholder="Detalles de la oferta"></textarea>
+
+        <label>Importe Total (€):</label>
+        <input type="number" id="oferta-importe" step="0.01" placeholder="0.00">
+
+        <label>Estado:</label>
+        <select id="oferta-estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Aceptada">Aceptada</option>
+            <option value="Rechazada">Rechazada</option>
+        </select>
+
+        <button type="button" onclick="guardarOferta()">Guardar Oferta</button>
+    </form>
 
 </body>
 </html>
