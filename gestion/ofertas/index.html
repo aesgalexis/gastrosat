@@ -11,61 +11,62 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
     <script>
-        firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-            console.log("Usuario autenticado:", user.email);
-            cargarClientes();
-        } else {
-            console.log("Usuario no autenticado, redirigiendo...");
-            window.location.href = "../";
+        // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
+        if (!firebase.apps.length) {
+            const firebaseConfig = {
+                apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
+                authDomain: "factu-f58ab.firebaseapp.com",
+                projectId: "factu-f58ab",
+                storageBucket: "factu-f58ab.firebasestorage.app",
+                messagingSenderId: "126560099435",
+                appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
+                measurementId: "G-MC2S07WMSL"
+            };
+            firebase.initializeApp(firebaseConfig);
         }
-    });
-        // 🔹 Configuración de Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
-            authDomain: "factu-f58ab.firebaseapp.com",
-            projectId: "factu-f58ab",
-            storageBucket: "factu-f58ab.firebasestorage.app",
-            messagingSenderId: "126560099435",
-            appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
-            measurementId: "G-MC2S07WMSL"
-        };
-        firebase.initializeApp(firebaseConfig);
+
+        // 🔹 Inicializar Firestore y Auth
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
-         // 🔹 Cargar clientes en el selector
-    function cargarClientes() {
-        const clienteSelect = document.getElementById("oferta-cliente");
-        clienteSelect.innerHTML = "<option value=''>Cargando clientes...</option>";
+        // 🔹 Detectar cambios en autenticación
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("Usuario autenticado:", user.email);
+                cargarClientes();
+            } else {
+                console.log("Usuario no autenticado, redirigiendo...");
+                window.location.href = "../";
+            }
+        });
 
-        db.collection("clientes").get().then(snapshot => {
-            clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
-            let clientesEncontrados = false;
+        // 🔹 Función para cargar clientes en el selector
+        function cargarClientes() {
+            console.log("Intentando cargar clientes...");
+            const clienteSelect = document.getElementById("oferta-cliente");
+            clienteSelect.innerHTML = "<option value=''>Cargando clientes...</option>";
 
-            snapshot.forEach(doc => {
-                const cliente = doc.data();
-                if (cliente.nombre && cliente.cif) {  // Verifica que tenga datos
-                    clientesEncontrados = true;
+            db.collection("clientes").get()
+            .then(snapshot => {
+                console.log("Clientes obtenidos:", snapshot.docs.length);
+                clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
+
+                snapshot.forEach(doc => {
+                    console.log("Cliente encontrado:", doc.data());
+                    const cliente = doc.data();
                     const option = document.createElement("option");
                     option.value = doc.id;
                     option.textContent = `${cliente.nombre} (${cliente.cif})`;
                     clienteSelect.appendChild(option);
-                }
+                });
+            })
+            .catch(error => {
+                console.error("Error al cargar clientes:", error);
+                clienteSelect.innerHTML = "<option value=''>Error al cargar clientes</option>";
             });
+        }
 
-            if (!clientesEncontrados) {
-                clienteSelect.innerHTML = "<option value=''>No hay clientes disponibles</option>";
-            }
-        })
-        .catch(error => {
-            console.error("Error al cargar clientes:", error);
-            clienteSelect.innerHTML = "<option value=''>Error al cargar clientes</option>";
-        });
-    }
-
-    window.onload = cargarClientes;
-
-        // 🔹 Autocompletar datos del cliente
+        // 🔹 Autocompletar datos del cliente seleccionado
         function autocompletarCliente() {
             const clienteId = document.getElementById("oferta-cliente").value;
 
@@ -88,7 +89,7 @@
             });
         }
 
-        // 🔹 Guardar Oferta
+        // 🔹 Guardar Oferta en Firestore
         function guardarOferta() {
             const clienteId = document.getElementById("oferta-cliente").value;
             const nombre = document.getElementById("oferta-nombre").value;
@@ -128,8 +129,6 @@
                 alert("Error al guardar la oferta.");
             });
         }
-
-        window.onload = cargarClientes;
     </script>
 
     <style>
