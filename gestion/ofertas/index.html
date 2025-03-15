@@ -26,7 +26,7 @@
 
     <h2>Gestión de Ofertas</h2>
     <button onclick="window.location.href='../'">🔙 Volver</button>
-    <button onclick="window.location.href='crear.html'">➕ Crear Oferta</button>
+    <button onclick="window.location.href='creator.html'">➕ Crear Oferta</button>
 
     <h3>Ofertas Existentes</h3>
     <table>
@@ -93,7 +93,7 @@
                         <tr>
                             <td>${oferta.ofertaId}</td>
                             <td>${oferta.nombre}</td>
-                            <td>${oferta.importe} €</td>
+                            <td>${oferta.importe.toFixed(2)} €</td>
                             <td>${oferta.estado}</td>
                             <td>
                                 <button class="btn-small" onclick="editarOferta('${doc.id}')">✏️ Editar</button>
@@ -108,14 +108,12 @@
             .catch(error => console.error("❌ Error al cargar ofertas:", error));
         }
 
-        // 🔹 Redirigir a la edición de una oferta
+        // 🔹 Redirigir a `creator.html` para editar la oferta
         function editarOferta(ofertaId) {
-    window.location.href = `creator.html?ofertaId=${ofertaId}`;
-}
-
+            window.location.href = `creator.html?ofertaId=${ofertaId}`;
         }
 
-        // 🔹 Redirigir a la generación de PDF
+        // 🔹 Redirigir a `generator.html` para generar el PDF
         function generarPDF(ofertaId) {
             window.location.href = `generator.html?ofertaId=${ofertaId}`;
         }
@@ -131,6 +129,8 @@
             })
             .catch(error => console.error("❌ Error al eliminar oferta:", error));
         }
+
+        window.onload = cargarOfertas;
     </script>
 </body>
 </html>
