@@ -7,6 +7,13 @@
     <title>Clientes - GastroSat</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
+    <script>
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user || user.email !== "tucorreo@gmail.com") {
+            window.location.href = "/login.html";
+        }
+    });
+</script>
 <body>
     <h2>Gestión de Clientes</h2>
     <button onclick="mostrarFormularioCliente()">➕ Agregar Cliente</button>
