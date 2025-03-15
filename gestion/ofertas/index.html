@@ -76,37 +76,40 @@
 
         // 🔹 Cargar ofertas en la tabla
         function cargarOfertas() {
-            const tabla = document.getElementById("tabla-ofertas");
-            tabla.innerHTML = "<tr><td colspan='5'>Cargando ofertas...</td></tr>";
+    const tabla = document.getElementById("tabla-ofertas");
+    tabla.innerHTML = "<tr><td colspan='5'>Cargando ofertas...</td></tr>";
 
-            db.collection("ofertas").orderBy("fecha", "desc").get()
-            .then(snapshot => {
-                if (snapshot.empty) {
-                    tabla.innerHTML = "<tr><td colspan='5'>No hay ofertas registradas</td></tr>";
-                    return;
-                }
-
-                tabla.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const oferta = doc.data();
-                    const fila = `
-                        <tr>
-                            <td>${oferta.ofertaId}</td>
-                            <td>${oferta.nombre}</td>
-                            <td>${oferta.importe.toFixed(2)} €</td>
-                            <td>${oferta.estado}</td>
-                            <td>
-                                <button class="btn-small" onclick="editarOferta('${doc.id}')">✏️ Editar</button>
-                                <button class="btn-small" onclick="generarPDF('${doc.id}')">📄 PDF</button>
-                                <button class="btn-small delete-btn" onclick="eliminarOferta('${doc.id}')">🗑️ Eliminar</button>
-                            </td>
-                        </tr>
-                    `;
-                    tabla.innerHTML += fila;
-                });
-            })
-            .catch(error => console.error("❌ Error al cargar ofertas:", error));
+    db.collection("ofertas").orderBy("fecha", "desc").get()
+    .then(snapshot => {
+        if (snapshot.empty) {
+            tabla.innerHTML = "<tr><td colspan='5'>No hay ofertas registradas</td></tr>";
+            return;
         }
+
+        tabla.innerHTML = "";
+        snapshot.forEach(doc => {
+            const oferta = doc.data();
+            const importe = oferta.importe ? oferta.importe.toFixed(2) : "0.00"; // 🛠️ Evita errores si no hay `importe`
+            
+            const fila = `
+                <tr>
+                    <td>${oferta.ofertaId || "Sin ID"}</td>
+                    <td>${oferta.nombre || "Desconocido"}</td>
+                    <td>${importe} €</td>
+                    <td>${oferta.estado || "Sin estado"}</td>
+                    <td>
+                        <button class="btn-small" onclick="editarOferta('${doc.id}')">✏️ Editar</button>
+                        <button class="btn-small" onclick="generarPDF('${doc.id}')">📄 PDF</button>
+                        <button class="btn-small delete-btn" onclick="eliminarOferta('${doc.id}')">🗑️ Eliminar</button>
+                    </td>
+                </tr>
+            `;
+            tabla.innerHTML += fila;
+        });
+    })
+    .catch(error => console.error("❌ Error al cargar ofertas:", error));
+}
+
 
         // 🔹 Redirigir a `creator.html` para editar la oferta
         function editarOferta(ofertaId) {
