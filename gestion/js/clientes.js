@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarClientes();
 });
 
+// 🔹 Cargar clientes desde Firebase y mostrarlos en la tabla
 function cargarClientes() {
     console.log("📡 Intentando conectar con Firebase...");
 
@@ -47,4 +48,71 @@ function cargarClientes() {
         console.log("✅ Tabla actualizada correctamente.");
     })
     .catch(error => console.error("❌ Error al cargar clientes:", error));
+}
+
+// 🔹 Agregar un nuevo cliente
+function agregarCliente() {
+    const nombre = prompt("Ingrese el nombre del cliente:");
+    const cif = prompt("Ingrese el CIF:");
+    const telefono = prompt("Ingrese el teléfono:");
+    const email = prompt("Ingrese el correo electrónico:");
+
+    if (!nombre || !email) {
+        alert("❌ Nombre y correo son obligatorios.");
+        return;
+    }
+
+    db.collection("clientes").add({
+        nombre,
+        cif: cif || "-",
+        telefono: telefono || "-",
+        email,
+        creado: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+        alert("✅ Cliente agregado correctamente.");
+        cargarClientes();
+    })
+    .catch(error => console.error("❌ Error al agregar cliente:", error));
+}
+
+// 🔹 Editar cliente
+function editarCliente(clienteId) {
+    db.collection("clientes").doc(clienteId).get()
+    .then(doc => {
+        if (!doc.exists) {
+            alert("❌ Cliente no encontrado.");
+            return;
+        }
+
+        const cliente = doc.data();
+        const nuevoNombre = prompt("Editar Nombre:", cliente.nombre);
+        const nuevoCIF = prompt("Editar CIF:", cliente.cif);
+        const nuevoTelefono = prompt("Editar Teléfono:", cliente.telefono);
+        const nuevoEmail = prompt("Editar Email:", cliente.email);
+
+        db.collection("clientes").doc(clienteId).update({
+            nombre: nuevoNombre,
+            cif: nuevoCIF,
+            telefono: nuevoTelefono,
+            email: nuevoEmail
+        })
+        .then(() => {
+            alert("✅ Cliente actualizado correctamente.");
+            cargarClientes();
+        })
+        .catch(error => console.error("❌ Error al actualizar cliente:", error));
+    });
+}
+
+// 🔹 Eliminar cliente
+function eliminarCliente(clienteId) {
+    if (!confirm("⚠️ ¿Seguro que quieres eliminar este cliente?")) return;
+
+    db.collection("clientes").doc(clienteId).delete()
+    .then(() => {
+        alert("✅ Cliente eliminado correctamente.");
+        cargarClientes();
+    })
+    .catch(error => console.error("❌ Error al eliminar cliente:", error));
 }
