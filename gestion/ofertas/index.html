@@ -58,7 +58,7 @@
                     const cliente = doc.data();
                     const option = document.createElement("option");
                     option.value = doc.id;
-                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
+                    option.textContent = ${cliente.nombre} (${cliente.cif});
                     clienteSelect.appendChild(option);
                 });
             })
@@ -108,7 +108,7 @@
             }
 
             const fecha = new Date().toISOString().split("T")[0];
-            const ofertaId = `OF-${fecha.replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
+            const ofertaId = OF-${fecha.replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)};
 
             db.collection("ofertas").doc(ofertaId).set({
                 ofertaId: ofertaId,
@@ -141,14 +141,14 @@
             doc.text("Oferta - GastroSat", 20, 20);
 
             doc.setFontSize(12);
-            doc.text(`Fecha: ${new Date().toISOString().split("T")[0]}`, 20, 30);
-            doc.text(`Cliente: ${document.getElementById("oferta-nombre").value}`, 20, 40);
-            doc.text(`Nombre Fiscal: ${document.getElementById("oferta-nombre-fiscal").value}`, 20, 50);
-            doc.text(`Dirección: ${document.getElementById("oferta-direccion").value}`, 20, 60);
-            doc.text(`CIF: ${document.getElementById("oferta-cif").value}`, 20, 70);
-            doc.text(`Descripción: ${document.getElementById("oferta-descripcion").value}`, 20, 80);
-            doc.text(`Importe Total: ${document.getElementById("oferta-importe").value} €`, 20, 90);
-            doc.text(`Estado: ${document.getElementById("oferta-estado").value}`, 20, 100);
+            doc.text(Fecha: ${new Date().toISOString().split("T")[0]}, 20, 30);
+            doc.text(Cliente: ${document.getElementById("oferta-nombre").value}, 20, 40);
+            doc.text(Nombre Fiscal: ${document.getElementById("oferta-nombre-fiscal").value}, 20, 50);
+            doc.text(Dirección: ${document.getElementById("oferta-direccion").value}, 20, 60);
+            doc.text(CIF: ${document.getElementById("oferta-cif").value}, 20, 70);
+            doc.text(Descripción: ${document.getElementById("oferta-descripcion").value}, 20, 80);
+            doc.text(Importe Total: ${document.getElementById("oferta-importe").value} €, 20, 90);
+            doc.text(Estado: ${document.getElementById("oferta-estado").value}, 20, 100);
 
             doc.save("Oferta_GastroSat.pdf");
         }
