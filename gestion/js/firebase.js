@@ -8,19 +8,19 @@ const firebaseConfig = {
     measurementId: "G-MC2S07WMSL"
 };
 
-// Inicializar Firebase solo si no ha sido inicializado antes
+// ✅ Inicializar Firebase solo si no ha sido inicializado antes
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-// Inicializar servicios
+// ✅ Asegurar que los servicios están disponibles antes de usarlos
 const auth = firebase.auth();
-const db = firebase.firestore();
+const db = firebase.firestore(); // 🔧 Esto previene el error `firebase.firestore is not a function`
 
-// Usuario autorizado
+// ✅ Definir usuario autorizado ANTES de usarlo
 const usuarioAutorizado = "tucorreo@gmail.com";
 
-// 🔴 **Bloqueo total de acceso sin autenticación**
+// 🔒 Función para verificar autenticación y bloquear acceso si es necesario
 function verificarAutenticacion() {
     auth.onAuthStateChanged((user) => {
         if (!user || user.email !== usuarioAutorizado) {
@@ -30,9 +30,15 @@ function verificarAutenticacion() {
     });
 }
 
-// Función para iniciar sesión con Google
+// 🔐 Función para iniciar sesión con Google
 function login() {
     const provider = new firebase.auth.GoogleAuthProvider();
+    
+    // 🔧 PREVENIR PROBLEMAS CON COOKIES DE TERCEROS EN CHROME
+    provider.setCustomParameters({
+        prompt: "select_account"
+    });
+
     auth.signInWithPopup(provider).then((result) => {
         const user = result.user;
         if (user.email !== usuarioAutorizado) {
@@ -42,10 +48,12 @@ function login() {
             console.log("✅ Sesión iniciada correctamente.");
             window.location.href = "/gestion/index.html";
         }
-    }).catch((error) => console.error("❌ Error en login:", error));
+    }).catch((error) => {
+        console.error("❌ Error en login:", error);
+    });
 }
 
-// Función para cerrar sesión
+// 🚪 Función para cerrar sesión
 function logout() {
     auth.signOut().then(() => {
         console.log("✅ Sesión cerrada. Redirigiendo a login...");
