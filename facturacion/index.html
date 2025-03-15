@@ -11,7 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js"></script>
 
     <script>
-        // 🔹 Configuración de Firebase (usando tu configuración)
+        // 🔹 Configuración de Firebase (usa tus datos)
         const firebaseConfig = {
             apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
             authDomain: "factu-f58ab.firebaseapp.com",
@@ -27,31 +27,59 @@
         // 🔹 Correo permitido para acceder (cambia esto por tu cuenta)
         const emailPermitido = "TU_CORREO@gmail.com";
 
-        // 🔹 Autenticación automática
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                if (user.email === emailPermitido) {
-                    document.getElementById("contenido").style.display = "block";
-                    document.getElementById("cargando").style.display = "none";
-                } else {
-                    firebase.auth().signOut();
-                    window.location.href = "https://google.com"; // Redirige si no es el usuario correcto
-                }
-            } else {
-                // Iniciar sesión automáticamente si no está autenticado
-                firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
-            }
-        });
+        // 🔹 Función para iniciar sesión manualmente con email/contraseña
+        function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    if (user.email === emailPermitido) {
+                        document.getElementById("login-container").style.display = "none";
+                        document.getElementById("contenido").style.display = "block";
+                    } else {
+                        alert("Acceso denegado. No tienes permisos.");
+                        firebase.auth().signOut();
+                    }
+                })
+                .catch((error) => {
+                    alert("Error: " + error.message);
+                });
+        }
+
+        // 🔹 Función para cerrar sesión
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                document.getElementById("contenido").style.display = "none";
+                document.getElementById("login-container").style.display = "block";
+            });
+        }
     </script>
+
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px; }
+        input, button { width: 100%; padding: 10px; margin: 5px 0; }
+        #contenido { display: none; }
+    </style>
 
 </head>
 <body>
-    <p id="cargando">Verificando acceso...</p>
-    
-    <!-- 🔹 Contenido oculto hasta que se verifique el usuario -->
-    <div id="contenido" style="display: none;">
+
+    <!-- 🔹 Formulario de Login -->
+    <div id="login-container">
+        <h2>Iniciar Sesión</h2>
+        <input type="email" id="email" placeholder="Correo electrónico">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button onclick="login()">Iniciar sesión</button>
+    </div>
+
+    <!-- 🔹 Contenido privado (visible solo tras iniciar sesión) -->
+    <div id="contenido">
         <h2>Bienvenido a la Facturación de Gastrosat</h2>
         <p>Contenido privado solo para tu cuenta.</p>
+        <button onclick="logout()">Cerrar sesión</button>
     </div>
+
 </body>
 </html>
