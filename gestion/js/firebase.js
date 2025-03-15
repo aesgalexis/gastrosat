@@ -1,5 +1,8 @@
-// Verificar si Firebase ya está inicializado antes de declararlo
-if (!firebase.apps.length) {
+// Evitar múltiples inicializaciones
+if (!window._firebaseInitialized) {
+    window._firebaseInitialized = true;
+
+    // Configuración de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
         authDomain: "factu-f58ab.firebaseapp.com",
@@ -11,15 +14,15 @@ if (!firebase.apps.length) {
     };
 
     firebase.initializeApp(firebaseConfig);
+
+    // Definir db y auth como variables globales en `window`
+    window.db = firebase.firestore();
+    window.auth = firebase.auth();
+
+    // Verificar autenticación una sola vez al cargar la página
+    window.auth.onAuthStateChanged(user => {
+        if (!user) {
+            window.location.href = "../"; // Redirigir si no está autenticado
+        }
+    });
 }
-
-// Solo definimos db y auth si no existen
-const db = firebase.firestore();
-const auth = firebase.auth();
-
-// Verificar autenticación una sola vez
-auth.onAuthStateChanged(user => {
-    if (!user) {
-        window.location.href = "../"; // Redirigir si no está autenticado
-    }
-});
