@@ -1,7 +1,7 @@
-// 🔹 Cargar clientes desde Firebase y mostrarlos en la tabla
+// 🔹 Función para cargar clientes desde Firebase y mostrarlos en la tabla
 function cargarClientes() {
     console.log("📡 Intentando conectar con Firebase...");
-    
+
     const tabla = document.getElementById("tabla-clientes");
     if (!tabla) {
         console.error("❌ No se encontró la tabla de clientes.");
@@ -26,19 +26,18 @@ function cargarClientes() {
             const cliente = doc.data();
             console.log("📄 Insertando en la tabla:", cliente);
 
-            const fila = `
-                <tr>
-                    <td>${cliente.nombre || "-"}</td>
-                    <td>${cliente.cif ? cliente.cif : "-"}</td>
-                    <td>${cliente.telefono || "-"}</td>
-                    <td>${cliente.email || "-"}</td>
-                    <td>
-                        <button onclick="editarCliente('${doc.id}')">✏️ Editar</button>
-                        <button class="delete-btn" onclick="eliminarCliente('${doc.id}')">🗑️ Eliminar</button>
-                    </td>
-                </tr>
+            const fila = document.createElement("tr");
+            fila.innerHTML = `
+                <td>${cliente.nombre || "-"}</td>
+                <td>${cliente.hasOwnProperty("cif") ? cliente.cif : "-"}</td>
+                <td>${cliente.hasOwnProperty("telefono") ? cliente.telefono : "-"}</td>
+                <td>${cliente.hasOwnProperty("email") ? cliente.email : "-"}</td>
+                <td>
+                    <button onclick="editarCliente('${doc.id}')">✏️ Editar</button>
+                    <button class="delete-btn" onclick="eliminarCliente('${doc.id}')">🗑️ Eliminar</button>
+                </td>
             `;
-            tabla.insertAdjacentHTML("beforeend", fila); // 🔹 Inserta fila en la tabla sin sobrescribir
+            tabla.appendChild(fila);
         });
 
         console.log("✅ Tabla actualizada correctamente.");
@@ -46,8 +45,21 @@ function cargarClientes() {
     .catch(error => console.error("❌ Error al cargar clientes:", error));
 }
 
-// 🔹 Asegurar que `cargarClientes()` se ejecuta cuando el DOM esté listo
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("🚀 Vista de clientes completamente cargada.");
-    setTimeout(cargarClientes, 500);
-});
+// 🔹 FORZAR CARGA AUTOMÁTICA DE CLIENTES TRAS CARGAR LA PÁGINA
+window.onload = function () {
+    console.log("🚀 Página cargada, iniciando carga de clientes...");
+    
+    // Método 1: Retrasar la ejecución para asegurar que el DOM está listo
+    setTimeout(() => {
+        cargarClientes();
+    }, 1000);
+
+    // Método 2: Comprobar si la tabla está disponible y reintentar
+    const interval = setInterval(() => {
+        if (document.getElementById("tabla-clientes")) {
+            console.log("✅ Tabla detectada en el DOM. Cargando clientes...");
+            cargarClientes();
+            clearInterval(interval); // Detener el intervalo tras la primera carga exitosa
+        }
+    }, 500);
+};
