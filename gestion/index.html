@@ -12,16 +12,16 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- Firebase y lógica central (se carga una sola vez) -->
-    <script src="js/firebase.js" defer></script>
+    <!-- Firebase y lógica central (firebase.js debe cargarse antes que gestion.js) -->
+    <script src="js/firebase.js"></script>
     <script src="js/gestion.js" defer></script>
 </head>
 <body>
     <h1>Gestión GastroSat</h1>
     <nav>
-    <button onclick="cargarVista('ofertas')">📄 Ofertas</button>
-    <button onclick="cargarVista('clientes')">👥 Clientes</button>
-</nav>
+        <button onclick="cargarVista('ofertas')">📄 Ofertas</button>
+        <button onclick="cargarVista('clientes')">👥 Clientes</button>
+    </nav>
 
     <div id="contenido">Cargando...</div>
 </body>
