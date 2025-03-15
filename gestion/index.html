@@ -3,161 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clientes - GastroSat</title>
+    <title>Gestión - GastroSat</title>
 
-    <!-- Firebase SDK -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- ✅ Cargar Firebase SDKs (pero la inicialización estará en firebase.js) -->
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- Firebase Config -->
-   <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+    <!-- ✅ Cargar Firebase desde un solo archivo -->
+    <script src="js/firebase.js"></script>
 
-<!-- Inicializar Firebase -->
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
-        authDomain: "factu-f58ab.firebaseapp.com",
-        projectId: "factu-f58ab",
-        storageBucket: "factu-f58ab.firebasestorage.app",
-        messagingSenderId: "126560099435",
-        appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
-        measurementId: "G-MC2S07WMSL"
-    };
-
-    // Verificar si Firebase ya está inicializado antes de inicializarlo
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    // Autenticación y carga de clientes
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            console.log("✅ Usuario autenticado:", user.email);
-            cargarClientes();
-        } else {
-            console.warn("⚠️ No hay usuario autenticado, iniciando sesión...");
-            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-                .then(() => cargarClientes())
-                .catch(error => console.error("❌ Error en autenticación:", error));
-        }
-    });
-
-    function cargarClientes() {
-        console.log("📡 Cargando clientes...");
-
-        const tabla = document.getElementById("tabla-clientes");
-        if (!tabla) {
-            console.error("❌ No se encontró la tabla.");
-            return;
-        }
-
-        db.collection("clientes").orderBy("nombre", "asc").get()
-        .then(snapshot => {
-            console.log("✅ Clientes obtenidos:", snapshot.docs.length);
-
-            if (snapshot.empty) {
-                tabla.innerHTML = "<tr><td colspan='4'>No hay clientes registrados</td></tr>";
-                return;
-            }
-
-            tabla.innerHTML = "";
-            snapshot.forEach(doc => {
-                const cliente = doc.data();
-                console.log("📄 Cliente:", cliente);
-
-                const fila = `
-                    <tr>
-                        <td>${cliente.nombre || "-"}</td>
-                        <td>${cliente.cif || "-"}</td>
-                        <td>${cliente.telefono || "-"}</td>
-                        <td>${cliente.email || "-"}</td>
-                    </tr>
-                `;
-                tabla.innerHTML += fila;
-            });
-
-            console.log("✅ Tabla actualizada correctamente.");
-        })
-        .catch(error => console.error("❌ Error al cargar clientes:", error));
-    }
-</script>
-
-
-
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
-        th { background-color: #f4f4f4; }
-    </style>
-</head>
-<body>
-
-    <h2>Lista de Clientes</h2>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>CIF</th>
-                <th>Teléfono</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-clientes">
-            <tr><td colspan="4">Cargando...</td></tr>
-        </tbody>
-    </table>
+    <!-- ✅ Lógica de la gestión -->
+    <script src="js/gestion.js"></script>
 
     <script>
-        function cargarClientes() {
-            console.log("📡 Cargando clientes...");
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("🔥 DOM completamente cargado, ahora cargamos la vista de inicio...");
 
-            const tabla = document.getElementById("tabla-clientes");
-            if (!tabla) {
-                console.error("❌ No se encontró la tabla.");
-                return;
-            }
-
-            db.collection("clientes").orderBy("nombre", "asc").get()
-            .then(snapshot => {
-                console.log("✅ Clientes obtenidos:", snapshot.docs.length);
-
-                if (snapshot.empty) {
-                    tabla.innerHTML = "<tr><td colspan='4'>No hay clientes registrados</td></tr>";
-                    return;
-                }
-
-                tabla.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const cliente = doc.data();
-                    console.log("📄 Cliente:", cliente);
-
-                    const fila = `
-                        <tr>
-                            <td>${cliente.nombre || "-"}</td>
-                            <td>${cliente.cif || "-"}</td>
-                            <td>${cliente.telefono || "-"}</td>
-                            <td>${cliente.email || "-"}</td>
-                        </tr>
-                    `;
-                    tabla.innerHTML += fila;
-                });
-
-                console.log("✅ Tabla actualizada correctamente.");
-            })
-            .catch(error => console.error("❌ Error al cargar clientes:", error));
-        }
-
-        // Ejecutar al cargar la página
-        window.onload = cargarClientes;
+            // Cargar automáticamente la vista de clientes al iniciar
+            cargarVista('clientes');
+        });
     </script>
+</head>
+<body>
+    <h1>Gestión GastroSat</h1>
 
+    <nav>
+        <button onclick="cargarVista('ofertas')">📄 Ofertas</button>
+        <button onclick="cargarVista('clientes')">👥 Clientes</button>
+    </nav>
+
+    <!-- Aquí se cargará dinámicamente la vista seleccionada -->
+    <div id="contenido">Cargando...</div>
 </body>
 </html>
