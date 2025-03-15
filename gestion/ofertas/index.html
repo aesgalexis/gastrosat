@@ -11,6 +11,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
     <script>
+        firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            console.log("Usuario autenticado:", user.email);
+            cargarClientes();
+        } else {
+            console.log("Usuario no autenticado, redirigiendo...");
+            window.location.href = "../";
+        }
+    });
         // 🔹 Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
