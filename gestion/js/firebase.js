@@ -1,4 +1,3 @@
-// firebase.js
 const firebaseConfig = {
     apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
     authDomain: "factu-f58ab.firebaseapp.com",
@@ -12,8 +11,6 @@ const firebaseConfig = {
 // Inicializar Firebase solo si no ha sido inicializado antes
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
-} else {
-    firebase.app(); // Si ya está inicializado, usar la app existente
 }
 
 // Inicializar servicios
@@ -23,22 +20,22 @@ const db = firebase.firestore();
 // Usuario autorizado
 const usuarioAutorizado = "aesg.alexis@gmail.com";
 
-// Función para verificar autenticación
+// Verificar autenticación y redirigir si es necesario
 function verificarAutenticacion() {
     auth.onAuthStateChanged((user) => {
         if (!user || user.email !== usuarioAutorizado) {
-            window.location.href = "/login.html";
+            window.location.href = "/gestion/login.html";
         }
     });
 }
 
-// Función de login con Google
+// Función para iniciar sesión con Google
 function login() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).then((result) => {
         const user = result.user;
         if (user.email !== usuarioAutorizado) {
-            alert("Acceso denegado");
+            alert("❌ Acceso denegado");
             auth.signOut();
         } else {
             window.location.href = "/gestion/index.html";
@@ -49,6 +46,6 @@ function login() {
 // Función para cerrar sesión
 function logout() {
     auth.signOut().then(() => {
-        window.location.href = "/login.html";
+        window.location.href = "/gestion/login.html";
     });
 }
