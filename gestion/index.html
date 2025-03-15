@@ -14,18 +14,47 @@
     <!-- Firebase y gestión -->
     <script src="js/firebase.js" defer></script>
     <script src="js/gestion.js" defer></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #contenido {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    gest
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            if (typeof firebase !== "undefined" && firebase.auth) {
-                verificarAutenticacion(); // Llamar a la función de autenticación
-            } else {
-                console.error("❌ Firebase no está cargado correctamente.");
-            }
-        });
-    </script>
+    <div class="container">
+        <h1>Panel de Gestión</h1>
+        <button onclick="cargarVista('clientes')">Clientes</button>
+        <button onclick="cargarVista('ofertas')">Ofertas</button>
+        <button onclick="logout()">Cerrar sesión</button>
+
+        <div id="contenido">
+            <p>Selecciona una opción para comenzar.</p>
+        </div>
+    </div>
+
 </body>
 </html>
