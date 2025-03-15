@@ -43,16 +43,16 @@
         }
     </style>
 </head>
-    <script>
+    <script type="module">
+    import { verificarAutenticacion } from "./js/firebase.js";
+
+    // ✅ Verificar autenticación al cargar la página
     document.addEventListener("DOMContentLoaded", () => {
-        if (typeof firebase !== "undefined" && firebase.auth) {
-            console.log("🔄 Verificando autenticación...");
-            verificarAutenticacion(); // Bloqueo firme de acceso
-        } else {
-            console.error("❌ Firebase no está cargado correctamente.");
-        }
+        console.log("🔄 Verificando autenticación...");
+        verificarAutenticacion();
     });
 </script>
+
 <body>
 
     <div class="container">
