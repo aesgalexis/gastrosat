@@ -19,9 +19,8 @@ function cargarClientes() {
             return;
         }
 
-        tabla.innerHTML = ""; // Limpiar tabla antes de agregar nuevos clientes
+        // Limpiar tabla y reconstruir el contenido
         let contenidoTabla = "";
-
         snapshot.forEach(doc => {
             const cliente = doc.data();
             console.log("📄 Insertando en la tabla:", cliente);
@@ -41,7 +40,12 @@ function cargarClientes() {
         });
 
         console.log("📊 Contenido generado para la tabla:", contenidoTabla);
-        tabla.innerHTML = contenidoTabla; // Finalmente, actualizar la tabla en una sola operación
+        
+        // **FORZAR la actualización de la tabla**
+        setTimeout(() => {
+            tabla.innerHTML = contenidoTabla;
+            console.log("✅ Tabla actualizada correctamente.");
+        }, 100);
     })
     .catch(error => console.error("❌ Error al cargar clientes:", error));
 }
@@ -49,5 +53,5 @@ function cargarClientes() {
 // 🔹 Asegurar que `cargarClientes()` se ejecuta cuando el DOM esté listo
 document.addEventListener("DOMContentLoaded", () => {
     console.log("🚀 Vista de clientes completamente cargada.");
-    cargarClientes();
+    setTimeout(cargarClientes, 500);
 });
