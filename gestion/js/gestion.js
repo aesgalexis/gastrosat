@@ -26,6 +26,7 @@ function cargarVista(vista) {
 
 // Función para cargar scripts dinámicamente
 function cargarScript(scriptSrc) {
+    console.log(`📜 Cargando script: ${scriptSrc}`);
     const script = document.createElement("script");
     script.src = scriptSrc;
     script.defer = true;
