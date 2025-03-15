@@ -1,6 +1,12 @@
-// ✅ Importar Firebase en su versión modular (SIN COMPAT)
+// ✅ Importar Firebase correctamente con ES Modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { 
+    getAuth, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    signOut, 
+    onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 // ✅ Configuración de Firebase
@@ -19,24 +25,28 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ✅ Definir usuario autorizado ANTES de usarlo
-const usuarioAutorizado = "aesg.alexis@gmail.com";
+// ✅ Usuario autorizado
+const usuarioAutorizado = "tucorreo@gmail.com";
 
-// 🔒 Función para verificar autenticación y bloquear acceso si es necesario
+// 🔒 **Función para verificar autenticación y bloquear acceso si es necesario**
 export function verificarAutenticacion() {
+    console.log("🔍 Ejecutando verificación de autenticación...");
+
     onAuthStateChanged(auth, (user) => {
         if (!user || user.email !== usuarioAutorizado) {
             console.warn("⚠ Acceso NO autorizado. Redirigiendo a login...");
             window.location.href = "/gestion/login.html";
+        } else {
+            console.log("✅ Usuario autenticado:", user.email);
         }
     });
 }
 
-// 🔐 Función para iniciar sesión con Google
+// 🔐 **Función para iniciar sesión con Google**
 export function login() {
     const provider = new GoogleAuthProvider();
-    
-    // 🔧 Evitar problemas con Chrome
+
+    // 🔧 Evitar problemas con Chrome (ventanas emergentes)
     provider.setCustomParameters({
         prompt: "select_account"
     });
@@ -55,7 +65,7 @@ export function login() {
     });
 }
 
-// 🚪 Función para cerrar sesión
+// 🚪 **Función para cerrar sesión**
 export function logout() {
     signOut(auth).then(() => {
         console.log("✅ Sesión cerrada. Redirigiendo a login...");
@@ -63,7 +73,7 @@ export function logout() {
     }).catch((error) => console.error("❌ Error al cerrar sesión:", error));
 }
 
-// ✅ Función para cargar clientes desde Firestore
+// ✅ **Función para cargar clientes desde Firestore**
 export function cargarClientes() {
     const clientesLista = document.getElementById("clientes-lista");
     if (!clientesLista) return;
