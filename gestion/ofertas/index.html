@@ -77,9 +77,38 @@
             firebase.initializeApp(firebaseConfig);
         }
 
-        // 🔹 Inicializar Firestore
+        // 🔹 Inicializar Firestore y Auth
         const db = firebase.firestore();
+        const auth = firebase.auth();
         let ofertaEnEdicion = null; // Guardará la oferta que se está editando
+
+        // 🔹 Esperar autenticación antes de cargar datos
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("✅ Usuario autenticado:", user.email);
+                cargarClientes();  // Ahora sí podemos cargar clientes
+                cargarOfertas();   // Ahora sí podemos cargar ofertas
+            } else {
+                console.error("❌ Usuario no autenticado, redirigiendo...");
+                window.location.href = "../";  // Redirigir si no está autenticado
+            }
+        });
+
+        // 🔹 Cargar clientes en el selector
+        function cargarClientes() {
+            const clienteSelect = document.getElementById("oferta-cliente");
+            db.collection("clientes").get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    const cliente = doc.data();
+                    const option = document.createElement("option");
+                    option.value = doc.id;
+                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
+                    clienteSelect.appendChild(option);
+                });
+            }).catch(error => {
+                console.error("❌ Error al cargar clientes:", error);
+            });
+        }
 
         // 🔹 Cargar ofertas en el selector
         function cargarOfertas() {
@@ -95,20 +124,8 @@
                     option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
                     ofertaSelect.appendChild(option);
                 });
-            });
-        }
-
-        // 🔹 Cargar clientes en el selector
-        function cargarClientes() {
-            const clienteSelect = document.getElementById("oferta-cliente");
-            db.collection("clientes").get().then(snapshot => {
-                snapshot.forEach(doc => {
-                    const cliente = doc.data();
-                    const option = document.createElement("option");
-                    option.value = doc.id;
-                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
-                    clienteSelect.appendChild(option);
-                });
+            }).catch(error => {
+                console.error("❌ Error al cargar ofertas:", error);
             });
         }
 
@@ -162,13 +179,7 @@
                 return;
             }
 
-            const datosOferta = {
-                clienteId,
-                descripcion,
-                importe: parseFloat(importe),
-                estado,
-                fecha: new Date().toISOString().split("T")[0]
-            };
+            const datosOferta = { clienteId, descripcion, importe: parseFloat(importe), estado, fecha: new Date().toISOString().split("T")[0] };
 
             if (ofertaEnEdicion) {
                 db.collection("ofertas").doc(ofertaEnEdicion).update(datosOferta)
@@ -180,16 +191,11 @@
             }
         }
 
-        // 🔹 Resetear formulario para crear una nueva oferta
+        // 🔹 Resetear formulario para nueva oferta
         function nuevaOferta() {
             ofertaEnEdicion = null;
             document.getElementById("oferta-form").reset();
         }
-
-        window.onload = () => {
-            cargarClientes();
-            cargarOfertas();
-        };
     </script>
 </body>
 </html>
