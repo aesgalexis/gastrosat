@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de PDF - GastroSat</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+    <!-- jsPDF para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        // 🔹 Inicializar Firebase si no está inicializado
+        if (!firebase.apps.length) {
+            const firebaseConfig = {
+                apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
+                authDomain: "factu-f58ab.firebaseapp.com",
+                projectId: "factu-f58ab",
+                storageBucket: "factu-f58ab.firebasestorage.app",
+                messagingSenderId: "126560099435",
+                appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
+                measurementId: "G-MC2S07WMSL"
+            };
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // 🔹 Inicializar Firestore y Auth
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // 🔹 Cargar ofertas disponibles
+        function cargarOfertas() {
+            const ofertaSelect = document.getElementById("oferta-select");
+            ofertaSelect.innerHTML = "<option value=''>Cargando ofertas...</option>";
+
+            db.collection("ofertas").orderBy("fecha", "desc").get()
+            .then(snapshot => {
+                ofertaSelect.innerHTML = "<option value=''>Seleccione una oferta</option>";
+
+                snapshot.forEach(doc => {
+                    const oferta = doc.data();
+                    const option = document.createElement("option");
+                    option.value = doc.id;
+                    option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
+                    ofertaSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Error al cargar ofertas:", error);
+                ofertaSelect.innerHTML = "<option value=''>Error al cargar ofertas</option>";
+            });
+        }
+
+        // 🔹 Cargar los datos de la oferta seleccionada
+        function cargarDatosOferta() {
+            const ofertaId = document.getElementById("oferta-select").value;
+            if (!ofertaId) return;
+
+            db.collection("ofertas").doc(ofertaId).get().then(doc => {
+                if (doc.exists) {
+                    const oferta = doc.data();
+                    document.getElementById("oferta-id").textContent = oferta.ofertaId;
+                    document.getElementById("oferta-fecha").textContent = oferta.fecha;
+                    document.getElementById("oferta-nombre").textContent = oferta.nombre;
+                    document.getElementById("oferta-nombre-fiscal").textContent = oferta.nombreFiscal;
+                    document.getElementById("oferta-direccion").textContent = oferta.direccion;
+                    document.getElementById("oferta-cif").textContent = oferta.cif;
+                    document.getElementById("oferta-descripcion").textContent = oferta.descripcion;
+                    document.getElementById("oferta-importe").textContent = oferta.importe + " €";
+                    document.getElementById("oferta-estado").textContent = oferta.estado;
+                }
+            });
+        }
+
+        // 🔹 Generar PDF de la oferta seleccionada
+        function generarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.text("Oferta - GastroSat", 20, 20);
+
+            doc.setFontSize(12);
+            doc.text(`ID: ${document.getElementById("oferta-id").textContent}`, 20, 30);
+            doc.text(`Fecha: ${document.getElementById("oferta-fecha").textContent}`, 20, 40);
+            doc.text(`Cliente: ${document.getElementById("oferta-nombre").textContent}`, 20, 50);
+            doc.text(`Nombre Fiscal: ${document.getElementById("oferta-nombre-fiscal").textContent}`, 20, 60);
+            doc.text(`Dirección: ${document.getElementById("oferta-direccion").textContent}`, 20, 70);
+            doc.text(`CIF: ${document.getElementById("oferta-cif").textContent}`, 20, 80);
+            doc.text(`Descripción: ${document.getElementById("oferta-descripcion").textContent}`, 20, 90);
+            doc.text(`Importe Total: ${document.getElementById("oferta-importe").textContent}`, 20, 100);
+            doc.text(`Estado: ${document.getElementById("oferta-estado").textContent}`, 20, 110);
+
+            doc.save(`Oferta_${document.getElementById("oferta-id").textContent}.pdf`);
+        }
+
+        window.onload = cargarOfertas;
+    </script>
+
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
+        select, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; border-radius: 12px; border: 1px solid #ddd; }
+        button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #0056b3; }
+        .info-box { background: #f8f8f8; padding: 10px; margin-top: 10px; border-radius: 12px; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <h2>Generar PDF de Oferta</h2>
+    <button onclick="window.location.href='../'">🔙 Volver</button>
+
+    <label>Selecciona una oferta:</label>
+    <select id="oferta-select" onchange="cargarDatosOferta()"></select>
+
+    <div class="info-box">
+        <p><strong>ID:</strong> <span id="oferta-id">-</span></p>
+        <p><strong>Fecha:</strong> <span id="oferta-fecha">-</span></p>
+        <p><strong>Cliente:</strong> <span id="oferta-nombre">-</span></p>
+        <p><strong>Nombre Fiscal:</strong> <span id="oferta-nombre-fiscal">-</span></p>
+        <p><strong>Dirección:</strong> <span id="oferta-direccion">-</span></p>
+        <p><strong>CIF:</strong> <span id="oferta-cif">-</span></p>
+        <p><strong>Descripción:</strong> <span id="oferta-descripcion">-</span></p>
+        <p><strong>Importe Total:</strong> <span id="oferta-importe">-</span></p>
+        <p><strong>Estado:</strong> <span id="oferta-estado">-</span></p>
+    </div>
+
+    <button onclick="generarPDF()">📄 Generar PDF</button>
+
+</body>
+</html>
