@@ -29,7 +29,7 @@ function cargarClientes() {
             const fila = `
                 <tr>
                     <td>${cliente.nombre || "-"}</td>
-                    <td>${cliente.cif || "-"}</td>
+                    <td>${cliente.cif ? cliente.cif : "-"}</td>
                     <td>${cliente.telefono || "-"}</td>
                     <td>${cliente.email || "-"}</td>
                     <td>
