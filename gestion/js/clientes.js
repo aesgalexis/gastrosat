@@ -1,12 +1,23 @@
 console.log("🚀 `clientes.js` cargado correctamente.");
 
-// 🔹 Asignar funciones globalmente
+// 🔹 Función global para garantizar acceso
 window.cargarClientes = cargarClientes;
 window.agregarCliente = agregarCliente;
 window.editarCliente = editarCliente;
 window.eliminarCliente = eliminarCliente;
 
-// 🔹 Función para cargar clientes
+// 🔹 Esperar autenticación antes de cargar clientes
+auth.onAuthStateChanged(user => {
+    if (user) {
+        console.log("✅ Usuario autenticado:", user.email);
+        cargarClientes();
+    } else {
+        console.error("❌ Usuario no autenticado, redirigiendo...");
+        window.location.href = "../";
+    }
+});
+
+// 🔹 Función para cargar clientes en la tabla
 function cargarClientes() {
     console.log("📡 Intentando conectar con Firebase...");
 
