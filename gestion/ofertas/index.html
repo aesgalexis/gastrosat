@@ -12,40 +12,35 @@
 
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; text-align: center; }
-        button { background-color: #007BFF; color: white; padding: 10px; border: none; border-radius: 12px; cursor: pointer; margin: 10px 0; }
-        button:hover { background-color: #0056b3; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background-color: #f4f4f4; }
-        .btn-small { padding: 5px; font-size: 14px; }
-        .delete-btn { background-color: red; }
-        .delete-btn:hover { background-color: darkred; }
+        button { padding: 5px 10px; border-radius: 8px; cursor: pointer; }
+        .editar { background-color: #FFC107; }
+        .editar:hover { background-color: #E0A800; }
+        .pdf { background-color: #007BFF; color: white; }
+        .pdf:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
 
     <h2>Gestión de Ofertas</h2>
-    <button onclick="window.location.href='../'">🔙 Volver</button>
-    <button onclick="window.location.href='creator.html'">➕ Crear Oferta</button>
+    <button onclick="window.location.href='creator.html'">➕ Crear Nueva Oferta</button>
 
-    <h3>Ofertas Existentes</h3>
     <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Cliente</th>
-                <th>Importe</th>
-                <th>Estado</th>
+                <th>Subtotal (€)</th>
+                <th>Total (€)</th>
                 <th>Acciones</th>
             </tr>
         </thead>
-        <tbody id="tabla-ofertas">
-            <tr><td colspan="5">Cargando ofertas...</td></tr>
-        </tbody>
+        <tbody id="ofertas-lista"></tbody>
     </table>
 
     <script>
-        // 🔹 Verifica si Firebase ya está inicializado antes de usarlo
+        // 🔹 Inicializar Firebase
         if (!firebase.apps.length) {
             const firebaseConfig = {
                 apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
@@ -59,76 +54,46 @@
             firebase.initializeApp(firebaseConfig);
         }
 
-        // 🔹 Inicializar Firestore y Auth
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        // 🔹 Esperar autenticación antes de cargar datos
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                console.log("✅ Usuario autenticado:", user.email);
-                cargarOfertas();
-            } else {
-                console.error("❌ Usuario no autenticado, redirigiendo...");
-                window.location.href = "../"; 
-            }
-        });
-
         // 🔹 Cargar ofertas en la tabla
         function cargarOfertas() {
-            const tabla = document.getElementById("tabla-ofertas");
-            tabla.innerHTML = "<tr><td colspan='5'>Cargando ofertas...</td></tr>";
+            const lista = document.getElementById("ofertas-lista");
+            lista.innerHTML = "<tr><td colspan='4'>Cargando ofertas...</td></tr>";
 
+            const db = firebase.firestore();
             db.collection("ofertas").orderBy("fecha", "desc").get()
             .then(snapshot => {
-                if (snapshot.empty) {
-                    tabla.innerHTML = "<tr><td colspan='5'>No hay ofertas registradas</td></tr>";
-                    return;
-                }
-
-                tabla.innerHTML = "";
+                lista.innerHTML = "";
                 snapshot.forEach(doc => {
                     const oferta = doc.data();
-                    const fila = `
-                        <tr>
-                            <td>${oferta.ofertaId}</td>
-                            <td>${oferta.nombre}</td>
-                            <td>${oferta.importe} €</td>
-                            <td>${oferta.estado}</td>
-                            <td>
-                                <button class="btn-small" onclick="editarOferta('${doc.id}')">✏️ Editar</button>
-                                <button class="btn-small" onclick="generarPDF('${doc.id}')">📄 PDF</button>
-                                <button class="btn-small delete-btn" onclick="eliminarOferta('${doc.id}')">🗑️ Eliminar</button>
-                            </td>
-                        </tr>
+                    const tr = document.createElement("tr");
+
+                    tr.innerHTML = `
+                        <td>${oferta.nombre}</td>
+                        <td>${oferta.subtotal.toFixed(2)}</td>
+                        <td>${oferta.total.toFixed(2)}</td>
+                        <td>
+                            <button class="editar" onclick="editarOferta('${doc.id}')">✏️ Editar</button>
+                            <button class="pdf" onclick="generarPDF('${doc.id}')">📄 PDF</button>
+                        </td>
                     `;
-                    tabla.innerHTML += fila;
+                    lista.appendChild(tr);
                 });
             })
             .catch(error => console.error("❌ Error al cargar ofertas:", error));
         }
 
-        // 🔹 Redirigir a la edición de una oferta
+        // 🔹 Redirigir a la página de edición
         function editarOferta(ofertaId) {
-            window.location.href = `editar.html?ofertaId=${ofertaId}`;
+            window.location.href = `editor.html?ofertaId=${ofertaId}`;
         }
 
-        // 🔹 Redirigir a la generación de PDF
+        // 🔹 Redirigir a la página de generación de PDF
         function generarPDF(ofertaId) {
             window.location.href = `generator.html?ofertaId=${ofertaId}`;
         }
 
-        // 🔹 Eliminar una oferta
-        function eliminarOferta(ofertaId) {
-            if (!confirm("¿Estás seguro de que deseas eliminar esta oferta?")) return;
-
-            db.collection("ofertas").doc(ofertaId).delete()
-            .then(() => {
-                alert("✅ Oferta eliminada correctamente.");
-                cargarOfertas(); // Recargar la lista
-            })
-            .catch(error => console.error("❌ Error al eliminar oferta:", error));
-        }
+        window.onload = cargarOfertas;
     </script>
+
 </body>
 </html>
