@@ -3,156 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>unatomo</title>
+    <title>Ofertas - GastroSat</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 🔹 Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
+            authDomain: "factu-f58ab.firebaseapp.com",
+            projectId: "factu-f58ab",
+            storageBucket: "factu-f58ab.firebasestorage.app",
+            messagingSenderId: "126560099435",
+            appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
+            measurementId: "G-MC2S07WMSL"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 🔹 Cargar clientes en el selector
+        function cargarClientes() {
+            const clienteSelect = document.getElementById("oferta-cliente");
+            clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
+
+            db.collection("clientes").orderBy("nombre").get().then(snapshot => {
+                snapshot.forEach(doc => {
+                    const cliente = doc.data();
+                    const option = document.createElement("option");
+                    option.value = doc.id;
+                    option.textContent = `${cliente.nombre} (${cliente.cif})`;
+                    clienteSelect.appendChild(option);
+                });
+            });
+        }
+
+        // 🔹 Autocompletar datos del cliente
+        function autocompletarCliente() {
+            const clienteId = document.getElementById("oferta-cliente").value;
+
+            if (!clienteId) {
+                document.getElementById("oferta-nombre").value = "";
+                document.getElementById("oferta-nombre-fiscal").value = "";
+                document.getElementById("oferta-direccion").value = "";
+                document.getElementById("oferta-cif").value = "";
+                return;
+            }
+
+            db.collection("clientes").doc(clienteId).get().then(doc => {
+                if (doc.exists) {
+                    const cliente = doc.data();
+                    document.getElementById("oferta-nombre").value = cliente.nombre;
+                    document.getElementById("oferta-nombre-fiscal").value = cliente.nombreFiscal;
+                    document.getElementById("oferta-direccion").value = cliente.direccion;
+                    document.getElementById("oferta-cif").value = cliente.cif;
+                }
+            });
+        }
+
+        // 🔹 Guardar Oferta
+        function guardarOferta() {
+            const clienteId = document.getElementById("oferta-cliente").value;
+            const nombre = document.getElementById("oferta-nombre").value;
+            const nombreFiscal = document.getElementById("oferta-nombre-fiscal").value;
+            const direccion = document.getElementById("oferta-direccion").value;
+            const cif = document.getElementById("oferta-cif").value;
+            const descripcion = document.getElementById("oferta-descripcion").value;
+            const importe = document.getElementById("oferta-importe").value;
+            const estado = document.getElementById("oferta-estado").value;
+
+            if (!clienteId || !descripcion || !importe) {
+                alert("Seleccione un cliente y complete los campos obligatorios.");
+                return;
+            }
+
+            const fecha = new Date().toISOString().split("T")[0];
+            const ofertaId = `OF-${fecha.replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+            db.collection("ofertas").doc(ofertaId).set({
+                ofertaId: ofertaId,
+                clienteId: clienteId,
+                nombre: nombre,
+                nombreFiscal: nombreFiscal,
+                direccion: direccion,
+                cif: cif,
+                fecha: fecha,
+                descripcion: descripcion,
+                importe: parseFloat(importe),
+                estado: estado
+            })
+            .then(() => {
+                alert("Oferta guardada correctamente.");
+                document.getElementById("oferta-form").reset();
+            })
+            .catch(error => {
+                console.error("Error al guardar la oferta:", error);
+                alert("Error al guardar la oferta.");
+            });
+        }
+
+        window.onload = cargarClientes;
+    </script>
+
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            text-align: center;
-            position: relative;
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; text-align: center; }
+        input, select, textarea, button { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            font-size: 16px; 
+            border-radius: 12px;
+            border: 1px solid #ddd;
         }
-        .post-container {
-            width: 800px;
-            height: 600px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 20px;
-            position: absolute;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .active {
-            display: flex;
-        }
-        .post-upper {
-            color: blue;
-        }
-        .post-lower {
-            color: green;
-        }
-        .arrow {
-            font-size: 32px;
-            cursor: pointer;
-            position: fixed;
-            color: #333;
-        }
-        .arrow-left { left: 20px; top: 50%; transform: translateY(-50%); }
-        .arrow-right { right: 20px; top: 50%; transform: translateY(-50%); }
-        .arrow-up { top: 20px; left: 50%; transform: translateX(-50%); }
-        .arrow-down { bottom: 20px; left: 50%; transform: translateX(-50%); }
+        button { background-color: #007BFF; color: white; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
-    <div id="post-1" class="post-container active">
-        <h2>Primer post</h2>
-        <p>Contenido del primer post.</p>
-        <div class="arrow arrow-right" onclick="nextPost()">➡️</div>
-    </div>
-    
-    <div id="post-1-upper" class="post-container post-upper">
-        <h2>Nivel superior del primer post</h2>
-        <p>Contenido superior del primer post.</p>
-    </div>
-    
-    <div id="post-1-lower" class="post-container post-lower">
-        <h2>Nivel inferior del primer post</h2>
-        <p>Contenido inferior del primer post.</p>
-    </div>
 
-    <div id="post-2" class="post-container">
-        <h2>Segundo post</h2>
-        <p>Contenido del segundo post.</p>
-        <div class="arrow arrow-left" onclick="prevPost()">⬅️</div>
-        <div class="arrow arrow-right" onclick="nextPost()">➡️</div>
-    </div>
-    
-    <div id="post-2-upper" class="post-container post-upper">
-        <h2>Nivel superior del segundo post</h2>
-        <p>Contenido superior del segundo post.</p>
-    </div>
-    
-    <div id="post-2-lower" class="post-container post-lower">
-        <h2>Nivel inferior del segundo post</h2>
-        <p>Contenido inferior del segundo post.</p>
-    </div>
+    <h2>Gestión de Ofertas</h2>
+    <button onclick="window.location.href='../'">🔙 Volver</button>
 
-    <div id="post-3" class="post-container">
-        <h2>Tercer post</h2>
-        <p>Contenido del tercer post.</p>
-        <div class="arrow arrow-left" onclick="prevPost()">⬅️</div>
-    </div>
+    <h3>Crear Nueva Oferta</h3>
+    <form id="oferta-form">
+        <label>Cliente:</label>
+        <select id="oferta-cliente" onchange="autocompletarCliente()"></select>
 
-    <div id="post-3-upper" class="post-container post-upper">
-        <h2>Nivel superior del tercer post</h2>
-        <p>Contenido superior del tercer post.</p>
-    </div>
-    
-    <div id="post-3-lower" class="post-container post-lower">
-        <h2>Nivel inferior del tercer post</h2>
-        <p>Contenido inferior del tercer post.</p>
-    </div>
+        <label>Nombre:</label>
+        <input type="text" id="oferta-nombre" readonly>
 
-    <div class="arrow arrow-up" onclick="navigateUp()">⬆️</div>
-    <div class="arrow arrow-down" onclick="navigateDown()">⬇️</div>
+        <label>Nombre Fiscal:</label>
+        <input type="text" id="oferta-nombre-fiscal" readonly>
 
-    <script>
-        let postIndex = 1;
-        let totalPosts = 3;
-        let currentView = "main"; // Puede ser 'main', 'upper' o 'lower'
+        <label>Dirección:</label>
+        <input type="text" id="oferta-direccion" readonly>
 
-        function showPost(index) {
-            hideAllPosts();
-            document.getElementById(`post-${index}`).classList.add("active");
-            postIndex = index;
-            currentView = "main";
-        }
+        <label>CIF:</label>
+        <input type="text" id="oferta-cif" readonly>
 
-        function hideAllPosts() {
-            document.querySelectorAll(".post-container").forEach(post => post.classList.remove("active"));
-        }
+        <label>Descripción de la Oferta:</label>
+        <textarea id="oferta-descripcion" rows="3" placeholder="Detalles de la oferta"></textarea>
 
-        function nextPost() {
-            if (postIndex < totalPosts) {
-                showPost(postIndex + 1);
-            }
-        }
+        <label>Importe Total (€):</label>
+        <input type="number" id="oferta-importe" step="0.01" placeholder="0.00">
 
-        function prevPost() {
-            if (postIndex > 1) {
-                showPost(postIndex - 1);
-            }
-        }
+        <label>Estado:</label>
+        <select id="oferta-estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Aceptada">Aceptada</option>
+            <option value="Rechazada">Rechazada</option>
+        </select>
 
-        function navigateUp() {
-            if (currentView === "main") {
-                hideAllPosts();
-                document.getElementById(`post-${postIndex}-upper`).classList.add("active");
-                currentView = "upper";
-            } else if (currentView === "lower") {
-                showPost(postIndex);
-            }
-        }
+        <button type="button" onclick="guardarOferta()">Guardar Oferta</button>
+    </form>
 
-        function navigateDown() {
-            if (currentView === "main") {
-                hideAllPosts();
-                document.getElementById(`post-${postIndex}-lower`).classList.add("active");
-                currentView = "lower";
-            } else if (currentView === "upper") {
-                showPost(postIndex);
-            }
-        }
-    </script>
 </body>
 </html>
