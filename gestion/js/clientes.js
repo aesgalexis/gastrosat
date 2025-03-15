@@ -1,15 +1,12 @@
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("🚀 `clientes.js` cargado correctamente.");
-    cargarClientes();
-});
+console.log("🚀 `clientes.js` cargado correctamente.");
 
-// 🔹 Hacer las funciones accesibles globalmente
+// 🔹 Asignar funciones globalmente para que los botones las encuentren
 window.cargarClientes = cargarClientes;
 window.agregarCliente = agregarCliente;
 window.editarCliente = editarCliente;
 window.eliminarCliente = eliminarCliente;
 
-// 🔹 Cargar clientes desde Firebase y mostrarlos en la tabla
+// 🔹 Función para cargar clientes
 function cargarClientes() {
     console.log("📡 Intentando conectar con Firebase...");
 
@@ -30,7 +27,6 @@ function cargarClientes() {
             return;
         }
 
-        // Vaciar la tabla antes de actualizar
         tabla.innerHTML = "";
 
         snapshot.forEach(doc => {
@@ -56,8 +52,9 @@ function cargarClientes() {
     .catch(error => console.error("❌ Error al cargar clientes:", error));
 }
 
-// 🔹 Agregar un nuevo cliente
+// 🔹 Agregar un cliente
 function agregarCliente() {
+    console.log("➕ Agregar Cliente pulsado");
     const nombre = prompt("Ingrese el nombre del cliente:");
     const cif = prompt("Ingrese el CIF:");
     const telefono = prompt("Ingrese el teléfono:");
@@ -84,6 +81,7 @@ function agregarCliente() {
 
 // 🔹 Editar cliente
 function editarCliente(clienteId) {
+    console.log("✏️ Editar Cliente pulsado:", clienteId);
     db.collection("clientes").doc(clienteId).get()
     .then(doc => {
         if (!doc.exists) {
@@ -113,6 +111,7 @@ function editarCliente(clienteId) {
 
 // 🔹 Eliminar cliente
 function eliminarCliente(clienteId) {
+    console.log("🗑️ Eliminar Cliente pulsado:", clienteId);
     if (!confirm("⚠️ ¿Seguro que quieres eliminar este cliente?")) return;
 
     db.collection("clientes").doc(clienteId).delete()
