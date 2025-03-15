@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("🚀 Clientes.js cargado, iniciando carga de clientes...");
+    console.log("🚀 `clientes.js` cargado correctamente.");
     cargarClientes();
 });
 
@@ -23,10 +23,8 @@ function cargarClientes() {
             return;
         }
 
-        // 🔥 Forzar la actualización eliminando todos los nodos antes de insertar nuevos datos
-        while (tabla.firstChild) {
-            tabla.removeChild(tabla.firstChild);
-        }
+        // Vaciar la tabla antes de actualizar
+        tabla.innerHTML = "";
 
         snapshot.forEach(doc => {
             const cliente = doc.data();
@@ -47,7 +45,6 @@ function cargarClientes() {
         });
 
         console.log("✅ Tabla actualizada correctamente.");
-        console.log("📊 Contenido actual de la tabla:", tabla.innerHTML);
     })
     .catch(error => console.error("❌ Error al cargar clientes:", error));
 }
