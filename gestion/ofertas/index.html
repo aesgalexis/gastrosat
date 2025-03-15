@@ -24,21 +24,37 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 🔹 Cargar clientes en el selector
-        function cargarClientes() {
-            const clienteSelect = document.getElementById("oferta-cliente");
-            clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
+         // 🔹 Cargar clientes en el selector
+    function cargarClientes() {
+        const clienteSelect = document.getElementById("oferta-cliente");
+        clienteSelect.innerHTML = "<option value=''>Cargando clientes...</option>";
 
-            db.collection("clientes").orderBy("nombre").get().then(snapshot => {
-                snapshot.forEach(doc => {
-                    const cliente = doc.data();
+        db.collection("clientes").get().then(snapshot => {
+            clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
+            let clientesEncontrados = false;
+
+            snapshot.forEach(doc => {
+                const cliente = doc.data();
+                if (cliente.nombre && cliente.cif) {  // Verifica que tenga datos
+                    clientesEncontrados = true;
                     const option = document.createElement("option");
                     option.value = doc.id;
                     option.textContent = `${cliente.nombre} (${cliente.cif})`;
                     clienteSelect.appendChild(option);
-                });
+                }
             });
-        }
+
+            if (!clientesEncontrados) {
+                clienteSelect.innerHTML = "<option value=''>No hay clientes disponibles</option>";
+            }
+        })
+        .catch(error => {
+            console.error("Error al cargar clientes:", error);
+            clienteSelect.innerHTML = "<option value=''>Error al cargar clientes</option>";
+        });
+    }
+
+    window.onload = cargarClientes;
 
         // 🔹 Autocompletar datos del cliente
         function autocompletarCliente() {
