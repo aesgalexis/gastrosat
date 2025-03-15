@@ -25,15 +25,14 @@
         firebase.initializeApp(firebaseConfig);
 
         // 🔹 Correo permitido para acceder
-        const emailPermitido = "TU_CORREO@gmail.com"; // Reemplázalo con tu cuenta
+        const emailPermitido = "aesg.alexis@gmail.com"; // Reemplázalo con tu cuenta
 
-        // 🔹 Configurar FirebaseUI
-        const ui = new firebaseui.auth.AuthUI(firebase.auth());
-
+        // 🔹 Inicializar FirebaseUI
         function iniciarFirebaseUI() {
+            const ui = new firebaseui.auth.AuthUI(firebase.auth());
             ui.start('#firebaseui-auth-container', {
                 signInOptions: [
-                    firebase.auth.GoogleAuthProvider.PROVIDER_ID // Solo permite Google
+                    firebase.auth.GoogleAuthProvider.PROVIDER_ID
                 ],
                 signInFlow: "popup",
                 callbacks: {
