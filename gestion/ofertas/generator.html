@@ -28,9 +28,6 @@
     <h2>Generar PDF de Oferta</h2>
     <button onclick="window.location.href='../'">🔙 Volver</button>
 
-    <label>Selecciona una oferta:</label>
-    <select id="oferta-select" onchange="cargarDatosOferta()"></select>
-
     <!-- 📄 Plantilla para el PDF -->
     <div id="pdf-content" class="pdf-container">
         <div class="header">
@@ -73,50 +70,14 @@
             firebase.initializeApp(firebaseConfig);
         }
 
-        // 🔹 Inicializar Firestore y Auth
+        // 🔹 Inicializar Firestore
         const db = firebase.firestore();
-        const auth = firebase.auth();
 
-        // 🔹 Detectar cambios en autenticación
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                cargarOfertas();
-            } else {
-                window.location.href = "../"; // Redirigir si no está autenticado
-            }
-        });
+        // 🔹 Obtener ofertaId desde la URL
+        const params = new URLSearchParams(window.location.search);
+        const ofertaId = params.get("ofertaId");
 
-        // 🔹 Cargar ofertas disponibles
-        function cargarOfertas() {
-            const ofertaSelect = document.getElementById("oferta-select");
-            ofertaSelect.innerHTML = "<option value=''>Cargando ofertas...</option>";
-
-            db.collection("ofertas").orderBy("fecha", "desc").get()
-            .then(snapshot => {
-                if (snapshot.empty) {
-                    ofertaSelect.innerHTML = "<option value=''>No hay ofertas disponibles</option>";
-                    return;
-                }
-
-                ofertaSelect.innerHTML = "<option value=''>Seleccione una oferta</option>";
-
-                snapshot.forEach(doc => {
-                    const oferta = doc.data();
-                    const option = document.createElement("option");
-                    option.value = doc.id;
-                    option.textContent = `${oferta.ofertaId} - ${oferta.nombre}`;
-                    ofertaSelect.appendChild(option);
-                });
-            })
-            .catch(() => {
-                ofertaSelect.innerHTML = "<option value=''>Error al cargar ofertas</option>";
-            });
-        }
-
-        // 🔹 Cargar datos de la oferta seleccionada
-        function cargarDatosOferta() {
-            const ofertaId = document.getElementById("oferta-select").value;
-
+        if (ofertaId) {
             db.collection("ofertas").doc(ofertaId).get().then(doc => {
                 if (doc.exists) {
                     const oferta = doc.data();
