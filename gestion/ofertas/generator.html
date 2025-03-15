@@ -10,12 +10,21 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- jsPDF y jsPDF-AutoTable para generación de PDF -->
+    <!-- jsPDF para generación de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
-        #oferta-detalle { text-align: left; border: 1px solid #ddd; padding: 20px; border-radius: 12px; background: #f9f9f9; margin-top: 20px; }
+        body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0; }
+        #contenedor { display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        #vista-previa { 
+            width: 210mm; height: 297mm; padding: 20mm; 
+            border: 1px solid #ddd; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+            display: flex; flex-direction: column; align-items: flex-start; text-align: left;
+        }
+        #logo { width: 100px; }
+        .info { width: 100%; display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .separador { width: 100%; border-top: 2px solid #000; margin: 10px 0; }
+        .detalle { font-size: 14px; }
         button { background-color: #007BFF; color: white; padding: 10px; border: none; border-radius: 12px; cursor: pointer; margin-top: 20px; }
         button:hover { background-color: #0056b3; }
     </style>
@@ -25,17 +34,35 @@
     <h2>Vista Previa de la Oferta</h2>
     <button onclick="window.history.back()">🔙 Volver</button>
 
-    <div id="oferta-detalle">
-        <p><strong>ID:</strong> <span id="oferta-id"></span></p>
-        <p><strong>Cliente:</strong> <span id="oferta-nombre"></span></p>
-        <p><strong>Nombre Fiscal:</strong> <span id="oferta-nombre-fiscal"></span></p>
-        <p><strong>Dirección:</strong> <span id="oferta-direccion"></span></p>
-        <p><strong>CIF:</strong> <span id="oferta-cif"></span></p>
-        <p><strong>Fecha:</strong> <span id="oferta-fecha"></span></p>
-        <p><strong>Descripción:</strong></p>
-        <p id="oferta-descripcion"></p>
-        <p><strong>Importe Total:</strong> <span id="oferta-importe"></span> €</p>
-        <p><strong>Estado:</strong> <span id="oferta-estado"></span></p>
+    <div id="contenedor">
+        <!-- 🔹 Previsualización en formato A4 -->
+        <div id="vista-previa">
+            <div class="info">
+                <img id="logo" src="/logo5.png" alt="Logo">
+                <div>
+                    <p><strong>Empresa:</strong> GastroSat</p>
+                    <p><strong>Dirección:</strong> -----------------</p>
+                    <p><strong>Teléfono:</strong> -----------------</p>
+                    <p><strong>Email:</strong> -----------------</p>
+                </div>
+                <div>
+                    <p><strong>Cliente:</strong> <span id="oferta-nombre"></span></p>
+                    <p><strong>Fiscal:</strong> <span id="oferta-nombre-fiscal"></span></p>
+                    <p><strong>Dirección:</strong> <span id="oferta-direccion"></span></p>
+                    <p><strong>CIF:</strong> <span id="oferta-cif"></span></p>
+                </div>
+            </div>
+
+            <div class="separador"></div>
+            
+            <h3>Descripción de la Oferta</h3>
+            <p id="oferta-descripcion" class="detalle"></p>
+
+            <div class="separador"></div>
+
+            <p><strong>Importe Total:</strong> <span id="oferta-importe"></span> €</p>
+            <p><strong>Estado:</strong> <span id="oferta-estado"></span></p>
+        </div>
     </div>
 
     <button onclick="generarPDF()">📄 Descargar PDF</button>
@@ -80,12 +107,10 @@
                 }
 
                 const oferta = doc.data();
-                document.getElementById("oferta-id").textContent = oferta.ofertaId;
                 document.getElementById("oferta-nombre").textContent = oferta.nombre;
                 document.getElementById("oferta-nombre-fiscal").textContent = oferta.nombreFiscal;
                 document.getElementById("oferta-direccion").textContent = oferta.direccion;
                 document.getElementById("oferta-cif").textContent = oferta.cif;
-                document.getElementById("oferta-fecha").textContent = oferta.fecha;
                 document.getElementById("oferta-descripcion").textContent = oferta.descripcion;
                 document.getElementById("oferta-importe").textContent = oferta.importe;
                 document.getElementById("oferta-estado").textContent = oferta.estado;
@@ -98,41 +123,38 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ format: "a4" });
 
-            // 🔹 Logo de la empresa
+            // 🔹 Logo
             const img = new Image();
-            img.src = "/logov5.jpg"; // Ruta del logo
+            img.src = "/logo5.png";
 
             img.onload = function () {
-                doc.addImage(img, "jpg", 20, 15, 50, 20);
+                doc.addImage(img, "PNG", 20, 15, 50, 20);
 
-                // 🔹 Datos de la empresa (4 líneas reservadas)
+                // 🔹 Datos de la empresa
                 doc.setFontSize(12);
                 doc.text("Empresa: GastroSat", 20, 45);
                 doc.text("Dirección: ---------------", 20, 55);
                 doc.text("Teléfono: ---------------", 20, 65);
                 doc.text("Email: ---------------", 20, 75);
 
-                // 🔹 Datos del cliente (alineados a la derecha)
+                // 🔹 Datos del cliente
                 doc.text("Cliente: " + document.getElementById("oferta-nombre").textContent, 120, 45);
                 doc.text("Fiscal: " + document.getElementById("oferta-nombre-fiscal").textContent, 120, 55);
                 doc.text("Dirección: " + document.getElementById("oferta-direccion").textContent, 120, 65);
                 doc.text("CIF: " + document.getElementById("oferta-cif").textContent, 120, 75);
 
-                // 🔹 Línea separadora
+                // 🔹 Separador
                 doc.line(20, 85, 190, 85);
 
-                // 🔹 Descripción de la oferta
+                // 🔹 Descripción
                 doc.setFontSize(14);
                 doc.text("Descripción de la Oferta:", 20, 95);
                 doc.setFontSize(12);
                 const desc = doc.splitTextToSize(document.getElementById("oferta-descripcion").textContent, 160);
                 doc.text(desc, 20, 105);
 
-                // 🔹 Segunda línea separadora
-                doc.line(20, 140, 190, 140);
-
-                // 🔹 Guardar el PDF
-                doc.save(`Oferta_${document.getElementById("oferta-id").textContent}.pdf`);
+                // 🔹 Guardar PDF
+                doc.save(`Oferta_${ofertaId}.pdf`);
             };
         }
 
