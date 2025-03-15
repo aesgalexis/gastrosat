@@ -56,66 +56,46 @@
             firebase.initializeApp(firebaseConfig);
         }
 
-        // 🔹 Firestore
         const db = firebase.firestore();
         const urlParams = new URLSearchParams(window.location.search);
-        const ofertaId = urlParams.get("ofertaId"); // Detectar si hay una oferta a editar
-        let ofertaData = null;
+        const ofertaId = urlParams.get("ofertaId");
 
         function cargarOferta() {
-            if (ofertaId) {
-                document.getElementById("titulo").textContent = "Editar Oferta"; // Cambia el título
+            if (!ofertaId) return; // 🛠️ Si no hay ofertaId, es una oferta nueva
 
-                db.collection("ofertas").doc(ofertaId).get()
-                .then(doc => {
-                    if (!doc.exists) {
-                        alert("❌ La oferta no existe.");
-                        window.history.back();
-                        return;
-                    }
+            document.getElementById("titulo").textContent = "Editar Oferta"; // Cambia el título
 
-                    ofertaData = doc.data();
-                    document.getElementById("oferta-nombre").textContent = ofertaData.nombre;
+            db.collection("ofertas").doc(ofertaId).get()
+            .then(doc => {
+                if (!doc.exists) {
+                    alert("❌ La oferta no existe.");
+                    window.history.back();
+                    return;
+                }
 
-                    // Cargar conceptos en la interfaz
-                    const container = document.getElementById("conceptos-container");
-                    container.innerHTML = "";
-                    ofertaData.conceptos.forEach(concepto => {
-                        const div = document.createElement("div");
-                        div.classList.add("concepto");
-                        div.innerHTML = `
-                            <input type="text" value="${concepto.nombre}" class="concepto-nombre" required>
-                            <input type="number" value="${concepto.cantidad}" min="1" class="concepto-cantidad" required oninput="actualizarTotal()">
-                            <input type="number" value="${concepto.precio}" step="0.01" class="concepto-precio" required oninput="actualizarTotal()">
-                            <button type="button" onclick="eliminarConcepto(this)">❌</button>
-                        `;
-                        container.appendChild(div);
-                    });
+                const oferta = doc.data();
+                document.getElementById("oferta-nombre").textContent = oferta.nombre || "Sin nombre";
 
-                    actualizarTotal();
-                })
-                .catch(error => console.error("❌ Error al cargar la oferta:", error));
-            }
+                // Cargar conceptos
+                const container = document.getElementById("conceptos-container");
+                container.innerHTML = "";
+                (oferta.conceptos || []).forEach(concepto => {
+                    const div = document.createElement("div");
+                    div.classList.add("concepto");
+                    div.innerHTML = `
+                        <input type="text" value="${concepto.nombre}" class="concepto-nombre" required>
+                        <input type="number" value="${concepto.cantidad}" min="1" class="concepto-cantidad" required oninput="actualizarTotal()">
+                        <input type="number" value="${concepto.precio}" step="0.01" class="concepto-precio" required oninput="actualizarTotal()">
+                        <button type="button" onclick="eliminarConcepto(this)">❌</button>
+                    `;
+                    container.appendChild(div);
+                });
+
+                actualizarTotal();
+            })
+            .catch(error => console.error("❌ Error al cargar la oferta:", error));
         }
 
-        // 🔹 Agregar concepto
-        function agregarConcepto() {
-            const container = document.getElementById("conceptos-container");
-            const div = document.createElement("div");
-            div.classList.add("concepto");
-
-            div.innerHTML = `
-                <input type="text" placeholder="Concepto" class="concepto-nombre" required>
-                <input type="number" placeholder="Cantidad" class="concepto-cantidad" value="1" min="1" required oninput="actualizarTotal()">
-                <input type="number" placeholder="Precio Unitario (€)" class="concepto-precio" step="0.01" required oninput="actualizarTotal()">
-                <button type="button" onclick="eliminarConcepto(this)">❌</button>
-            `;
-
-            container.appendChild(div);
-            actualizarTotal();
-        }
-
-        // 🔹 Calcular totales
         function actualizarTotal() {
             let subtotal = 0;
             document.querySelectorAll(".concepto").forEach(concepto => {
@@ -129,26 +109,16 @@
             document.getElementById("oferta-total").textContent = total.toFixed(2);
         }
 
-        // 🔹 Guardar oferta (crear o actualizar)
         function guardarOferta() {
-            const conceptos = [];
-            document.querySelectorAll(".concepto").forEach(concepto => {
-                const nombre = concepto.querySelector(".concepto-nombre").value.trim();
-                const cantidad = parseFloat(concepto.querySelector(".concepto-cantidad").value) || 1;
-                const precio = parseFloat(concepto.querySelector(".concepto-precio").value) || 0;
-                if (nombre) conceptos.push({ nombre, cantidad, precio });
-            });
-
             const subtotal = parseFloat(document.getElementById("oferta-subtotal").textContent);
             const total = parseFloat(document.getElementById("oferta-total").textContent);
 
             if (ofertaId) {
-                db.collection("ofertas").doc(ofertaId).update({ conceptos, subtotal, total })
+                db.collection("ofertas").doc(ofertaId).update({ subtotal, total })
                 .then(() => alert("✅ Cambios guardados."));
             }
         }
 
-        // 🔹 Cargar oferta si hay un `ofertaId`
         window.onload = cargarOferta;
     </script>
 
