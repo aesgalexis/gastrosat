@@ -3,57 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión - GastroSat</title>
+    <title>Clientes - GastroSat</title>
 
-    <link rel="stylesheet" href="css/styles.css">
-
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- Firebase y lógica de gestión -->
-    <script src="js/firebase.js"></script>
-    <script src="js/gestion.js"></script>
-
-    <!-- 🚀 Cargar `clientes.js` solo cuando todo esté listo -->
+    <!-- Firebase Config -->
     <script>
-    function cargarVista(vista) {
-        console.log(`📂 Intentando cargar vista: ${vista}`);
-        fetch(`views/${vista}.html`)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById("contenido").innerHTML = html;
-                console.log(`✅ Vista ${vista} cargada correctamente.`);
+        const firebaseConfig = {
+            apiKey: "AIzaSyAst9f2-Jro1d4OX0henL8OeKXT4Ds35uA",
+            authDomain: "factu-f58ab.firebaseapp.com",
+            projectId: "factu-f58ab",
+            storageBucket: "factu-f58ab.firebasestorage.app",
+            messagingSenderId: "126560099435",
+            appId: "1:126560099435:web:483f6c5d68ab3217c3652e",
+            measurementId: "G-MC2S07WMSL"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
 
-                // 🔹 Cargar script específico solo después de cargar la vista
-                if (vista === "clientes") {
-                    let script = document.createElement("script");
-                    script.src = "js/clientes.js";
-                    script.onload = function() {
-                        console.log("✅ `clientes.js` cargado correctamente.");
-                        if (typeof cargarClientes === "function") {
-                            console.log("🚀 Ejecutando `cargarClientes()`...");
-                            cargarClientes();
-                        } else {
-                            console.error("❌ `cargarClientes` no está definido después de cargar `clientes.js`.");
-                        }
-                    };
-                    document.body.appendChild(script);
-                }
-            })
-            .catch(error => console.error(`❌ Error al cargar la vista: ${error}`));
-    }
-</script>
-
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: #f4f4f4; }
+    </style>
 </head>
 <body>
-    <h1>Gestión GastroSat</h1>
-    <nav>
-        <button onclick="cargarVista('ofertas')">📄 Ofertas</button>
-        <button onclick="cargarVista('clientes')">👥 Clientes</button>
-    </nav>
 
-    <div id="contenido">Cargando...</div>
+    <h2>Lista de Clientes</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>CIF</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-clientes">
+            <tr><td colspan="4">Cargando...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        function cargarClientes() {
+            console.log("📡 Cargando clientes...");
+
+            const tabla = document.getElementById("tabla-clientes");
+            if (!tabla) {
+                console.error("❌ No se encontró la tabla.");
+                return;
+            }
+
+            db.collection("clientes").orderBy("nombre", "asc").get()
+            .then(snapshot => {
+                console.log("✅ Clientes obtenidos:", snapshot.docs.length);
+
+                if (snapshot.empty) {
+                    tabla.innerHTML = "<tr><td colspan='4'>No hay clientes registrados</td></tr>";
+                    return;
+                }
+
+                tabla.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const cliente = doc.data();
+                    console.log("📄 Cliente:", cliente);
+
+                    const fila = `
+                        <tr>
+                            <td>${cliente.nombre || "-"}</td>
+                            <td>${cliente.cif || "-"}</td>
+                            <td>${cliente.telefono || "-"}</td>
+                            <td>${cliente.email || "-"}</td>
+                        </tr>
+                    `;
+                    tabla.innerHTML += fila;
+                });
+
+                console.log("✅ Tabla actualizada correctamente.");
+            })
+            .catch(error => console.error("❌ Error al cargar clientes:", error));
+        }
+
+        // Ejecutar al cargar la página
+        window.onload = cargarClientes;
+    </script>
+
 </body>
 </html>
