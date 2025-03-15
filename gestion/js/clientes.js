@@ -1,6 +1,6 @@
 console.log("🚀 `clientes.js` cargado correctamente.");
 
-// 🔹 Asignar funciones globalmente para que los botones las encuentren
+// 🔹 Asignar funciones globalmente para evitar errores
 window.cargarClientes = cargarClientes;
 window.agregarCliente = agregarCliente;
 window.editarCliente = editarCliente;
@@ -10,12 +10,15 @@ window.eliminarCliente = eliminarCliente;
 function cargarClientes() {
     console.log("📡 Intentando conectar con Firebase...");
 
+    // Esperar a que la tabla exista en el DOM
     const tabla = document.getElementById("tabla-clientes");
     if (!tabla) {
-        console.error("❌ No se encontró la tabla de clientes.");
+        console.warn("⏳ La tabla aún no está disponible. Reintentando en 500ms...");
+        setTimeout(cargarClientes, 500);
         return;
     }
 
+    console.log("✅ Tabla encontrada. Procediendo a cargar clientes...");
     tabla.innerHTML = "<tr><td colspan='5'>Cargando...</td></tr>";
 
     db.collection("clientes").orderBy("nombre", "asc").get()
