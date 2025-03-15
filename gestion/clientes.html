@@ -1,0 +1,31 @@
+<!-- clientes.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - GastroSat</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <h2>Gestión de Clientes</h2>
+    <button onclick="mostrarFormularioCliente()">➕ Agregar Cliente</button>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>CIF</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-clientes">
+            <tr><td colspan="5">Cargando clientes...</td></tr>
+        </tbody>
+    </table>
+    
+    <script src="js/clientes.js"></script>
+</body>
+</html>
