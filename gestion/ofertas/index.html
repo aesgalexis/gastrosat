@@ -10,8 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
-    <!-- jsPDF y html2canvas para generar PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- jsPDF para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
@@ -56,7 +55,6 @@
                 clienteSelect.innerHTML = "<option value=''>Seleccione un cliente</option>";
 
                 snapshot.forEach(doc => {
-                    console.log("Cliente encontrado:", doc.data());
                     const cliente = doc.data();
                     const option = document.createElement("option");
                     option.value = doc.id;
@@ -70,7 +68,7 @@
             });
         }
 
-        // 🔹 Autocompletar datos del cliente seleccionado
+        // 🔹 Autocompletar datos del cliente
         function autocompletarCliente() {
             const clienteId = document.getElementById("oferta-cliente").value;
 
@@ -93,7 +91,7 @@
             });
         }
 
-        // 🔹 Guardar Oferta en Firestore
+        // 🔹 Guardar Oferta
         function guardarOferta() {
             const clienteId = document.getElementById("oferta-cliente").value;
             const nombre = document.getElementById("oferta-nombre").value;
@@ -140,16 +138,17 @@
             const doc = new jsPDF();
 
             doc.setFontSize(16);
-            doc.text("OFERTA - GASTROSAT", 20, 20);
+            doc.text("Oferta - GastroSat", 20, 20);
 
             doc.setFontSize(12);
-            doc.text(`Cliente: ${document.getElementById("oferta-nombre").value}`, 20, 30);
-            doc.text(`Nombre Fiscal: ${document.getElementById("oferta-nombre-fiscal").value}`, 20, 40);
-            doc.text(`Dirección: ${document.getElementById("oferta-direccion").value}`, 20, 50);
-            doc.text(`CIF: ${document.getElementById("oferta-cif").value}`, 20, 60);
-            doc.text(`Descripción: ${document.getElementById("oferta-descripcion").value}`, 20, 70);
-            doc.text(`Importe Total: ${document.getElementById("oferta-importe").value} €`, 20, 80);
-            doc.text(`Estado: ${document.getElementById("oferta-estado").value}`, 20, 90);
+            doc.text(`Fecha: ${new Date().toISOString().split("T")[0]}`, 20, 30);
+            doc.text(`Cliente: ${document.getElementById("oferta-nombre").value}`, 20, 40);
+            doc.text(`Nombre Fiscal: ${document.getElementById("oferta-nombre-fiscal").value}`, 20, 50);
+            doc.text(`Dirección: ${document.getElementById("oferta-direccion").value}`, 20, 60);
+            doc.text(`CIF: ${document.getElementById("oferta-cif").value}`, 20, 70);
+            doc.text(`Descripción: ${document.getElementById("oferta-descripcion").value}`, 20, 80);
+            doc.text(`Importe Total: ${document.getElementById("oferta-importe").value} €`, 20, 90);
+            doc.text(`Estado: ${document.getElementById("oferta-estado").value}`, 20, 100);
 
             doc.save("Oferta_GastroSat.pdf");
         }
@@ -166,6 +165,7 @@
 
     <h2>Gestión de Ofertas</h2>
     <button onclick="window.location.href='../'">🔙 Volver</button>
+
     <button onclick="generarPDF()">📄 Generar PDF</button>
 
 </body>
