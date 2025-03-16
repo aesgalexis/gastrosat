@@ -1,36 +1,6 @@
 /* Fuente general */
 body {
-    font-family: Arial, sans-serif;
-}
-
-/* Logo */
-img.logo {
-    width: 100%;
-    max-width: 300px;
-    height: auto;
-}
-
-/* Ajuste para escritorio */
-@media screen and (min-width: 768px) { 
-    .wrapper {
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 50px;
-        max-width: 1000px;
-    }
-
-    .logo {
-        max-width: 300px;
-        height: auto;
-        align-self: flex-start;
-        margin-top: 90px;
-    }
-
-    .content {
-        text-align: left;
-        max-width: 650px;
-    }
+    font-family: ;
 }
 
 /* Enlaces */
