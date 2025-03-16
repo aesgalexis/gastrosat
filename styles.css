@@ -1,0 +1,83 @@
+/* Fuente general */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Logo */
+img.logo {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+/* Ajuste para escritorio */
+@media screen and (min-width: 768px) { 
+    .wrapper {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 50px;
+        max-width: 1000px;
+    }
+
+    .logo {
+        max-width: 300px;
+        height: auto;
+        align-self: flex-start;
+        margin-top: 90px;
+    }
+
+    .content {
+        text-align: left;
+        max-width: 650px;
+    }
+}
+
+/* Enlaces */
+a {
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+a:hover {
+    color: #007bff; 
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    background-color: #f8f8f8;
+    font-size: 14px;
+    color: #333;
+}
+
+footer img {
+    opacity: 0.5;
+    transition: opacity 0.3s ease-in-out;
+    margin-right: 10px;
+}
+
+footer img:hover {
+    opacity: 1;
+}
+
+/* Ajuste de imágenes del footer */
+footer div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+/* Listas */
+li {
+    margin-bottom: 5px;
+}
