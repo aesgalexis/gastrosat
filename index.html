@@ -1,6 +1,73 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <style>
+    /* Ajustes generales (ya funciona bien en móviles) */
+img.logo {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+/* Ajustes generales (ya funciona bien en móviles) */
+img.logo {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+@media screen and (min-width: 1180px) {
+    .logo {
+        position: sticky; /* Elimina la propiedad sticky */
+        top: 20px;
+    }
+}
+
+/* Ajuste para escritorio */
+@media screen and (min-width: 768px) { 
+    .wrapper {
+        display: flex;  /* Alinea el logo y el contenido en fila */
+        align-items: flex-start; /* Asegura que ambos queden arriba */
+        justify-content: center; /* Mantiene el contenido centrado */
+        gap: 50px; /* Espacio entre el logo y el contenido */
+        max-width: 1000px; /* Ajusta el ancho máximo para evitar desbordamientos */
+    }
+
+    .logo {
+        max-width: 300px; /* Ajusta el tamaño del logo */
+        height: auto;
+        align-self: flex-start; /* Asegura que el logo esté arriba */
+        margin-top: 90px; /* Ajusta la distancia desde arriba */
+    }
+    .content {
+        text-align: left;
+        max-width: 650px;
+    }
+}
+a {
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+a:hover {
+    color: #007bff; 
+    text-decoration: underline;
+}
+        /* Ajuste de opacidad en estado normal */
+footer img {
+    opacity: 0.5;
+    transition: opacity 0.3s ease-in-out;
+    margin-right: 10px;
+}
+
+/* Recupera la opacidad al pasar el ratón */
+footer img:hover {
+    opacity: 1;
+}
+li {
+    margin-bottom: 5px;
+}
+
+</style>
 <link rel="preload" href="logov5.svg" as="image" type="image/svg+xml">
     <!-- Favicon estándar -->
 <link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
@@ -21,7 +88,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>GastroSat | Asistencia Técnica y Equipamiento para Hostelería</title>
-    <link rel="stylesheet" href="styles.css">
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="GastroSat ofrece asistencia técnica y venta de equipamiento para hostelería en Mallorca. Reparación, mantenimiento e instalación de maquinaria industrial.">
     <meta name="keywords" content="asistencia técnica hostelería, reparación de maquinaria hostelería, venta de equipamiento hostelería, comprar maquinaria industrial, mantenimiento equipos industriales, servicio técnico maquinaria, reparación maquinaria Mallorca, equipamiento para hostelería, repuestos maquinaria hostelería, instalación de maquinaria, Fricosmos, Tecnoinox, Infrico, Impafri, Intarcon, hornos industriales, vitrinas refrigeradas, lavavajillas industriales, freidoras industriales, maquinaria de frío, servicio técnico en Mallorca, reparación maquinaria en Palma, asistencia técnica en Baleares, equipamiento para hoteles Mallorca, maquinaria para restaurantes Palma, venta de maquinaria hostelería, comprar equipamiento para restaurantes, distribuidor de maquinaria industrial, maquinaria para hoteles en Mallorca, maquinaria de cocina industrial, proveedores de equipamiento gastronómico, venta de hornos industriales, comprar lavavajillas industriales, maquinaria de frío industrial">
