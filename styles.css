@@ -28,6 +28,9 @@ ul {
     
 /* Footer */
 footer {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box; /* Asegura que el padding no aumente el tamaño */
     text-align: center;
     padding: 20px;
     margin-top: 40px;
