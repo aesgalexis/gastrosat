@@ -38,6 +38,10 @@ footer {
     font-size: 14px;
     color: #333;
 }
+footer > div {
+    max-width: 1900px; /* O el valor que prefieras */
+    margin: auto; /* Centra el contenido */
+}
 
 footer img {
     opacity: 0.5;
