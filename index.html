@@ -213,6 +213,12 @@ img.logo {
     <p>Desarrollado con 💚 por <strong>Gastrosat</strong></p>
 </footer>
 
+    <script>
+    document.querySelector('a[href="#"]').addEventListener('click', function (e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+</script>
 
 </body>
 </html>
