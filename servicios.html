@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <style>
+    /* Ajustes generales (ya funciona bien en móviles) */
+img.logo {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+/* Ajustes generales (ya funciona bien en móviles) */
+img.logo {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+@media screen and (min-width: 1180px) {
+    .logo {
+        position: sticky; /* Elimina la propiedad sticky */
+        top: 20px;
+    }
+}
+
+/* Ajuste para escritorio */
+@media screen and (min-width: 768px) { 
+    .wrapper {
+        display: flex;  /* Alinea el logo y el contenido en fila */
+        align-items: flex-start; /* Asegura que ambos queden arriba */
+        justify-content: center; /* Mantiene el contenido centrado */
+        gap: 50px; /* Espacio entre el logo y el contenido */
+        max-width: 1000px; /* Ajusta el ancho máximo para evitar desbordamientos */
+    }
+
+    .logo {
+        max-width: 300px; /* Ajusta el tamaño del logo */
+        height: auto;
+        align-self: flex-start; /* Asegura que el logo esté arriba */
+        margin-top: 90px; /* Ajusta la distancia desde arriba */
+    }
+    .content {
+        text-align: left;
+        max-width: 650px;
+    }
+}
+a {
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+a:hover {
+    color: #007bff; 
+    text-decoration: underline;
+}
+        /* Ajuste de opacidad en estado normal */
+footer img {
+    opacity: 0.5;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Recupera la opacidad al pasar el ratón */
+footer img:hover {
+    opacity: 1;
+}
+
+</style>
+    <link rel="stylesheet" href="styles.css">
+<link rel="preload" href="logov5.svg" as="image" type="image/svg+xml">
+    <!-- Favicon estándar -->
+<link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
+
+<!-- Favicons en diferentes tamaños para mejor compatibilidad -->
+<link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon_io/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon_io/android-chrome-512x512.png">
+
+<!-- Apple Touch Icon (para iOS y dispositivos Apple) -->
+<link rel="apple-touch-icon" href="favicon_io/apple-touch-icon.png">
+
+<!-- Web Manifest (para Progressive Web Apps) -->
+<link rel="manifest" href="favicon_io/site.webmanifest">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>GastroSat | Servicios</title>
+    
+</head>
+<body style="margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; text-align: center;">
+
+    <div class="wrapper" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; padding: 20px; max-width: 90%; margin: auto;">
+        <!-- Logo -->
+        <img src="logov5.svg" alt="GastroSat Logo" class="logo">
+
+        <!-- Caja de contenido sin borde -->
+        <div class="content" style="width: 100%; max-width: 650px; padding: 20px; text-align: left;">
+            <h2>Servicios</h2>
+            ⚙️ Servicios de Asistencia Técnica en Hostelería
+🧊 Frío Industrial
+✔ Cámaras de conservación y congelación (puertas, paneles, evaporadores, compresores)
+✔ Vitrinas refrigeradas (expositoras, murales, autoservicio)
+✔ Mesas frías y armarios refrigerados (gastronorm, pastelería, heladería)
+✔ Fabricadores de hielo (cubito, escama, nugget, hielo seco)
+✔ Enfriadores de botellas y barriles
+
+🔥 Cocción y Calor
+✔ Hornos (convectores, mixtos, brasa, pizza)
+✔ Planchas, fry-tops y parrillas
+✔ Freidoras y baños maría
+✔ Cocinas industriales y quemadores
+✔ Mantenedores de calor y lámparas infrarrojas
+
+🚰 Lavado y Higiene
+✔ Lavavajillas industriales (cúpula, arrastre, túneles de lavado)
+✔ Lavavasos y lavaplatos
+✔ Dosificadores de detergente y abrillantador
+✔ Sistemas de filtrado y ósmosis inversa
+
+💨 Extracción y Ventilación
+✔ Campanas extractoras (filtrado, compensación, UV)
+✔ Motores y turbinas de extracción
+✔ Filtros de grasa y carbón activo
+✔ Sistemas de renovación de aire
+
+🍽️ Buffets y Autoservicio
+✔ Baños maría y mesas calientes
+✔ Islas de frío y self-service
+✔ Termos y dispensadores de líquidos
+
+🔩 Otros Equipos y Elementos
+✔ Grifería industrial y prelavado
+✔ Mesas, fregaderos y mobiliario de acero inoxidable
+✔ Máquinas de café y molinos
+✔ Trituradores y compactadores de residuos
+✔ Sistemas de iluminación y control eléctrico
+<a href="/" style="display: inline-block; margin-top: 20px; font-size: 16px; text-decoration: none; color: #007bff; font-weight: bold;">
+    ← Volver al inicio
+</a>
+        </div>
+
+<!-- Footer con imágenes de logos con opacidad reducida -->
+<footer style="text-align: center; padding: 20px; margin-top: 40px; background-color: #f8f8f8; font-size: 14px; color: #333;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 10px;">
+        
+    <a href="https://www.infrico.com/" target="_blank">
+        <img src="logos_proveedores/infrico.png" alt="Logo Infrico" style="height: 50px;" loading="lazy">
+    </a>
+    <a href="https://www.miele.com/" target="_blank">
+        <img src="logos_proveedores/miele.png" alt="Logo Miele" style="height: 50px;" loading="lazy">
+    </a>
+    <a href="https://www.fricosmos.com/" target="_blank">
+        <img src="logos_proveedores/fricosmos.png" alt="Logo Fricosmos" style="height: 50px;" loading="lazy">
+    </a>
+    <a href="https://www.impafri.com/" target="_blank">
+        <img src="logos_proveedores/impafri.png" alt="Logo Impafri" style="height: 37.5px; margin-top: 6px;" loading="lazy"> <!-- Reducido 25% -->
+    </a>
+    <a href="https://www.intarcon.com/" target="_blank">
+        <img src="logos_proveedores/intarcon.png" alt="Logo Intarcon" style="height: 30px; margin-top: 10px;" loading="lazy"> <!-- Reducido 25% -->
+    </a>
+    <a href="https://www.tecnoinox.it/" target="_blank">
+        <img src="logos_proveedores/tecnoinox.png" alt="Logo Tecnoinox" style="height: 50px;" loading="lazy">
+    </a>     
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 10px;">
+    <a href="https://www.eurofours.com/es" target="_blank">
+        <img src="logos_proveedores/eurofours.png" alt="Logo Eurofours" style="height: 50px;" loading="lazy">
+    </a>   
+</div>
+    <br>
+    <p>©2025 GastroSat. Algunos derechos reservados.</p>
+    <p>Desarrollado con 💚 por <strong>GastroSat</strong></p>
+</footer>
+
+
+</body>
+</html>
