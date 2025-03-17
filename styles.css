@@ -22,7 +22,9 @@ li {
 }
 ul {
     list-style: none; /* Elimina los puntos */
-    padding-left: 0; /* Asegura alineación correcta */
+    padding-left: 0;
+    margin-top: 0;
+    
 /* Footer */
 footer {
     text-align: center;
