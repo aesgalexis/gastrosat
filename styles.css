@@ -14,7 +14,7 @@ a:hover {
     text-decoration: underline;
 }
 h4 {
-    margin-bottom: 4px; /* Reduce el espacio entre el título y la lista */
+    margin-bottom: 5px; /* Reduce el espacio entre el título y la lista */
 }
 /* Listas */
 li {
