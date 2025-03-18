@@ -54,7 +54,14 @@ footer img:hover {
 }
 
 /* Ajuste de imágenes del footer */
-footer div {
+nav {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 0;
+    display: flex;
+    max-width: 1900px;
+}
+nav div {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -62,17 +69,17 @@ footer div {
     margin-bottom: 10px;
 }
 
-footer p {
+nav p {
     margin: 5px 0;
 }
 /* --- MENÚ EN EL FOOTER --- */
-.footer-menu {
+.nav-menu {
     text-align: center;
     margin-bottom: 0px; /* Espacio antes de los logos */
     background-color: #777777;
 }
 
-.footer-links {
+.nav-links {
     list-style: none;
     padding: 0;
     display: flex;
@@ -81,11 +88,11 @@ footer p {
     flex-wrap: wrap; /* Para evitar que se desborde en pantallas pequeñas */
 }
 
-.footer-links li {
+.nav-links li {
     display: inline;
 }
 
-.footer-links a {
+.nav-links a {
     text-decoration: none;
     color: #333;
     font-size: 14px;
@@ -93,13 +100,7 @@ footer p {
     transition: color 0.3s ease;
 }
 
-.footer-links a:hover {
+.nav-links a:hover {
     color: #007bff;
 }
-nav {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 0;
-    display: flex;
-    max-width: 1900px;
-}
+
