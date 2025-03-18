@@ -98,8 +98,8 @@ nav {
 
 /* Formulario contacto */
 form {
-    max-width: 500px;
-    margin: 20px auto;
+    max-width: 650px;
+    margin: 0px auto;
     padding: 20px;
     background-color: #f8f8f8;
     border-radius: 8px;
@@ -120,7 +120,7 @@ input, textarea {
 }
 
 button {
-    background-color: #004960;
+    background-color: #000000;
     color: white;
     padding: 10px;
     border: none;
