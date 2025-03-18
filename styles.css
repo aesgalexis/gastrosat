@@ -97,7 +97,7 @@ nav {
 @media (max-width: 768px) {
     nav {
         display: flex;
-        flex-direction: column; /* Cambia de fila a columna */
+        
         align-items: center; /* Centra los elementos */
     }
     .nav-links {
