@@ -94,6 +94,22 @@ img.logo {
     <input type="hidden" name="_next" value="https://gastrosat.com">
   <button type="submit">Send</button>
 </form>
+            <script>
+    document.querySelector("form").addEventListener("submit", function(event) {
+        event.preventDefault(); // Evita la redirección automática
+        fetch(this.action, {
+            method: this.method,
+            body: new FormData(this),
+            headers: { 'Accept': 'application/json' }
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = "https://gastrosat.com"; // Redirige manualmente
+            } else {
+                alert("Hubo un error al enviar el formulario.");
+            }
+        });
+    });
+</script>
             
 <a href="/" style="display: inline-block; margin-top: 20px; font-size: 16px; text-decoration: none; color: #007bff; font-weight: bold;">
     ← Volver al inicio
