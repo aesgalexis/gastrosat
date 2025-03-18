@@ -57,7 +57,7 @@ footer img:hover {
 /* Estilos base del menú */
 nav {
     width: 100%;
-    background-color: #BFBFBF;
+    background-color: #404040;
     margin-bottom: -39px; /* Ajuste fino para eliminar separación no deseada */
     padding-bottom: 10px; /* Espacio interno si es necesario */
     padding: 10px 0;
