@@ -73,35 +73,34 @@ nav p {
     margin: 5px 0;
 }
 /* --- MENÚ EN EL FOOTER --- */
-.nav-menu {
-    width: 100%;
-    background-color: #777777;
-    padding: 10px 0; /* Espaciado superior e inferior */
-    display: flex;
-    justify-content: center;
+.footer-menu {
+    width: 100%;  /* Ocupa todo el ancho de la pantalla */
+    background-color: #777777;  /* Color de fondo */
+    padding: 10px 0;  /* Espaciado superior e inferior */
+    text-align: center;  /* Centra el texto */
 }
 
-.nav-links {
-    list-style: none;
+.footer-links {
+    list-style: none;  /* Quita los estilos de lista */
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: center; /* Centra los enlaces */
-    gap: 30px; /* Espaciado entre enlaces */
+    justify-content: center;  /* Centra los elementos */
+    gap: 20px;  /* Espaciado entre enlaces */
 }
 
-.nav-links li {
+.footer-links li {
     display: inline;
 }
 
-.nav-links a {
+.footer-links a {
     text-decoration: none;
-    color: #ffffff; /* Blanco para que resalte en fondo oscuro */
+    color: #fff;  /* Color del texto */
     font-size: 14px;
     font-weight: bold;
     transition: color 0.3s ease;
 }
 
-.nav-links a:hover {
-    color: #007bff;
+.footer-links a:hover {
+    color: #007bff;  /* Cambio de color al pasar el ratón */
 }
