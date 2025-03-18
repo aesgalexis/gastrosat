@@ -103,11 +103,30 @@ img.logo {
   <button type="submit">Enviar</button>
 </form>
 
-            <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const form = document.querySelector("form"); // Busca el formulario
+            <!-- Contenedor para la notificación (inicialmente oculto) -->
+<div id="success-message" style="
+    display: none;
+    background-color: #28a745;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+">
+    ✅ ¡Mensaje enviado correctamente!
+</div>
 
-        if (form) { // Verifica si el formulario realmente existe antes de ejecutar el código
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.querySelector("form");
+        const successMessage = document.getElementById("success-message");
+
+        if (form) {
             form.addEventListener("submit", function(event) {
                 event.preventDefault(); // Evita la redirección automática
 
@@ -117,7 +136,14 @@ img.logo {
                     headers: { 'Accept': 'application/json' }
                 }).then(response => {
                     if (response.ok) {
-                        window.location.href = "https://gastrosat.com"; // Redirige manualmente
+                        successMessage.style.display = "block"; // Muestra la notificación
+                        form.reset(); // Limpia el formulario después del envío
+
+                        // Oculta el mensaje después de 3 segundos y redirige
+                        setTimeout(() => {
+                            successMessage.style.display = "none";
+                            window.location.href = "https://gastrosat.com"; // Si quieres redirigir después
+                        }, 3000);
                     } else {
                         alert("Hubo un error al enviar el formulario.");
                     }
@@ -131,6 +157,7 @@ img.logo {
         }
     });
 </script>
+
 
             
 <a href="/" style="display: inline-block; margin-top: 20px; font-size: 16px; text-decoration: none; color: #007bff; font-weight: bold;">
