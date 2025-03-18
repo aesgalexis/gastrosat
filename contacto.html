@@ -79,30 +79,30 @@ img.logo {
             <h2>📩 Contacto</h2>
 <p>Si tienes alguna consulta o necesitas asistencia, rellena el formulario y te responderemos lo antes posible.</p>
 <br>
-<form
-  action="https://formspree.io/f/mvgkgjba"
-  method="POST"
->
+<form action="https://formspree.io/f/mvgkgjba" method="POST">
   <label>
     Nombre:
-    <input type="nombre" name="nombre">
+    <input type="text" name="nombre">
   </label>    
   <label>
     Correo electrónico:
-    <input type="email" name="email">
+    <input type="email" name="email" required>
   </label>
-    <label>
+  <label>
     Teléfono:
-    <input type="telefono" name="telefono">
+    <input type="tel" name="telefono">
   </label>
   <label>
     Mensaje:
     <textarea name="message"></textarea>
   </label>
-    <input type="hidden" name="_next" value="https://gastrosat.com">
-    <br>
+  
+  <input type="hidden" name="_next" value="https://gastrosat.com">
+  
+  <br>
   <button type="submit">Enviar</button>
 </form>
+
             <script>
     document.querySelector("form").addEventListener("submit", function(event) {
         event.preventDefault(); // Evita la redirección automática
