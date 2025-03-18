@@ -98,7 +98,7 @@ nav {
 
 /* Formulario contacto */
 form {
-    max-width: 600px; /* Se ajusta a un ancho máximo en pantallas grandes */
+    max-width: 550px; /* Se ajusta a un ancho máximo en pantallas grandes */
     width: 100%; /* Ocupa todo el ancho disponible en móviles */
     margin: 0 auto;
     padding: 20px;
