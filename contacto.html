@@ -79,20 +79,20 @@ img.logo {
             <h2>📩 Contacto</h2>
 <p>Si tienes alguna consulta o necesitas asistencia, rellena el formulario y te responderemos lo antes posible.</p>
 
-<form action="enviar.php" method="get">
-    <label for="nombre">👤 Nombre:</label>
-    <input type="text" id="nombre" name="nombre" required>
-
-    <label for="email">✉️ Correo Electrónico:</label>
-    <input type="email" id="email" name="email" required>
-
-    <label for="telefono">📞 Teléfono (opcional):</label>
-    <input type="tel" id="telefono" name="telefono">
-
-    <label for="mensaje">💬 Mensaje:</label>
-    <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
-
-    <button type="submit">Enviar</button>
+<form
+  action="https://formspree.io/f/mvgkgjba"
+  method="POST"
+>
+  <label>
+    Your email:
+    <input type="email" name="email">
+  </label>
+  <label>
+    Your message:
+    <textarea name="message"></textarea>
+  </label>
+  <!-- your other form fields go here -->
+  <button type="submit">Send</button>
 </form>
             
 <a href="/" style="display: inline-block; margin-top: 20px; font-size: 16px; text-decoration: none; color: #007bff; font-weight: bold;">
