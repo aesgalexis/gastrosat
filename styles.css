@@ -33,7 +33,7 @@ footer {
     box-sizing: border-box; /* Asegura que el padding no aumente el tamaño */
     text-align: center;
     padding: 20px;
-    margin-top: 40px;
+    margin-top: 0px;
     background-color: #f8f8f8;
     font-size: 14px;
     color: #333;
