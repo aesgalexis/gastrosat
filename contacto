@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <style>
+    /* Ajustes generales (ya funciona bien en móviles) */
+img.logo {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+/* Ajustes generales (ya funciona bien en móviles) */
+img.logo {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+@media screen and (min-width: 1180px) {
+    .logo {
+        position: sticky; /* Elimina la propiedad sticky */
+        top: 20px;
+    }
+}
+
+/* Ajuste para escritorio */
+@media screen and (min-width: 768px) { 
+    .wrapper {
+        display: flex;  /* Alinea el logo y el contenido en fila */
+        align-items: flex-start; /* Asegura que ambos queden arriba */
+        justify-content: center; /* Mantiene el contenido centrado */
+        gap: 50px; /* Espacio entre el logo y el contenido */
+        max-width: 1000px; /* Ajusta el ancho máximo para evitar desbordamientos */
+    }
+
+    .logo {
+        max-width: 300px; /* Ajusta el tamaño del logo */
+        height: auto;
+        align-self: flex-start; /* Asegura que el logo esté arriba */
+        margin-top: 90px; /* Ajusta la distancia desde arriba */
+    }
+    .content {
+        text-align: left;
+        max-width: 650px;
+    }
+}
+
+</style>
+    <link rel="stylesheet" href="styles.css">
+<link rel="preload" href="logov5.svg" as="image" type="image/svg+xml">
+    <!-- Favicon estándar -->
+<link rel="icon" type="image/x-icon" href="favicon_io/favicon.ico">
+
+<!-- Favicons en diferentes tamaños para mejor compatibilidad -->
+<link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon_io/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon_io/android-chrome-512x512.png">
+
+<!-- Apple Touch Icon (para iOS y dispositivos Apple) -->
+<link rel="apple-touch-icon" href="favicon_io/apple-touch-icon.png">
+
+<!-- Web Manifest (para Progressive Web Apps) -->
+<link rel="manifest" href="favicon_io/site.webmanifest">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>Gastrosat | Política de privacidad</title>
+    
+</head>
+<body style="margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; text-align: center;">
+
+    <div class="wrapper" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; padding: 20px; max-width: 90%; margin: auto;">
+        <!-- Logo -->
+        <img src="logov5.svg" alt="GastroSat Logo" class="logo">
+
+        <!-- Caja de contenido sin borde -->
+        <div class="content" style="width: 100%; max-width: 650px; padding: 20px; text-align: left;">
+            <h2>📩 Contacto</h2>
+<p>Si tienes alguna consulta o necesitas asistencia, rellena el formulario y te responderemos lo antes posible.</p>
+
+<form action="mailto:info@gastrosat.com" method="post" enctype="text/plain">
+    <label for="nombre">👤 Nombre:</label>
+    <input type="text" id="nombre" name="nombre" required>
+
+    <label for="email">✉️ Correo Electrónico:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="telefono">📞 Teléfono (opcional):</label>
+    <input type="tel" id="telefono" name="telefono">
+
+    <label for="mensaje">💬 Mensaje:</label>
+    <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
+
+    <button type="submit">Enviar</button>
+</form>
+            
+<a href="/" style="display: inline-block; margin-top: 20px; font-size: 16px; text-decoration: none; color: #007bff; font-weight: bold;">
+    ← Volver al inicio
+</a>
+        </div>
+    </div>
+
+<!-- Footer con imágenes de logos con opacidad reducida -->
+<footer style="text-align: center; padding: 20px; margin-top: 40px; background-color: #f8f8f8; font-size: 14px; color: #333;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 10px;">
+        
+    <a href="https://www.infrico.com/" target="_blank">
+        <img src="logos_proveedores/infrico.png" alt="Logo Infrico" style="height: 50px;" loading="lazy">
+    </a>
+    <a href="https://www.miele.com/" target="_blank">
+        <img src="logos_proveedores/miele.png" alt="Logo Miele" style="height: 50px;" loading="lazy">
+    </a>
+    <a href="https://www.fricosmos.com/" target="_blank">
+        <img src="logos_proveedores/fricosmos.png" alt="Logo Fricosmos" style="height: 50px;" loading="lazy">
+    </a>
+    <a href="https://www.impafri.com/" target="_blank">
+        <img src="logos_proveedores/impafri.png" alt="Logo Impafri" style="height: 37.5px; margin-top: 6px;" loading="lazy"> <!-- Reducido 25% -->
+    </a>
+    <a href="https://www.intarcon.com/" target="_blank">
+        <img src="logos_proveedores/intarcon.png" alt="Logo Intarcon" style="height: 30px; margin-top: 10px;" loading="lazy"> <!-- Reducido 25% -->
+    </a>
+    <a href="https://www.tecnoinox.it/" target="_blank">
+        <img src="logos_proveedores/tecnoinox.png" alt="Logo Tecnoinox" style="height: 50px;" loading="lazy">
+    </a>     
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 10px;">
+    <a href="https://www.eurofours.com/es" target="_blank">
+        <img src="logos_proveedores/eurofours.png" alt="Logo Eurofours" style="height: 50px;" loading="lazy">
+    </a> 
+    <a href="https://www.edenox.es/" target="_blank">
+        <img src="logos_proveedores/edenox.webp" alt="Logo Edenox" style="height: 50px;" loading="lazy">
+    </a>  
+</div>
+    <br>
+    <p>©2025 GastroSat. Algunos derechos reservados.</p>
+    <p>Desarrollado con 💚 por <strong>Gastrosat</strong></p>
+</footer>
+
+
+</body>
+</html>
