@@ -55,6 +55,8 @@ footer img:hover {
 }
 /* Estilos base del menú */
 nav {
+    position: relative;
+    z-index: 10;
     width: 100%;
     background-color: ##004960;
     margin-bottom: 0px; /* Ajuste fino para eliminar separación no deseada */
