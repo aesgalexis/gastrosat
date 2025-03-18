@@ -63,7 +63,7 @@ nav {
     display: flex;
     justify-content: center;
     text-align: center; /* Asegura que esté centrado */
-
+    color: white !important;
 }
 
 .nav-links {
