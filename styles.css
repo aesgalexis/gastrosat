@@ -57,7 +57,7 @@ footer img:hover {
 nav {
     width: 100%;
     background-color: #004960;
-    margin-bottom: 0px; /* Ajuste fino para eliminar separación no deseada */
+    margin-bottom: -10px; /* Ajuste fino para eliminar separación no deseada */
     padding-bottom: 10px; /* Espacio interno si es necesario */
     padding: 10px 0;
     display: flex;
