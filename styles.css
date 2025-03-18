@@ -93,21 +93,7 @@ nav {
 .nav-links a:hover {
     color: #007bff !important;
 }
-/* Comportamiento en móviles: cambia de fila a columna */
-@media (max-width: 768px) {
-    nav {
-        display: flex;
-        
-        align-items: center; /* Centra los elementos */
-    }
-    .nav-links {
-        flex-direction: column;
-        text-align: center;
-    }
-    .nav-links li {
-        margin-bottom: 10px;
-    }
-}
+
 /* Formulario contacto */
 form {
     max-width: 500px;
