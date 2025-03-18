@@ -105,17 +105,24 @@ form {
     box-sizing: border-box;
 }
 
-input, label {
+input, label, textarea {
     display: block;
     width: 100%;
     margin-bottom: 10px;
 }
 
-input {
+input, textarea {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
+    font-family: inherit;
+}
+
+/* Ajuste del textarea para que tenga 5-7 líneas visibles */
+textarea {
+    height: 120px; /* Aproximadamente 5-7 líneas */
+    resize: vertical; /* Permite ajustar la altura si el usuario lo necesita */
 }
 
 button {
@@ -140,3 +147,4 @@ button:hover {
         max-width: 100%; /* Ocupa todo el ancho en móviles */
     }
 }
+
