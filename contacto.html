@@ -77,31 +77,34 @@ img.logo {
         <!-- Caja de contenido sin borde -->
         <div class="content" style="width: 100%; max-width: 650px; padding: 20px; text-align: left;">
             <h2>📩 Contacto</h2>
-<p>Si tienes alguna consulta o necesitas asistencia, rellena el formulario y te responderemos lo antes posible.</p>
-<br>
-<form action="https://formspree.io/f/mvgkgjba" method="POST">
-  <label>
-    Nombre:
-    <input type="text" name="nombre">
-  </label>    
-  <label>
-    Correo electrónico:
-    <input type="email" name="email" required>
-  </label>
-  <label>
-    Teléfono:
-    <input type="tel" name="telefono">
-  </label>
-  <label>
-    Mensaje:
-    <textarea name="message"></textarea>
-  </label>
-  
-  <input type="hidden" name="_next" value="https://gastrosat.com">
-  
-  <br>
-  <button type="submit">Enviar</button>
-</form>
+            <p>Si tienes alguna consulta o necesitas asistencia, rellena el formulario y te responderemos lo antes posible.</p>
+            <br>
+            <form action="https://formspree.io/f/mvgkgjba" method="POST" style="text-align: left;">
+                <label>
+                    Nombre:
+                    <input type="text" name="nombre">
+                </label>    
+                <label>
+                    Correo electrónico:
+                    <input type="email" name="email" required>
+                </label>
+                <label>
+                    Teléfono:
+                    <input type="tel" name="telefono">
+                </label>
+                <label>
+                    Mensaje:
+                    <textarea name="message"></textarea>
+                </label>
+                
+                <input type="hidden" name="_next" value="https://gastrosat.com">
+                
+                <br>
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </div>
+</body>
 
             <!-- Contenedor para la notificación (inicialmente oculto) -->
 <div id="success-message" style="
