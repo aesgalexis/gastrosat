@@ -38,6 +38,8 @@ footer {
     background-color: #f8f8f8;
     font-size: 14px;
     color: #333;
+    position: relative;
+    z-index: 5;
 }
 footer > div {
     max-width: 1900px; /* O el valor que prefieras */
