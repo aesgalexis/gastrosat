@@ -57,7 +57,7 @@ footer img:hover {
 .nav-menu {
     width: 100%;  /* Ocupar todo el ancho */
     background-color: #777777;  /* Color de fondo */
-    padding: 0px 0;  /* Espaciado arriba y abajo */
+    padding: 10px 0;  /* Espaciado arriba y abajo */
     text-align: center;  /* Centrar el contenido */
     display: flex;
     justify-content: center;
