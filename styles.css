@@ -133,8 +133,9 @@ button {
     font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
-    display: block;
-    width: 100%;
+    display: inline-block;
+    width: auto;
+    margin: 0 auto;
     transition: background-color 0.3s;
 }
 
