@@ -103,6 +103,8 @@ form {
     margin: 0 auto; /* Centra el formulario en la pantalla */
     padding: 20px;
     box-sizing: border-box;
+    display: inline-block;
+    text-align: left;
 }
 
 input, label, textarea {
