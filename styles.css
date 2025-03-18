@@ -69,27 +69,22 @@ nav {
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: center; /* Alineación centrada */
-    gap: 20px; /* Espaciado entre elementos */
-    flex-wrap: wrap; /* Permite que los elementos se apilen si no caben */
+    justify-content: center; /* Centrar en la pantalla */
+    flex-wrap: wrap; /* Permite que bajen si no caben */
+    gap: 20px; /* Espaciado entre los elementos */
 }
 
 .nav-links li {
-    display: inline-block;
+    display: inline-block; /* Asegura que estén en la misma línea */
 }
 
 .nav-links a {
     text-decoration: none;
-    color: white;
-    font-size: 16px;
+    color: #ffffff; /* O el color que prefieras */
+    font-size: 14px;
     font-weight: bold;
+    padding: 10px 15px; /* Espaciado interno */
     transition: color 0.3s ease;
-    padding: 10px 15px;
-    display: block; /* Hace que toda el área del enlace sea clickeable */
-}
-
-.nav-links a:hover {
-    color: #f8f8f8;
 }
 
 /* Diseño responsivo: en móviles se apilan los enlaces */
