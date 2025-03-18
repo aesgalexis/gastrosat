@@ -98,37 +98,45 @@ nav {
 
 /* Formulario contacto */
 form {
-    max-width: 650px;
-    margin: 0px auto;
+    max-width: 650px; /* Se ajusta a un ancho máximo en pantallas grandes */
+    width: 100%; /* Ocupa todo el ancho disponible en móviles */
+    margin: 0 auto; /* Centra el formulario en la pantalla */
     padding: 20px;
-    background-color: #f8f8f8;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    box-sizing: border-box;
 }
 
-label {
-    font-weight: bold;
-}
-
-input, textarea {
+input, label {
+    display: block;
     width: 100%;
-    padding: 8px;
+    margin-bottom: 10px;
+}
+
+input {
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
 button {
-    background-color: #000000;
+    background-color: #007bff; /* Color original del botón */
     color: white;
-    padding: 10px;
     border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
-    text-transform: uppercase;
+    width: 100%;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #007bff;
+    background-color: #0056b3; /* Un poco más oscuro al pasar el cursor */
+}
+
+/* Ajustes específicos para pantallas pequeñas */
+@media (max-width: 768px) {
+    form {
+        max-width: 100%; /* Ocupa todo el ancho en móviles */
+    }
 }
