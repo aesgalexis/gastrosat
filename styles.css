@@ -68,7 +68,8 @@ footer p {
 /* --- MENÚ EN EL FOOTER --- */
 .footer-menu {
     text-align: center;
-    margin-bottom: 20px; /* Espacio antes de los logos */
+    margin-bottom: 0px; /* Espacio antes de los logos */
+    background-color: #777777;
 }
 
 .footer-links {
