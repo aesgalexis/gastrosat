@@ -53,54 +53,40 @@ footer img:hover {
     opacity: 1;
 }
 
-/* Ajuste de imágenes del footer */
-nav {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 0;
-    display: flex;
-    max-width: 1900px;
-}
-nav div {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 10px;
-}
-
-nav p {
-    margin: 5px 0;
-}
-/* --- MENÚ EN EL FOOTER --- */
-.footer-menu {
-    width: 100%;  /* Ocupa todo el ancho de la pantalla */
+/* Menú de navegación (justo encima del footer) */
+.nav-menu {
+    width: 100%;  /* Ocupar todo el ancho */
     background-color: #777777;  /* Color de fondo */
-    padding: 10px 0;  /* Espaciado superior e inferior */
-    text-align: center;  /* Centra el texto */
+    padding: 10px 0;  /* Espaciado arriba y abajo */
+    text-align: center;  /* Centrar el contenido */
+    display: flex;
+    justify-content: center;
 }
 
-.footer-links {
-    list-style: none;  /* Quita los estilos de lista */
+.nav-links {
+    list-style: none;  /* Quita los puntos de la lista */
     padding: 0;
     margin: 0;
-    display: flex;
+    display: flex;  /* Coloca los enlaces en línea */
     justify-content: center;  /* Centra los elementos */
-    gap: 20px;  /* Espaciado entre enlaces */
+    width: 100%;  /* Se asegura de ocupar todo el ancho */
 }
 
-.footer-links li {
-    display: inline;
+.nav-links li {
+    display: inline; /* Mantiene los elementos en línea */
+    margin: 0 15px;  /* Espaciado entre elementos */
 }
 
-.footer-links a {
+.nav-links a {
     text-decoration: none;
-    color: #fff;  /* Color del texto */
-    font-size: 14px;
+    color: #fff;  /* Color de texto */
+    font-size: 16px;
     font-weight: bold;
+    padding: 10px 15px; /* Espaciado interno para que no queden pegados */
+    display: block; /* Hace que toda el área sea clickeable */
     transition: color 0.3s ease;
 }
 
-.footer-links a:hover {
+.nav-links a:hover {
     color: #007bff;  /* Cambio de color al pasar el ratón */
 }
