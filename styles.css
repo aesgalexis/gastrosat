@@ -101,6 +101,7 @@ form {
     max-width: 620px; /* Se ajusta a un ancho máximo en pantallas grandes */
     width: 100%; /* Ocupa todo el ancho disponible en móviles */
     margin: 0;
+    margin-right: 30px;
     padding: 20px;
     box-sizing: border-box;
     display: block;
