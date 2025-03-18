@@ -52,3 +52,36 @@ footer img {
 footer img:hover {
     opacity: 1;
 }
+/* --- MENÚ DENTRO DEL FOOTER --- */
+.footer-nav {
+    width: 100%;
+    background-color: #333; /* Fondo oscuro */
+    padding: 10px 0; /* Espaciado arriba y abajo */
+}
+
+.footer-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center; /* Centrar enlaces */
+    gap: 25px; /* Espaciado entre elementos */
+}
+
+.footer-nav li {
+    display: inline;
+}
+
+.footer-nav a {
+    text-decoration: none;
+    color: #ffffff; /* Color del texto */
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 15px; /* Espaciado interno */
+    transition: color 0.3s ease-in-out;
+}
+
+.footer-nav a:hover {
+    color: #007bff; /* Color al pasar el ratón */
+}
+
