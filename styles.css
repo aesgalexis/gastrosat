@@ -74,18 +74,20 @@ nav p {
 }
 /* --- MENÚ EN EL FOOTER --- */
 .nav-menu {
-    text-align: center;
-    margin-bottom: 0px; /* Espacio antes de los logos */
+    width: 100%;
     background-color: #777777;
+    padding: 10px 0; /* Espaciado superior e inferior */
+    display: flex;
+    justify-content: center;
 }
 
 .nav-links {
     list-style: none;
     padding: 0;
+    margin: 0;
     display: flex;
-    justify-content: center; /* Centrar los enlaces */
-    gap: 20px; /* Espaciado entre enlaces */
-    flex-wrap: wrap; /* Para evitar que se desborde en pantallas pequeñas */
+    justify-content: center; /* Centra los enlaces */
+    gap: 30px; /* Espaciado entre enlaces */
 }
 
 .nav-links li {
@@ -94,7 +96,7 @@ nav p {
 
 .nav-links a {
     text-decoration: none;
-    color: #333;
+    color: #ffffff; /* Blanco para que resalte en fondo oscuro */
     font-size: 14px;
     font-weight: bold;
     transition: color 0.3s ease;
@@ -103,4 +105,3 @@ nav p {
 .nav-links a:hover {
     color: #007bff;
 }
-
