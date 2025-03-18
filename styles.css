@@ -67,35 +67,28 @@ nav {
 }
 
 .nav-links {
-    color: #ffffff;
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex;
-    justify-content: center; /* Centrar en la pantalla */
-    flex-wrap: wrap; /* Permite que bajen si no caben */
-    gap: 20px; /* Espaciado entre los elementos */
+    display: flex !important; /* Asegura que se usará flexbox */
+    justify-content: center !important; /* Centra los elementos */
+    flex-wrap: wrap !important; /* Para que no se desborde en móviles */
+    gap: 20px !important; /* Espaciado entre los enlaces */
 }
 
 .nav-links li {
-    display: inline-block; /* Asegura que estén en la misma línea */
+    display: inline-block !important; /* Asegura que estén en la misma línea */
 }
 
 .nav-links a {
-    text-decoration: none;
-    color: #ffffff; /* O el color que prefieras */
-    font-size: 14px;
-    font-weight: bold;
-    padding: 10px 15px; /* Espaciado interno */
-    transition: color 0.3s ease;
+    text-decoration: none !important;
+    color: #ffffff !important; /* Asegura que los enlaces sean blancos */
+    font-size: 14px !important;
+    font-weight: bold !important;
+    padding: 10px 15px !important;
+    transition: color 0.3s ease !important;
 }
 
-/* Diseño responsivo: en móviles se apilan los enlaces */
-@media screen and (max-width: 768px) {
-    .nav-links {
-        flex-direction: column; /* Pasa los elementos a una columna */
-        align-items: center; /* Centra los elementos */
-        gap: 10px; /* Espacio entre elementos en móvil */
-    }
+.nav-links a:hover {
+    color: #007bff !important; /* Color en hover */
 }
-
