@@ -48,6 +48,7 @@ footer img {
     opacity: 0.5;
     transition: opacity 0.3s ease-in-out;
     margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 footer img:hover {
