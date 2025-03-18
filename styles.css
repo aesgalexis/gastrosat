@@ -100,10 +100,10 @@ nav {
 form {
     max-width: 650px; /* Se ajusta a un ancho máximo en pantallas grandes */
     width: 100%; /* Ocupa todo el ancho disponible en móviles */
-    margin: 0 auto; /* Centra el formulario en la pantalla */
+    margin: 0 auto;
     padding: 20px;
     box-sizing: border-box;
-    display: inline-block;
+    display: block;
     text-align: left;
 }
 
