@@ -16,25 +16,41 @@ img.logo {
 }
 
 /* Ajuste para escritorio */
-@media screen and (min-width: 768px) { 
-    .wrapper {
-        display: flex;  /* Alinea el logo y el contenido en fila */
-        align-items: flex-start; /* Asegura que ambos queden arriba */
-        justify-content: center; /* Mantiene el contenido centrado */
-        gap: 50px; /* Espacio entre el logo y el contenido */
-        max-width: 1000px; /* Ajusta el ancho máximo para evitar desbordamientos */
-    }
+/* ===== PARCHE LAYOUT ESCRITORIO: logo izquierda sin solapes ===== */
+@media screen and (min-width: 768px) {
+  .wrapper {
+    display: flex;
+    flex-wrap: nowrap !important;   /* anula el inline "flex-wrap: wrap" */
+    align-items: flex-start;
+    justify-content: center;
+    gap: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;                  /* por si lo quitases del inline */
+  }
 
-    .logo {
-        max-width: 300px; /* Ajusta el tamaño del logo */
-        height: auto;
-        align-self: flex-start; /* Asegura que el logo esté arriba */
-        margin-top: 90px; /* Ajusta la distancia desde arriba */
-    }
-    .content {
-        text-align: left;
-        max-width: 650px;
-    }
+  .logo {
+    position: static !important;    /* neutraliza cualquier sticky heredado */
+    flex: 0 0 300px;                /* columna fija para el logo */
+    max-width: 300px;
+    height: auto;
+    margin-top: 0;                  /* sin desplazamientos raros */
+  }
+
+  .content {
+    flex: 1 1 0;                    /* columna fluida para el contenido */
+    min-width: 0;                   /* evita desbordes en flex */
+    max-width: 650px;               /* opcional, mantiene línea de lectura */
+    text-align: left;
+  }
+}
+
+/* En pantallas muy anchas, aseguramos que NO sea sticky */
+@media screen and (min-width: 1180px) {
+  .logo {
+    position: static !important;
+    top: auto !important;
+  }
 }
 
 </style>
