@@ -2,21 +2,17 @@
 <html lang="es">
 <head>
     <style>
-/* Ajustes generales (ya funciona bien en móviles) */
 img.logo {
   width: 100%;
   max-width: 300px;
   height: auto;
 }
 
-/* (si tenías otro bloque igual, no pasa nada) */
-
-/* ===== Layout escritorio: dos columnas, sin solapes ===== */
 @media screen and (min-width: 768px) {
   .wrapper {
     display: flex;
-    flex-wrap: nowrap !important;     /* anula el inline wrap */
-    align-items: flex-start !important;/* evita centrado vertical */
+    flex-wrap: nowrap !important;     
+    align-items: flex-start !important;
     justify-content: center;
     gap: 50px;
     max-width: 1000px;
@@ -31,10 +27,10 @@ img.logo {
     height: auto;
 
     /* comportamiento pedido */
-    margin-top: 90px;                 /* arranca 90px por debajo del top */
+    margin-top: 90px;             
     position: sticky;
-    top: 20px;                        /* se queda a 20px al hacer scroll */
-    z-index: 1;                       /* por si hay z-index del contenido */
+    top: 20px;                     
+    z-index: 1;                     
   }
 
   .content {
@@ -45,7 +41,6 @@ img.logo {
   }
 }
 
-/* Asegura el sticky también en pantallas muy anchas */
 @media screen and (min-width: 1180px) {
   .logo {
     position: sticky !important;
@@ -117,7 +112,7 @@ img.logo {
             color: white; background: linear-gradient(135deg, #007bff, #00b894); 
             text-decoration: none; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
             transition: all 0.3s ease;">
-    🛍️ Entrar a la Tienda Online
+    🛍️ Gastrosat.shop
   </a>
 </p>
 
