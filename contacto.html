@@ -21,12 +21,9 @@ img.logo {
   }
 
   .logo {
-    /* columna fija a la izquierda */
     flex: 0 0 300px;
     max-width: 300px;
     height: auto;
-
-    /* comportamiento pedido */
     margin-top: 90px;             
     position: sticky;
     top: 20px;                     
@@ -139,7 +136,7 @@ img.logo {
 
         if (form) {
             form.addEventListener("submit", function(event) {
-                event.preventDefault(); // Evita la redirección automática
+                event.preventDefault();
 
                 fetch(this.action, {
                     method: this.method,
@@ -147,13 +144,11 @@ img.logo {
                     headers: { 'Accept': 'application/json' }
                 }).then(response => {
                     if (response.ok) {
-                        successMessage.style.display = "block"; // Muestra la notificación
-                        form.reset(); // Limpia el formulario después del envío
-
-                        // Oculta el mensaje después de 3 segundos y redirige
+                        successMessage.style.display = "block";
+                        form.reset();
                         setTimeout(() => {
                             successMessage.style.display = "none";
-                            window.location.href = "https://gastrosat.com"; // Si quieres redirigir después
+                            window.location.href = "https://gastrosat.com";
                         }, 3000);
                     } else {
                         alert("Hubo un error al enviar el formulario.");
