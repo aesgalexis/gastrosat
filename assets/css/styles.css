@@ -148,3 +148,67 @@ button:hover {
     }
 }
 
+
+/* Descuentos sobre catálogo */
+.catalog-discount-content {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+.catalog-discount-sign {
+    flex: 0 0 116px;
+    box-sizing: border-box;
+    padding: 14px 10px;
+    color: white;
+    background: linear-gradient(135deg, #007bff, #00b894);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+.catalog-discount-sign > span {
+    display: block;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 0.6px;
+}
+.catalog-discount-sign strong {
+    display: block;
+    margin: 4px 0;
+    font-size: 42px;
+    line-height: 1;
+}
+.catalog-discount-sign strong span {
+    font-size: 25px;
+}
+.catalog-discount-copy {
+    min-width: 0;
+}
+.catalog-discount-copy p {
+    margin: 0 0 10px;
+}
+.catalog-discount-copy a {
+    color: #007bff;
+    font-weight: bold;
+}
+@media (max-width: 480px) {
+    .catalog-discount-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    .catalog-discount-sign {
+        flex-basis: auto;
+        width: 116px;
+    }
+}
+
+/* Mantener el aspecto de los encabezados con una jerarquia semantica. */
+.page-title {
+    font-size: 1.5em;
+    margin-block: 0.83em;
+}
+.section-title {
+    font-size: 1.17em;
+    margin-block: 1em;
+}
