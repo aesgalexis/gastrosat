@@ -90,7 +90,7 @@ img.logo {
             <h1 class="page-title">📩 Contacto</h1>
             <p>Si tienes alguna consulta o necesitas asistencia, rellena el formulario y te responderemos lo antes posible.</p>
             <br>
-            <form action="https://formspree.io/f/mvgkgjba" method="POST" style="text-align: left;">
+            <form id="contact-form" action="https://formspree.io/f/mvgkgjba" method="POST" style="text-align: left;">
                 <label>
                     Nombre:
                     <input type="text" name="nombre">
@@ -105,11 +105,13 @@ img.logo {
                 </label>
                 <label>
                     Mensaje:
-                    <textarea name="message"></textarea>
+                    <textarea name="message" required></textarea>
                 </label>
                 
                 <input type="hidden" name="_next" value="https://gastrosat.com">
                 
+                <p>Usaremos los datos que nos envíes para responder a tu consulta. El formulario se tramita mediante Formspree. Consulta nuestra <a href="/privacidad.html">política de privacidad</a>.</p>
+                <p id="form-status" role="status" aria-live="polite" hidden></p>
                 <br>
                 <button type="submit">Enviar</button>
             </form>
@@ -119,56 +121,37 @@ img.logo {
         </div>
     </div>
 
-            <!-- Contenedor para la notificación (inicialmente oculto) -->
-<div id="success-message" style="
-    display: none;
-    background-color: #28a745;
-    color: white;
-    padding: 15px;
-    text-align: center;
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 5px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-">
-    ✅ ¡Mensaje enviado correctamente!
-</div>
-
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const form = document.querySelector("form");
-        const successMessage = document.getElementById("success-message");
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("contact-form");
+        const status = document.getElementById("form-status");
+        const submitButton = form.querySelector('button[type="submit"]');
 
-        if (form) {
-            form.addEventListener("submit", function(event) {
-                event.preventDefault();
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            if (submitButton.disabled) return;
 
-                fetch(this.action, {
-                    method: this.method,
-                    body: new FormData(this),
-                    headers: { 'Accept': 'application/json' }
-                }).then(response => {
-                    if (response.ok) {
-                        successMessage.style.display = "block";
-                        form.reset();
-                        setTimeout(() => {
-                            successMessage.style.display = "none";
-                            window.location.href = "https://gastrosat.com";
-                        }, 3000);
-                    } else {
-                        alert("Hubo un error al enviar el formulario.");
-                    }
-                }).catch(error => {
-                    console.error("Error en la solicitud:", error);
-                    alert("Hubo un problema de conexión. Inténtalo de nuevo.");
+            submitButton.disabled = true;
+            status.hidden = false;
+            status.textContent = "Enviando mensaje…";
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: new FormData(form),
+                    headers: { Accept: "application/json" }
                 });
-            });
-        } else {
-            console.error("Formulario no encontrado en el DOM.");
-        }
+
+                if (!response.ok) throw new Error("El servidor rechazó el envío");
+
+                form.reset();
+                status.textContent = "Mensaje enviado. Gracias, te responderemos lo antes posible.";
+            } catch (error) {
+                status.textContent = "No se ha podido enviar el mensaje. Inténtalo de nuevo o escríbenos a info@gastrosat.com.";
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
     });
 </script>
 <nav>
